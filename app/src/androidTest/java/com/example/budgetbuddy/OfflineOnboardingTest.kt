@@ -1,0 +1,87 @@
+package com.example.budgetbuddy
+
+import android.content.Context
+import androidx.test.core.app.ActivityScenario
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
+import androidx.test.espresso.action.ViewActions.replaceText
+import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
+import org.junit.After
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
+import org.junit.Before
+import org.junit.Test
+import org.junit.runner.RunWith
+import java.text.SimpleDateFormat
+import java.util.Locale
+
+@RunWith(AndroidJUnit4::class)
+class OfflineOnboardingTest {
+    private val context: Context
+        get() = InstrumentationRegistry.getInstrumentation().targetContext
+
+    @Before
+    fun clearLocalProfile() {
+        context.getSharedPreferences("budget_buddy_offline_data", Context.MODE_PRIVATE).edit().clear().commit()
+    }
+
+    @After
+    fun cleanUp() {
+        context.getSharedPreferences("budget_buddy_offline_data", Context.MODE_PRIVATE).edit().clear().commit()
+    }
+
+    @Test
+    fun continueOfflineOpensLocalProfileInsteadOfOnlineSignIn() {
+        ActivityScenario.launch(WelcomeActivity::class.java).use {
+            onView(withId(R.id.btnContinueOffline)).check(matches(withText(R.string.continue_offline))).perform(click())
+            onView(withId(R.id.tvProfileTitle)).check(matches(withText(R.string.local_profile_title)))
+            onView(withId(R.id.edtDisplayName)).check(matches(isDisplayed()))
+            onView(withId(R.id.spCurrency)).check(matches(isDisplayed()))
+        }
+    }
+
+    @Test
+    fun profileNameAndCurrencyAreSavedOnlyOnDevice() {
+        ActivityScenario.launch(ProfileActivity::class.java).use {
+            onView(withId(R.id.edtDisplayName)).perform(replaceText("Local Buddy"), closeSoftKeyboard())
+            onView(withId(R.id.btnSaveProfile)).perform(click())
+
+            val localData = LocalDataStore(context)
+            assertTrue(localData.isProfileConfigured)
+            assertEquals("Local Buddy", localData.displayName)
+            assertEquals("R", localData.currencySymbol)
+        }
+    }
+
+    @Test
+    fun editingAndDeletingExpenseRebuildsBudgetSpending() {
+        val localData = LocalDataStore(context)
+        val month = SimpleDateFormat("MMMM yyyy", Locale.getDefault()).format(
+            requireNotNull(SimpleDateFormat("yyyy-MM-dd", Locale.US).parse("2026-08-10"))
+        )
+        localData.saveBudget(
+            month,
+            Budget(
+                budgetAmount = 500.0,
+                minimumGoal = 50.0,
+                categories = mapOf("Groceries" to BudgetCategory("Groceries", allocation = 500.0))
+            )
+        )
+
+        val original = Transaction("expense-1", categoryId = "Groceries", amount = 120.0, date = "2026-08-10")
+        localData.saveTransaction(original)
+        assertEquals(120.0, localData.getBudget(month)?.categories?.get("Groceries")?.amountSpent ?: -1.0, 0.001)
+
+        localData.saveTransaction(original.copy(amount = 45.0))
+        assertEquals(45.0, localData.getBudget(month)?.categories?.get("Groceries")?.amountSpent ?: -1.0, 0.001)
+
+        assertTrue(localData.deleteTransaction(original.transactionId))
+        assertEquals(0.0, localData.getBudget(month)?.categories?.get("Groceries")?.amountSpent ?: -1.0, 0.001)
+    }
+}

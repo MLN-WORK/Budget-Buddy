@@ -189,11 +189,36 @@
                 android:layout_height="50dp"
                 android:layout_marginTop="15dp"
                 android:background="@drawable/bg_button_teal"
-                android:drawableLeft="@drawable/ic_camera"
+                android:drawableStart="@drawable/ic_camera"
                 android:drawableTint="@color/white"
                 android:text="@string/add_image"
                 android:textColor="@color/white"
                 android:layout_gravity="center"/>
+
+            <ImageView
+                android:id="@+id/ivAttachedReceipt"
+                android:layout_width="140dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="12dp"
+                android:contentDescription="@string/attached_receipt"
+                android:scaleType="centerCrop"
+                android:visibility="gone"
+                tools:src="@drawable/placeholder_image"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/tvReceiptStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:fontFamily="@font/outfit"
+                android:gravity="center"
+                android:text="@string/receipt_attached_tap_to_replace"
+                android:textColor="@color/teal"
+                android:textSize="14sp"
+                android:visibility="gone"
+                tools:visibility="visible" />
             <!-- SAVE IMAGE -->
             <Button
                 android:id="@+id/btnSave"

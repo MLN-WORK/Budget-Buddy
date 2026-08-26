@@ -93,6 +93,24 @@ object AchievementManager {
             }
         }
     }
+
+    fun recordBudgetForMonth(displayMonth: String, context: Context) {
+        val localData = LocalDataStore(context)
+        val months = localData.recordBudgetMonth(displayMonth)
+        saveExactProgress("monthly_budget_once", months.size.coerceAtMost(1), context)
+        val streak = AchievementProgressCalculator.longestConsecutiveMonthStreak(months)
+        saveExactProgress("monthly_budget_streak", streak, context)
+    }
+
+    private fun saveExactProgress(achievementId: String, progress: Int, context: Context) {
+        restore(context)
+        val achievement = achievements.find { it.achievementId == achievementId } ?: return
+        val wasCompleted = achievement.isCompleted
+        achievement.progress = progress
+        achievement.isCompleted = progress >= achievement.target
+        LocalDataStore(context).saveAchievement(achievementId, achievement.isCompleted, progress)
+        if (!wasCompleted && achievement.isCompleted) AchievementUtils.showPopup(context, achievement)
+    }
     fun checkStayWithinBudgetForMonth(userId: String, monthKey: String, context: Context) {
         val localData = LocalDataStore(context)
         val month = runCatching {

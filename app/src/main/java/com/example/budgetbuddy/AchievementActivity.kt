@@ -36,7 +36,10 @@ class AchievementActivity : AppCompatActivity() {
     }
 
     private fun displayUserName() {
-        binding.tvAchievements.text = "You've got this, \n${LocalDataStore(this).displayName}"
+        binding.tvAchievements.text = getString(
+            R.string.achievement_greeting,
+            LocalDataStore(this).displayName
+        )
     }
 
     private fun appNavigationSetup(){

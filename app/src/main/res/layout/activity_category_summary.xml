@@ -47,7 +47,7 @@
                     android:src="@drawable/ic_back_arrow"
                     android:backgroundTint="@color/teal"
                     app:tint="@color/white"
-                    android:contentDescription="back to home screen"/>
+                    android:contentDescription="@string/back_to_home"/>
 
 
             </FrameLayout>

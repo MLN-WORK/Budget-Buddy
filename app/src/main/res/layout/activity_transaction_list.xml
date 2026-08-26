@@ -47,7 +47,7 @@
                     android:src="@drawable/ic_back_arrow"
                     android:backgroundTint="@color/teal"
                     app:tint="@color/white"
-                    android:contentDescription="back to home screen"/>
+                    android:contentDescription="@string/back_to_home"/>
 
             </FrameLayout>
 
@@ -145,7 +145,7 @@
                         android:id="@+id/rbAll"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="All"
+                        android:text="@string/all"
                         android:textColor="@color/black"
                         app:buttonTint="@color/teal"
                         android:paddingEnd="10dp"/>
@@ -154,7 +154,7 @@
                         android:id="@+id/rbIncomes"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Incomes"
+                        android:text="@string/incomes"
                         android:textColor="@color/black"
                         app:buttonTint="@color/teal"
                         android:paddingEnd="10dp"/>
@@ -163,12 +163,23 @@
                         android:id="@+id/rbExpenses"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Expenses"
+                        android:text="@string/expenses"
                         android:textColor="@color/black"
                         app:buttonTint="@color/teal"/>
                 </RadioGroup>
 
             </FrameLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="12dp"
+                android:fontFamily="@font/outfit"
+                android:gravity="center"
+                android:text="@string/transaction_actions_hint"
+                android:textColor="@color/grey"
+                android:textSize="14sp" />
 
             <!-- RecyclerView -->
             <androidx.recyclerview.widget.RecyclerView

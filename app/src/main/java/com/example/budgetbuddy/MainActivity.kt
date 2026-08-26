@@ -27,6 +27,9 @@ class MainActivity : AppCompatActivity() {
 
         setupExpandableBudget()
         setupNavigation()
+        binding.btnSettings.setOnClickListener {
+            startActivity(Intent(this, ProfileActivity::class.java).putExtra(ProfileActivity.EXTRA_SETTINGS_MODE, true))
+        }
         refreshDashboard()
         binding.btnRecordsHeader.setOnClickListener {
             startActivity(Intent(this, TransactionHistoryActivity::class.java))
@@ -67,6 +70,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun refreshDashboard() {
+        binding.tvWelcomeName.text = getString(R.string.welcome_name, localData.displayName)
         displayBalance()
         displayBudget()
         displayRecords()
@@ -77,9 +81,9 @@ class MainActivity : AppCompatActivity() {
         val monthKey = SimpleDateFormat("yyyy-MM", Locale.US).format(Calendar.getInstance().time)
         val balance = localData.getBalance(monthKey)
         val symbol = localData.currencySymbol
-        binding.tvBalanceAmount.text = "%s%.2f".format(symbol, balance.closingBalance)
-        binding.tvIncomeAmount.text = "%s%.2f".format(symbol, balance.totalIncome)
-        binding.tvExpensesAmount.text = "%s%.2f".format(symbol, balance.totalExpenses)
+        binding.tvBalanceAmount.text = getString(R.string.money_amount, symbol, balance.closingBalance)
+        binding.tvIncomeAmount.text = getString(R.string.money_amount, symbol, balance.totalIncome)
+        binding.tvExpensesAmount.text = getString(R.string.money_amount, symbol, balance.totalExpenses)
     }
 
     private fun displayBudget() {
@@ -88,8 +92,8 @@ class MainActivity : AppCompatActivity() {
         val total = budget?.budgetAmount ?: 0.0
         val remaining = total - spent
         val symbol = localData.currencySymbol
-        binding.tvBudgetSpent.text = "$symbol%.2f spent".format(spent)
-        binding.tvBudgetRemaining.text = "$symbol%.2f remaining".format(remaining)
+        binding.tvBudgetSpent.text = getString(R.string.spent_amount, symbol, spent)
+        binding.tvBudgetRemaining.text = getString(R.string.remaining_amount, symbol, remaining)
         binding.pgBudgetBar.progress = if (total > 0) ((spent / total) * 100).toInt().coerceIn(0, 100) else 0
     }
 

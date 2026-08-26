@@ -29,27 +29,24 @@ class TransactionAdapterForHome(
 
     override fun onBindViewHolder(holder: TransactionViewHolder, position: Int) {
         val transaction = transactionList[position]
+        val context = holder.itemView.context
         holder.categoryText.text = transaction.categoryId
         holder.dateText.text = transaction.date
 
-        val isExpense = transaction.transactionId
-            .split("-")
-            .lastOrNull()
-            ?.equals("EXPENSE", ignoreCase = true) == true
+        val isExpense = !transaction.isIncome
 
         if (isExpense) {
-            holder.amountText.text = "- %s%.2f".format(currencySymbol, transaction.amount)
+            holder.amountText.text = context.getString(R.string.expense_amount, currencySymbol, transaction.amount)
             holder.amountText.setTextColor(
                 ContextCompat.getColor(holder.itemView.context, R.color.cherry)
             )
         } else {
-            holder.amountText.text = "+ %s%.2f".format(currencySymbol, transaction.amount)
+            holder.amountText.text = context.getString(R.string.income_amount, currencySymbol, transaction.amount)
             holder.amountText.setTextColor(
                 ContextCompat.getColor(holder.itemView.context, R.color.moss)
             )
         }
 
-        val context = holder.itemView.context
         val iconName = categoryIconMap[transaction.categoryId] ?: "ic_currency"
         val iconDrawableId = context.resources.getIdentifier(iconName, "drawable", context.packageName)
         holder.recordIcon.setImageResource(iconDrawableId)
@@ -73,4 +70,3 @@ class TransactionAdapterForHome(
 
     override fun getItemCount(): Int = transactionList.size
 }
-

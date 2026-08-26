@@ -10,6 +10,80 @@
     <string name="forgot_password">Forgot password?</string>
     <string name="email_address">Email address</string>
 
+    <string name="welcome_title">Welcome to Budget Buddy</string>
+    <string name="welcome_message">A playful place to understand your money, with a quirky buddy cheering you on.</string>
+    <string name="offline_explanation">Budget Buddy works entirely on this device. No account, email address, internet connection, or online verification is needed.</string>
+    <string name="continue_offline">Continue offline</string>
+    <string name="continue_to_budget">Continue to my budget</string>
+    <string name="local_profile_title">Create your local profile</string>
+    <string name="settings_title">Your settings</string>
+    <string name="profile_explanation">Tell your buddy what to call you and which currency to display. These details stay only on this device.</string>
+    <string name="display_name_hint">Your name</string>
+    <string name="currency_label">Display currency</string>
+    <string name="save_and_continue">Save and continue</string>
+    <string name="save_settings">Save settings</string>
+    <string name="name_required">Please enter a name</string>
+    <string name="welcome_name">Hi, %1$s!</string>
+    <string name="open_settings">Open local profile settings</string>
+    <string name="back">Back</string>
+    <string name="zero_amount">0.00</string>
+    <string name="edit_transaction">Edit transaction</string>
+    <string name="update_transaction">Update transaction</string>
+    <string name="add_category_spinner">+ Add Category</string>
+    <string name="enter_valid_amount">Please enter a valid amount</string>
+    <string name="please_select_category">Please select a category</string>
+    <string name="transaction_saved">Transaction saved locally</string>
+    <string name="transaction_updated">Transaction updated</string>
+    <string name="transaction_save_failed">Could not save transaction</string>
+    <string name="attached_receipt">Attached receipt</string>
+    <string name="receipt_preview">Receipt preview</string>
+    <string name="receipt_attached_tap_to_replace">Receipt attached — tap the image to replace it</string>
+    <string name="camera_permission_needed">Camera permission is needed to take a receipt photo</string>
+    <string name="image_load_failed">The image could not be copied into Budget Buddy</string>
+    <string name="delete_transaction">Delete transaction?</string>
+    <string name="delete_transaction_message">This removes the transaction and recalculates its budget totals.</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="transaction_deleted">Transaction deleted and budgets recalculated</string>
+    <string name="celebrate_progress">Let\'s celebrate progress!</string>
+    <string name="achievements">Achievements</string>
+    <string name="month">Month</string>
+    <string name="feedback">Feedback</string>
+    <string name="spending_prompt">You only wanna spend...</string>
+    <string name="default_currency_symbol">R</string>
+    <string name="back_to_home">Back to home screen</string>
+    <string name="filter_by_category">Filter by category</string>
+    <string name="all">All</string>
+    <string name="incomes">Incomes</string>
+    <string name="successful">Successful</string>
+    <string name="close">Close</string>
+    <string name="achievement_icon">Achievement icon</string>
+    <string name="achievement_title">Achievement title</string>
+    <string name="achievement_description_placeholder">Achievement description</string>
+    <string name="achievement_badge">Achievement badge</string>
+    <string name="expand_collapse_arrow">Expand or collapse achievement</string>
+    <string name="completed">Completed</string>
+    <string name="category_icon">Category icon</string>
+    <string name="category_id">Category</string>
+    <string name="description_placeholder">Description</string>
+    <string name="example_date">2025-04-30</string>
+    <string name="receipt_photo">Receipt photo</string>
+    <string name="toast_status_icon">Status icon</string>
+    <string name="record_icon">Record category icon</string>
+    <string name="buddy_mood">Buddy mood</string>
+    <string name="budget_category_icon">Budget category icon</string>
+    <string name="selected_category_icon">Selected category icon</string>
+    <string name="no_description">(no description)</string>
+    <string name="achievement_greeting">You\'ve got this,\n%1$s</string>
+    <string name="money_amount">%1$s%2$.2f</string>
+    <string name="expense_amount">− %1$s%2$.2f</string>
+    <string name="income_amount">+ %1$s%2$.2f</string>
+    <string name="spent_amount">%1$s%2$.2f spent</string>
+    <string name="remaining_amount">%1$s%2$.2f remaining</string>
+    <string name="amount_left">%1$s%2$.2f left</string>
+    <string name="plain_decimal_amount">%1$.2f</string>
+    <string name="transaction_actions_hint">Tap a transaction to edit it. Press and hold to delete it.</string>
+
     <string name="home">Home</string>
     <string name="analytics">Analytics</string>
     <string name="transaction">Transaction</string>
@@ -87,4 +161,25 @@
     <string name="way_over_budget">You`re way over budget</string>
     <string name="you_only_wanna_spend">You aim to spend %.0f%% of your budget</string>
     <string name="looks_like_you_have_t_spent_any_money_yet">Looks like you have\'t spent any money yet</string>
+
+    <string-array name="currency_options">
+        <item>South African rand (R)</item>
+        <item>US dollar ($)</item>
+        <item>Euro (€)</item>
+        <item>British pound (£)</item>
+        <item>Japanese yen (¥)</item>
+        <item>Brazilian real (R$)</item>
+        <item>Indian rupee (₹)</item>
+        <item>Nigerian naira (₦)</item>
+    </string-array>
+    <string-array name="currency_symbols">
+        <item>R</item>
+        <item>$</item>
+        <item>€</item>
+        <item>£</item>
+        <item>¥</item>
+        <item>R$</item>
+        <item>₹</item>
+        <item>₦</item>
+    </string-array>
 </resources>

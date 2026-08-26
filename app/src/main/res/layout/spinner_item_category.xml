@@ -11,6 +11,7 @@
     <!-- Category icon -->
     <ImageView
         android:id="@+id/imgIcon"
+        android:contentDescription="@string/category_icon"
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_marginEnd="8dp"

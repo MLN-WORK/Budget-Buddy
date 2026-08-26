@@ -17,7 +17,7 @@ android:orientation="vertical">
             android:layout_height="40dp"
             android:layout_marginEnd="25dp"
             android:background="@drawable/circle_background"
-            android:contentDescription="Category Icon" />
+            android:contentDescription="@string/category_icon" />
 
         <!-- Right section: All text & photo -->
         <LinearLayout
@@ -38,7 +38,7 @@ android:orientation="vertical">
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Description"
+                    android:text="@string/description_placeholder"
                     android:textColor="@color/black"
                     android:textStyle="bold"
                     android:textSize="16sp" />
@@ -50,7 +50,7 @@ android:orientation="vertical">
                 android:id="@+id/tvDate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="2025-04-30"
+                android:text="@string/example_date"
                 android:textSize="14sp"
                 android:textColor="@color/black" />
 
@@ -59,7 +59,7 @@ android:orientation="vertical">
                 android:id="@+id/tvCategory"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Category ID"
+                android:text="@string/category_id"
                 android:textSize="14sp"
                 android:textColor="@color/black"
                 android:layout_marginTop="4dp"/>
@@ -67,6 +67,7 @@ android:orientation="vertical">
             <!-- Optional Photo -->
             <ImageView
                 android:id="@+id/ivPhoto"
+                android:contentDescription="@string/receipt_photo"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:scaleType="centerCrop"
@@ -78,7 +79,7 @@ android:orientation="vertical">
             android:id="@+id/tvAmount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="0.00"
+            android:text="@string/no_money"
             android:textColor="@color/black"
             android:textSize="20sp"
             android:gravity="center_vertical"/>

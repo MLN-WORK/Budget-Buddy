@@ -79,7 +79,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="25sp"
-                        android:text="Month"
+                        android:text="@string/month"
                         android:fontFamily="@font/roboto_bold"
                         android:textColor="@color/black"
                         app:layout_constraintStart_toStartOf="parent"
@@ -134,6 +134,7 @@
 
                     <ImageView
                         android:id="@+id/imgBuddyBO"
+                        android:contentDescription="@string/buddy"
                         android:layout_width="140dp"
                         android:layout_height="140dp"
                         android:src="@drawable/content_buddy"
@@ -285,7 +286,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="50dp"
                                 android:textSize="20sp"
-                                android:text="R"
+                                android:text="@string/default_currency_symbol"
                                 android:textColor="@color/black"
                                 android:fontFamily="@font/roboto_bold"
                                 android:layout_marginVertical="2dp"

@@ -1,6 +1,7 @@
 package com.example.budgetbuddy
 
 import android.app.DatePickerDialog
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -78,13 +79,13 @@ class TransactionHistoryActivity : AppCompatActivity() {
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        adapter = TransactionAdapter(mutableListOf(), emptyList(), "")
+        adapter = createAdapter(emptyList())
         rvTransactions.layoutManager = LinearLayoutManager(this)
         rvTransactions.adapter = adapter
 
         fetchAllCategories { categories ->
             allCategories = categories
-            adapter = TransactionAdapter(mutableListOf(), allCategories, localData.currencySymbol)
+            adapter = createAdapter(allCategories)
             rvTransactions.layoutManager = LinearLayoutManager(this)
             rvTransactions.adapter = adapter
             applyFilters()
@@ -125,6 +126,33 @@ class TransactionHistoryActivity : AppCompatActivity() {
         rbIncomes = findViewById(R.id.rbIncomes)
         btnCategoryTog = findViewById(R.id.btnCategoryTog)
         btnBackTHA = findViewById(R.id.btnBackTHA)
+    }
+
+    private fun createAdapter(categories: List<Category>) = TransactionAdapter(
+        mutableListOf(),
+        categories,
+        localData.currencySymbol,
+        onEdit = { transaction ->
+            startActivity(Intent(this, TransactionActivity::class.java).putExtra(
+                TransactionActivity.EXTRA_TRANSACTION_ID,
+                transaction.transactionId
+            ))
+        },
+        onDelete = ::confirmDelete
+    )
+
+    private fun confirmDelete(transaction: Transaction) {
+        AlertDialog.Builder(this)
+            .setTitle(R.string.delete_transaction)
+            .setMessage(R.string.delete_transaction_message)
+            .setNegativeButton(R.string.cancel, null)
+            .setPositiveButton(R.string.delete) { _, _ ->
+                if (localData.deleteTransaction(transaction.transactionId)) {
+                    toast(getString(R.string.transaction_deleted))
+                    applyFilters()
+                }
+            }
+            .show()
     }
 
     //Applying radio and date filters
@@ -274,16 +302,12 @@ class TransactionHistoryActivity : AppCompatActivity() {
 
     //Fetching EXPENSES
     fun List<Transaction>.filterExpensesOnly(): List<Transaction> {
-        return this.filter {
-            it.transactionId.split("-").lastOrNull()?.equals("EXPENSE", ignoreCase = true) == true
-        }
+        return filterNot(Transaction::isIncome)
     }
 
     //Fetching INCOMES
     fun List<Transaction>.filterIncomesOnly(): List<Transaction> {
-        return this.filter {
-            it.transactionId.split("-").lastOrNull()?.equals("INCOME", ignoreCase = true) == true
-        }
+        return filter(Transaction::isIncome)
     }
 
 // ----------------------------------------------------------------
@@ -293,7 +317,9 @@ class TransactionHistoryActivity : AppCompatActivity() {
     class TransactionAdapter(
         private var items: MutableList<Transaction>,
         private val categories: List<Category>,
-        private val currencySymbol: String
+        private val currencySymbol: String,
+        private val onEdit: (Transaction) -> Unit,
+        private val onDelete: (Transaction) -> Unit
     ) : RecyclerView.Adapter<TransactionAdapter.TransactionVH>() {
 
         inner class TransactionVH(view: View) : RecyclerView.ViewHolder(view) {
@@ -314,24 +340,27 @@ class TransactionHistoryActivity : AppCompatActivity() {
         override fun onBindViewHolder(holder: TransactionVH, position: Int) {
             val txn = items[position]
 
-            holder.tvDesc.text = txn.note ?: "(no description)"
-            holder.tvAmount.text = String.format(Locale.getDefault(), "%.2f", txn.amount)
+            holder.itemView.setOnClickListener { onEdit(txn) }
+            holder.itemView.setOnLongClickListener {
+                onDelete(txn)
+                true
+            }
+
+            val context = holder.itemView.context
+            holder.tvDesc.text = txn.note ?: context.getString(R.string.no_description)
             holder.tvDate.text = txn.date
             holder.tvCategory.text = txn.categoryId
 
-            val isExpense = txn.transactionId
-                .split("-")
-                .lastOrNull()
-                ?.equals("EXPENSE", ignoreCase = true) == true
+            val isExpense = !txn.isIncome
 
             //Setting text colour depending on transaction type
             if (isExpense) {
-                holder.tvAmount.text = "- $currencySymbol%.2f".format(txn.amount)
+                holder.tvAmount.text = context.getString(R.string.expense_amount, currencySymbol, txn.amount)
                 holder.tvAmount.setTextColor(
                     ContextCompat.getColor(holder.itemView.context, R.color.cherry)
                 )
             } else {
-                holder.tvAmount.text = "+ $currencySymbol%.2f".format(txn.amount)
+                holder.tvAmount.text = context.getString(R.string.income_amount, currencySymbol, txn.amount)
                 holder.tvAmount.setTextColor(
                     ContextCompat.getColor(holder.itemView.context, R.color.moss)
                 )
@@ -354,7 +383,6 @@ class TransactionHistoryActivity : AppCompatActivity() {
 
             val category = categories.find { it.name == txn.categoryId }
             val iconName = category?.icon ?: "ic_currency"
-            val context = holder.itemView.context
             val iconResId = context.resources.getIdentifier(iconName, "drawable", context.packageName)
 
             // 🐞 DEBUG LOGS

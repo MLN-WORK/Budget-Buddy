@@ -98,7 +98,10 @@ class BudgetActivity : AppCompatActivity() {
     }
 
     private fun updateBudgetAmount() {
-        binding.tvTotalBudgeted.text = selectedBudgetCategories.sumOf(BudgetCategory::allocation).toString()
+        binding.tvTotalBudgeted.text = getString(
+            R.string.plain_decimal_amount,
+            selectedBudgetCategories.sumOf(BudgetCategory::allocation)
+        )
     }
 
     private fun saveBudget() {
@@ -113,8 +116,7 @@ class BudgetActivity : AppCompatActivity() {
         localData.saveBudget(binding.tvCurrentMonth.text.toString(), budget)
         ToastUtil.showCustomToast(this, "Budget saved locally")
         AchievementManager.unlockAchievement("first_budget", this)
-        AchievementManager.unlockOrProgress("monthly_budget_once", this)
-        AchievementManager.unlockOrProgress("monthly_budget_streak", this)
+        AchievementManager.recordBudgetForMonth(binding.tvCurrentMonth.text.toString(), this)
         binding.fabSaveBudget.visibility = View.GONE
         binding.btnAddCategory.visibility = View.GONE
     }
@@ -131,7 +133,7 @@ class BudgetActivity : AppCompatActivity() {
             selectedBudgetCategories += budget.categories.map { (name, category) ->
                 category.copy(name = name, icon = iconByName[name] ?: category.icon ?: "ic_currency")
             }
-            binding.edtMinimumGoal.setText(budget.minimumGoal.toString())
+            binding.edtMinimumGoal.setText(getString(R.string.plain_decimal_amount, budget.minimumGoal))
             binding.btnAddCategory.visibility = View.GONE
             binding.fabSaveBudget.visibility = View.GONE
         }

@@ -27,15 +27,17 @@
             android:fontFamily="@font/outfit_bold"
             android:layout_gravity="center" />
 
-<!--        <TextView-->
-<!--            android:id="@+id/tvUsername"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_gravity="end"-->
-<!--            android:paddingEnd="15dp"-->
-<!--            android:textSize="18sp"-->
-<!--            android:textColor="@color/white"-->
-<!--            android:textStyle="bold"/>-->
+        <ImageButton
+            android:id="@+id/btnSettings"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="end|center_vertical"
+            android:layout_marginEnd="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/open_settings"
+            android:padding="12dp"
+            android:src="@drawable/ic_account"
+            app:tint="@color/white" />
     </FrameLayout>
 
     <!-- SCROLLABLE PAGE LAYOUT -->
@@ -57,6 +59,16 @@
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:paddingHorizontal="20dp">
+
+            <TextView
+                android:id="@+id/tvWelcomeName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:fontFamily="@font/outfit_bold"
+                android:textColor="@color/teal"
+                android:textSize="22sp"
+                tools:text="Hi, Buddy!" />
 
             <!-- BALANCE OVERVIEW CARD -->
             <com.google.android.material.card.MaterialCardView

@@ -1,144 +1,125 @@
+<p align="center">
+  <img src="app/src/main/res/drawable/logo.png" alt="Budget Buddy logo" width="180" />
+  <br />
+  <img src="app/src/main/res/drawable/happy_buddy.png" alt="A happy Budget Buddy" width="220" />
+</p>
+
 # Budget Buddy — Offline Version
 
-This repository contains the **offline version** of Budget Buddy, a native Android personal-finance tracker. The application does not request internet access, does not include Firebase or Google Services, does not require an account, and keeps its finance data in app-private storage on the device.
+Budget Buddy is a heartfelt Android project trying to bridge budgeting with a playful and quirky companion. This offline edition is an evolution and improvement over the original Budget Buddy: it removes abandoned online account features, makes setup simple, and keeps personal finance information on the Android device.
 
-## Overview
+## Install the app
 
-Budget Buddy helps one local user record income and expenses, organize entries by category, create monthly category budgets, review current-month balances, inspect transaction history, visualize spending, and unlock budgeting achievements. The dashboard is the launcher screen; cloud registration, sign-in, synchronization, and remote storage from the earlier version have been removed.
+You do not need Android Studio, programming tools, an online account, or a technical setup.
 
-## Implemented behavior
+1. Open the [Budget Buddy Releases page](https://github.com/MLN-WORK/Budget-Buddy/releases) on your Android phone.
+2. Open the latest release and tap **Budget-Buddy.apk** under **Assets**.
+3. If Android asks for permission, allow your browser or file manager to install apps from this source.
+4. Open the downloaded file and tap **Install**.
+5. Open **Budget Buddy**, tap **Continue offline**, enter the name your buddy should use, and choose a currency.
 
-- Saves income and expense transactions locally with an amount, ISO date, category, and optional note.
-- Provides eight built-in categories and supports additional user-created categories with bundled icons.
-- Calculates monthly income, expenses, and net balance from locally stored transactions.
-- Creates one budget per displayed month with category allocations and a minimum spending goal.
-- Updates a budget category's amount spent when a new local expense is recorded.
-- Shows current-month records, budget progress, per-category donut indicators, transaction filters, and category summaries.
-- Displays bar-chart and gauge analytics for a month or selected ISO-date range.
-- Persists achievement completion and progress locally.
-- Can capture or select an image and save it through Android's local media APIs.
+Android may warn that the app came from outside the Play Store. This is expected for a directly downloaded APK. Only install the APK from this repository's official release page.
 
-## Offline and privacy model
+## What the app does
 
-- No `INTERNET` permission is declared.
-- Firebase Authentication, Realtime Database, Firestore, Storage, the Google Services Gradle plugin, and `google-services.json` are absent.
-- Android cloud backup is disabled with `android:allowBackup="false"`.
-- Transactions, budgets, custom categories, currency, and achievement state are serialized as JSON inside app-private `SharedPreferences`.
-- The default display name is `Budget Buddy`, the local profile ID is an internal constant, and the default currency symbol is `R`.
-- Data remains on the device unless the user separately exports or backs up device storage outside this application.
+- Works completely offline with no sign-in, email address, password, online verification, or cloud account.
+- Saves a local display name and currency that can be changed from the profile button on the Home screen.
+- Records income and expenses with a date, category, amount, and optional note.
+- Creates custom spending categories alongside the built-in categories.
+- Builds monthly category budgets and shows spending, remaining funds, income, expenses, and balance.
+- Recalculates budget totals whenever a transaction is added, edited, or deleted.
+- Attaches a receipt from the camera or gallery and keeps the copied image inside the app.
+- Filters transaction history by type and date and summarizes spending by category.
+- Shows local charts, a spending gauge, and encouraging buddy moods.
+- Unlocks achievements, including a streak that requires budgets in three distinct consecutive months.
 
-The local preferences are private to the Android app sandbox but are not additionally encrypted. Do not use this prototype for highly sensitive financial records on a rooted or otherwise compromised device.
+In transaction history, tap a transaction to edit it. Press and hold a transaction to delete it and rebuild the related budget totals.
 
-## Technology stack
+## Privacy
 
-- Kotlin 2.1
-- Android SDK (compile/target SDK 35; minimum SDK 27 / Android 8.1)
+Budget Buddy has no internet permission and contains no Firebase, advertising, analytics service, remote database, or cloud synchronization code. The local profile, transactions, receipt copies, budgets, categories, settings, and achievements remain in the app's private storage on the device. Android cloud backup is disabled.
+
+Uninstalling the app or clearing its app data permanently removes its records. There is currently no export, backup, import, or multi-device recovery feature. The local store is protected by Android's app sandbox but is not separately encrypted, so the app should not be treated as a vault on a rooted or compromised device.
+
+## Requirements
+
+- Android 8.1 or newer
+- Camera permission only when taking a receipt photo
+- No internet connection, account, API, database, dataset, or external service
+
+## Current limitations
+
+- Budget Buddy is intentionally a single-device, local-profile app.
+- Receipt images stay inside the app and cannot currently be exported.
+- There is no automatic backup or restore after uninstalling or replacing the device.
+- Currency formatting uses the chosen symbol; it does not apply country-specific decimal or grouping rules.
+- The APK is distributed directly through repository releases rather than an app store.
+
+## For developers
+
+Budget Buddy is a single-module native Android application written in Kotlin with Activity-based screens and XML layouts.
+
+### Technology
+
+- Kotlin 2.1 and Android SDK 35 (minimum SDK 27)
 - AndroidX, Material Components, View Binding, and Data Binding
-- Gradle 8.10.2 with Android Gradle Plugin 8.8.2 and the Kotlin DSL
-- MPAndroidChart and SpeedView for local visualizations
-- Glide for displaying local images
-- JUnit 4 for host-side unit tests
+- Gradle 8.10.2, Android Gradle Plugin 8.8.2, and Kotlin DSL
+- MPAndroidChart and SpeedView for offline visualizations
+- Glide for local receipt images
+- JUnit 4 and AndroidX Espresso tests
 
-## Architecture and important structure
-
-The project is a single Android application module using Activity-based screens and XML layouts.
+### Important structure
 
 ```text
 app/src/main/java/com/example/budgetbuddy/
-  LocalDataStore.kt          App-private JSON persistence
-  FinanceCalculator.kt       Pure balance, range, and category calculations
-  MainActivity.kt            Dashboard and launcher
-  TransactionActivity.kt     Local transaction entry
-  BudgetActivity.kt          Monthly category budgets
-  AnalyticsActivity.kt       Charts and spending gauge
-  TransactionHistoryActivity.kt
-  CategorySummaryActivity.kt
-  AchievementManager.kt
-app/src/main/res/             XML layouts, icons, fonts, and bundled images
-app/src/test/                 Host-side finance calculation tests
-gradle/libs.versions.toml     Dependency versions
+  WelcomeActivity.kt                   Offline welcome screen
+  ProfileActivity.kt                   Local profile and settings
+  LocalDataStore.kt                    App-private persistence and budget rebuilds
+  FinanceCalculator.kt                 Pure finance calculations
+  AchievementProgressCalculator.kt     Distinct-month streak calculation
+  MainActivity.kt                      Dashboard
+  TransactionActivity.kt               Add and edit transactions and receipts
+  TransactionHistoryActivity.kt        Filter, edit, and delete history
+  BudgetActivity.kt                    Monthly category budgets
+  AnalyticsActivity.kt                 Charts and spending gauge
+app/src/main/res/                       Layouts, fonts, icons, and buddy artwork
+app/src/test/                           Host-side finance and streak tests
+app/src/androidTest/                    Offline onboarding UI tests
 ```
 
-Application entry point: `com.example.budgetbuddy.MainActivity`.
+The launcher entry point is `com.example.budgetbuddy.WelcomeActivity`.
 
-## Prerequisites
+### Build and test
 
-- Android Studio with an Android SDK 35 installation, or the equivalent command-line Android SDK
-- JDK 11 or newer (JDK 21 is supported by the included Gradle version)
-- An Android 8.1+ emulator or physical device for running the app
+Prerequisites are JDK 11 or newer, Android SDK 35, and Android Studio or the Android command-line SDK. Dependency downloads require internet access during development; the built app does not.
 
-Network access may be needed once during development to download Gradle and Maven dependencies. The built application itself is offline-only.
+On Windows:
 
-## Setup
+```powershell
+.\gradlew.bat testDebugUnitTest
+.\gradlew.bat lintDebug
+.\gradlew.bat assembleDebug
+.\gradlew.bat assembleDebugAndroidTest
+```
 
-1. Clone the repository.
-2. Open the repository root in Android Studio and allow Gradle sync to finish.
-3. Ensure `local.properties` points to your Android SDK. This file is intentionally ignored because it contains a machine-specific path.
+On macOS or Linux, use `./gradlew` instead. The installable debug APK is generated at `app/build/outputs/apk/debug/app-debug.apk`.
 
-Example `local.properties`:
+Device UI tests require a connected Android device or emulator:
+
+```powershell
+.\gradlew.bat connectedDebugAndroidTest
+```
+
+### Local configuration
+
+No environment variables or service credentials are required. A developer's `local.properties` may point Gradle to the Android SDK and is intentionally ignored because it contains a machine-specific path:
 
 ```properties
 sdk.dir=C:/path/to/Android/Sdk
 ```
 
-No environment variables, API keys, service credentials, databases, cloud accounts, external services, migrations, or downloaded datasets are required.
-
-## Dependency installation
-
-The Gradle wrapper resolves dependencies declared in `app/build.gradle.kts` and `gradle/libs.versions.toml`:
-
-```powershell
-.\gradlew.bat dependencies
-```
-
-On macOS or Linux, use `./gradlew` instead of `.\gradlew.bat`.
-
-## Build
-
-```powershell
-.\gradlew.bat assembleDebug
-```
-
-The generated APK is written under `app/build/outputs/apk/debug/` and is intentionally excluded from Git.
-
-## Test and static validation
-
-```powershell
-.\gradlew.bat testDebugUnitTest
-.\gradlew.bat lintDebug
-```
-
-The unit suite verifies monthly balance calculation, inclusive ISO-date filtering, and expense grouping by category. Instrumented UI test scaffolding exists, but no substantive device-driven UI test suite is implemented.
-
-## Run
-
-From Android Studio, select the `app` configuration and run it on an Android 8.1+ device or emulator. From the command line, build the debug APK and install it with Android Debug Bridge:
-
-```powershell
-adb install -r app\build\outputs\apk\debug\app-debug.apk
-```
-
-## Local data initialization and schema
-
-No database migration is required. The store is created automatically on first launch with empty transaction, budget, custom-category, and achievement collections. Records use these logical fields:
-
-- Transaction: ID, local user ID, category name, amount, `yyyy-MM-dd` date, optional note, income/expense flag, optional local photo path.
-- Budget: display month (`MMMM yyyy`), total allocation, minimum goal, and category allocation/spend values.
-- Category: name, drawable icon name, and custom-category flag.
-- Achievement: identifier, completion flag, and progress count.
-
-Clearing application data or uninstalling the app removes these records. There is no import, export, synchronization, or multi-device recovery feature.
-
-## Current limitations
-
-- This is a single-profile offline prototype; account registration, sign-in, cloud sync, and collaboration are intentionally unavailable.
-- Currency defaults to `R`; there is currently no settings screen for changing the locally stored currency or display name.
-- The image picker/camera screen can save a local image, but the transaction screen does not yet attach the returned image URI to a transaction. This is partially implemented UI, not a completed receipt-linking feature.
-- Budget spending is updated when new expenses are recorded; editing/deleting transactions and retroactively rebuilding budget totals are not implemented.
-- Achievement streak logic increments when a budget is saved and does not independently validate distinct consecutive months.
-- UI test files are scaffolding only; the meaningful automated coverage is the host-side finance calculation suite.
-- Several legacy layouts contain localization and accessibility lint warnings, but the verified lint run reports no errors.
+There are no database migrations or datasets. App-private storage initializes automatically on first launch.
 
 ## Security notes
 
-The original download contained a real Firebase client configuration and machine-specific Android SDK settings. Neither file is included here. `google-services.json`, environment files, signing stores, private keys, local SDK paths, build output, IDE state, logs, and generated artifacts are protected by `.gitignore` or excluded from the sanitized copy. No secret configuration is required for this offline version.
+Machine-specific SDK paths, online-service configuration from the original project, signing stores, keys, environment files, IDE state, logs, generated output, and APK files are excluded from source control. No secret configuration is required or supported by this offline version.

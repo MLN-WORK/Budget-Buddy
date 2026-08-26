@@ -12,6 +12,7 @@ android:orientation="vertical">
 
             <ImageView
             android:id="@+id/imgRecordIcon"
+            android:contentDescription="@string/record_icon"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:background="@drawable/circle_background"

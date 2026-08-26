@@ -35,7 +35,11 @@ class DonutAdapter(private val donutList: List<Donut>, private val currencySymbo
         holder.progressBar.progress = spentPercentage
 
         val remaining = donut.allocation - donut.amountSpent
-        holder.amountRemaining.text = "$currencySymbol%.2f left".format(remaining)
+        holder.amountRemaining.text = holder.itemView.context.getString(
+            R.string.amount_left,
+            currencySymbol,
+            remaining
+        )
 
         //***Testing out alternating colours***
         val context = holder.itemView.context
@@ -52,4 +56,3 @@ class DonutAdapter(private val donutList: List<Donut>, private val currencySymbo
 
     override fun getItemCount(): Int = donutList.size
 }
-

@@ -3,10 +3,12 @@ package com.example.budgetbuddy
 import android.content.Context
 import org.json.JSONArray
 import org.json.JSONObject
+import java.io.File
 
 /** App-private, device-local persistence. No data is sent off the device. */
 class LocalDataStore(context: Context) {
-    private val preferences = context.applicationContext
+    private val appContext = context.applicationContext
+    private val preferences = appContext
         .getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)
 
     val currencySymbol: String
@@ -14,6 +16,17 @@ class LocalDataStore(context: Context) {
 
     val displayName: String
         get() = preferences.getString(KEY_DISPLAY_NAME, DEFAULT_DISPLAY_NAME) ?: DEFAULT_DISPLAY_NAME
+
+    val isProfileConfigured: Boolean
+        get() = preferences.getBoolean(KEY_PROFILE_CONFIGURED, false)
+
+    fun saveProfile(displayName: String, currencySymbol: String) {
+        preferences.edit()
+            .putString(KEY_DISPLAY_NAME, displayName.trim())
+            .putString(KEY_CURRENCY, currencySymbol)
+            .putBoolean(KEY_PROFILE_CONFIGURED, true)
+            .apply()
+    }
 
     fun getCategories(): List<Category> = PRESET_CATEGORIES + getCustomCategories()
 
@@ -33,11 +46,28 @@ class LocalDataStore(context: Context) {
     }.getOrDefault(emptyList())
 
     fun saveTransaction(transaction: Transaction) {
+        val existing = getTransaction(transaction.transactionId)
         val transactions = getTransactions().filterNot { it.transactionId == transaction.transactionId } + transaction
         val array = JSONArray()
         transactions.forEach { array.put(it.toJson()) }
         preferences.edit().putString(KEY_TRANSACTIONS, array.toString()).apply()
-        if (!transaction.isIncome) updateBudgetSpending(transaction)
+        if (existing?.photoPath != transaction.photoPath) deleteLocalReceipt(existing?.photoPath)
+        rebuildBudgetSpending()
+    }
+
+    fun getTransaction(transactionId: String): Transaction? =
+        getTransactions().firstOrNull { it.transactionId == transactionId }
+
+    fun deleteTransaction(transactionId: String): Boolean {
+        val existing = getTransactions()
+        val remaining = existing.filterNot { it.transactionId == transactionId }
+        if (remaining.size == existing.size) return false
+        deleteLocalReceipt(existing.firstOrNull { it.transactionId == transactionId }?.photoPath)
+        val array = JSONArray()
+        remaining.forEach { array.put(it.toJson()) }
+        preferences.edit().putString(KEY_TRANSACTIONS, array.toString()).apply()
+        rebuildBudgetSpending()
+        return true
     }
 
     fun getTransactions(start: String, end: String): List<Transaction> =
@@ -51,6 +81,7 @@ class LocalDataStore(context: Context) {
         val budgets = readBudgets()
         budgets.put(month, budget.toJson())
         preferences.edit().putString(KEY_BUDGETS, budgets.toString()).apply()
+        rebuildBudgetSpending()
     }
 
     fun getBudget(month: String): Budget? = runCatching {
@@ -69,15 +100,38 @@ class LocalDataStore(context: Context) {
         preferences.edit().putString(KEY_ACHIEVEMENTS, values.toString()).apply()
     }
 
-    private fun updateBudgetSpending(transaction: Transaction) {
-        val month = transaction.date.toDisplayMonth() ?: return
-        val budget = getBudget(month) ?: return
-        val category = budget.categories[transaction.categoryId] ?: return
-        val updated = budget.categories.toMutableMap()
-        updated[transaction.categoryId] = category.copy(
-            amountSpent = (category.amountSpent ?: 0.0) + transaction.amount
-        )
-        saveBudget(month, budget.copy(categories = updated))
+    fun recordBudgetMonth(displayMonth: String): Set<String> {
+        val normalizedMonth = displayMonth.toMonthKey() ?: return getBudgetMonths()
+        val months = getBudgetMonths() + normalizedMonth
+        preferences.edit().putStringSet(KEY_BUDGET_MONTHS, months).apply()
+        return months
+    }
+
+    fun getBudgetMonths(): Set<String> =
+        preferences.getStringSet(KEY_BUDGET_MONTHS, emptySet())?.toSet().orEmpty()
+
+    /** Recalculates every stored budget from the transaction source of truth. */
+    fun rebuildBudgetSpending() {
+        val budgets = readBudgets()
+        val rebuilt = JSONObject()
+        val transactionsByMonth = getTransactions()
+            .filterNot(Transaction::isIncome)
+            .mapNotNull { transaction -> transaction.date.toDisplayMonth()?.let { it to transaction } }
+            .groupBy({ it.first }, { it.second })
+
+        val months = budgets.keys()
+        while (months.hasNext()) {
+            val month = months.next()
+            val budget = budgets.getJSONObject(month).toBudget()
+            val spentByCategory = transactionsByMonth[month].orEmpty()
+                .groupBy(Transaction::categoryId)
+                .mapValues { (_, transactions) -> transactions.sumOf(Transaction::amount) }
+            val categories = budget.categories.mapValues { (name, category) ->
+                category.copy(amountSpent = spentByCategory[name] ?: 0.0)
+            }
+            rebuilt.put(month, budget.copy(categories = categories).toJson())
+        }
+        preferences.edit().putString(KEY_BUDGETS, rebuilt.toString()).apply()
     }
 
     private fun getCustomCategories(): List<Category> = runCatching {
@@ -155,9 +209,24 @@ class LocalDataStore(context: Context) {
     private fun JSONObject.optNullableString(key: String): String? =
         if (isNull(key)) null else optString(key).takeIf(String::isNotBlank)
 
+    private fun deleteLocalReceipt(path: String?) {
+        val receipt = path?.let(::File) ?: return
+        val receiptsDirectory = File(appContext.filesDir, "receipts").canonicalFile
+        val candidate = runCatching { receipt.canonicalFile }.getOrNull() ?: return
+        if (candidate.parentFile == receiptsDirectory && candidate.isFile) candidate.delete()
+    }
+
     private fun String.toDisplayMonth(): String? = runCatching {
         val input = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US)
         val output = java.text.SimpleDateFormat("MMMM yyyy", java.util.Locale.getDefault())
+        output.format(requireNotNull(input.parse(this)))
+    }.getOrNull()
+
+    private fun String.toMonthKey(): String? = runCatching {
+        val input = java.text.SimpleDateFormat("MMMM yyyy", java.util.Locale.getDefault()).apply {
+            isLenient = false
+        }
+        val output = java.text.SimpleDateFormat("yyyy-MM", java.util.Locale.US)
         output.format(requireNotNull(input.parse(this)))
     }.getOrNull()
 
@@ -170,6 +239,8 @@ class LocalDataStore(context: Context) {
         private const val KEY_ACHIEVEMENTS = "achievements"
         private const val KEY_CURRENCY = "currency"
         private const val KEY_DISPLAY_NAME = "display_name"
+        private const val KEY_PROFILE_CONFIGURED = "profile_configured"
+        private const val KEY_BUDGET_MONTHS = "budget_months"
         private const val DEFAULT_CURRENCY = "R"
         private const val DEFAULT_DISPLAY_NAME = "Budget Buddy"
 
