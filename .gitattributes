@@ -1,0 +1,4 @@
+*.kt linguist-language=Kotlin linguist-detectable=true
+*.kts linguist-language=Kotlin linguist-detectable=true
+gradlew linguist-generated=true
+gradlew.bat linguist-generated=true
