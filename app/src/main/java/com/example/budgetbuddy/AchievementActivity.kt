@@ -1,6 +1,5 @@
 package com.example.budgetbuddy
 
-import AchievementAdapter
 import android.os.Bundle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.budgetbuddy.AchievementManager.achievements

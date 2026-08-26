@@ -1,3 +1,5 @@
+package com.example.budgetbuddy
+
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -5,8 +7,6 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.budgetbuddy.Achievement
-import com.example.budgetbuddy.R
 
 class AchievementAdapter(
     private val achievements: List<Achievement>
@@ -16,6 +16,7 @@ class AchievementAdapter(
         val achievementTitle: TextView = itemView.findViewById(R.id.tvAchievementTitle)
         val achievementDescription: TextView = itemView.findViewById(R.id.tvAchievementDescription)
         val achievementIcon: ImageView = itemView.findViewById(R.id.ivAchievementIcon)
+        val achievementLock: ImageView = itemView.findViewById(R.id.ivAchievementLock)
         val progressBar: ProgressBar = itemView.findViewById(R.id.pbAchievementProgress)
         val statusBanner: TextView = itemView.findViewById(R.id.tvStatusBanner)
         val expandToggle: ImageView = itemView.findViewById(R.id.ivExpandToggle)
@@ -36,9 +37,9 @@ class AchievementAdapter(
         val titleColorRes = if (achievement.isCompleted) R.color.black else R.color.grey
         holder.achievementTitle.setTextColor(holder.itemView.context.getColor(titleColorRes))
 
-        holder.achievementIcon.setImageResource(
-            if (achievement.isCompleted) achievement.badgeResId else R.drawable.locked_badge
-        )
+        holder.achievementIcon.setImageResource(achievement.badgeResId)
+        holder.achievementIcon.alpha = if (achievement.isCompleted) 1f else 0.6f
+        holder.achievementLock.visibility = if (achievement.isCompleted) View.GONE else View.VISIBLE
 
         // Set visibility of expanded section
         holder.expandedLayout.visibility = if (achievement.isExpanded) View.VISIBLE else View.GONE
@@ -59,9 +60,13 @@ class AchievementAdapter(
         if (achievement.isExpanded) {
             holder.statusBanner.visibility = View.VISIBLE
             holder.statusBanner.text = when {
-                achievement.isCompleted -> "Completed"
-                achievement.isRecurring -> "${achievement.progress}/${achievement.target} progress"
-                else -> "In Progress"
+                achievement.isCompleted -> holder.itemView.context.getString(R.string.completed)
+                achievement.isRecurring -> holder.itemView.context.getString(
+                    R.string.achievement_progress,
+                    achievement.progress,
+                    achievement.target
+                )
+                else -> holder.itemView.context.getString(R.string.in_progress)
             }
         } else {
             holder.statusBanner.visibility = View.GONE
@@ -73,7 +78,7 @@ class AchievementAdapter(
         // Toggle expansion on arrow click
         holder.expandToggle.setOnClickListener {
             achievement.isExpanded = !achievement.isExpanded
-            notifyItemChanged(position)
+            holder.bindingAdapterPosition.takeIf { it != RecyclerView.NO_POSITION }?.let(::notifyItemChanged)
         }
     }
 

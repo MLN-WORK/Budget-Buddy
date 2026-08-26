@@ -6,7 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/cream"
-    android:paddingBottom="15dp"
     tools:context=".MainActivity">
     <!-- HOME HEADER-->
     <FrameLayout
@@ -46,9 +45,8 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:paddingTop="15dp"
-        android:layout_marginBottom="40dp"
         app:layout_constraintTop_toBottomOf="@+id/homeHeader"
-        app:layout_constraintBottom_toBottomOf="@+id/bottomNavView"
+        app:layout_constraintBottom_toTopOf="@+id/bottomNavView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:fillViewport="true">

@@ -31,8 +31,13 @@ class TransactionActivity : BaseActivity() {
 
     private val imagePicker = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
-            selectedPhotoPath = result.data?.getStringExtra(AddImageActivity.EXTRA_IMAGE_PATH)
-            showReceipt()
+            val returned = result.data?.getStringExtra(AddImageActivity.EXTRA_IMAGE_PATH)?.let(::File)
+            if (ReceiptStorage.isUsableOwnedReceipt(this, returned)) {
+                selectedPhotoPath = returned?.absolutePath
+                showReceipt()
+            } else {
+                toast(getString(R.string.image_load_failed))
+            }
         }
     }
 
@@ -182,10 +187,19 @@ class TransactionActivity : BaseActivity() {
     }
 
     private fun showReceipt() {
-        val file = selectedPhotoPath?.let(::File)?.takeIf(File::exists)
+        val file = selectedPhotoPath?.let(::File)?.takeIf { ReceiptStorage.isUsableOwnedReceipt(this, it) }
         binding.ivAttachedReceipt.visibility = if (file == null) View.GONE else View.VISIBLE
         binding.tvReceiptStatus.visibility = if (file == null) View.GONE else View.VISIBLE
-        file?.let { Glide.with(this).load(it).placeholder(R.drawable.placeholder_image).into(binding.ivAttachedReceipt) }
+        file?.let {
+            runCatching {
+                Glide.with(this)
+                    .load(it)
+                    .placeholder(R.drawable.placeholder_image)
+                    .error(R.drawable.placeholder_image)
+                    .fitCenter()
+                    .into(binding.ivAttachedReceipt)
+            }.onFailure { toast(getString(R.string.image_load_failed)) }
+        }
     }
 
     private fun saveTransaction() {

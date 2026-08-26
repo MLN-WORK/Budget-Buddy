@@ -3,7 +3,6 @@ package com.example.budgetbuddy
 import android.content.Context
 import org.json.JSONArray
 import org.json.JSONObject
-import java.io.File
 
 /** App-private, device-local persistence. No data is sent off the device. */
 class LocalDataStore(context: Context) {
@@ -230,15 +229,7 @@ class LocalDataStore(context: Context) {
         if (isNull(key)) null else optString(key).takeIf(String::isNotBlank)
 
     private fun deleteLocalReceipt(path: String?) {
-        val receipt = path?.let(::File) ?: return
-        val receiptDirectories = buildList {
-            add(File(appContext.filesDir, "receipts").canonicalFile)
-            appContext.getExternalFilesDir(android.os.Environment.DIRECTORY_PICTURES)?.let {
-                add(File(it, "BudgetBuddy/Receipts").canonicalFile)
-            }
-        }
-        val candidate = runCatching { receipt.canonicalFile }.getOrNull() ?: return
-        if (candidate.parentFile?.let { it in receiptDirectories } == true && candidate.isFile) candidate.delete()
+        ReceiptStorage.deleteIfOwned(appContext, path)
     }
 
     private fun String.toDisplayMonth(): String? = runCatching {

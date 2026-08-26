@@ -48,7 +48,7 @@
     <string name="camera_unavailable">No camera application is available on this device</string>
     <string name="camera_capture_failed">The receipt photo could not be saved. Please try again or choose one from your gallery.</string>
     <string name="camera_permission_intro">Allow camera access so Budster can save receipt photos. You can still use every other feature without it.</string>
-    <string name="image_load_failed">The image could not be copied into Budget Buddy</string>
+    <string name="image_load_failed">Budget Buddy could not save this image. Please try another image under 30 MB.</string>
     <string name="delete_transaction">Delete transaction?</string>
     <string name="delete_transaction_message">This removes the transaction and recalculates its budget totals.</string>
     <string name="cancel">Cancel</string>
@@ -70,6 +70,9 @@
     <string name="achievement_title">Achievement title</string>
     <string name="achievement_description_placeholder">Achievement description</string>
     <string name="achievement_badge">Achievement badge</string>
+    <string name="achievement_locked">Locked achievement</string>
+    <string name="achievement_progress">%1$d/%2$d progress</string>
+    <string name="in_progress">In progress</string>
     <string name="expand_collapse_arrow">Expand or collapse achievement</string>
     <string name="completed">Completed</string>
     <string name="category_icon">Category icon</string>
