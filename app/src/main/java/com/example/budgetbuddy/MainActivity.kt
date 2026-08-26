@@ -4,7 +4,6 @@ import android.content.Intent
 import android.icu.util.Calendar
 import android.os.Bundle
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.budgetbuddy.databinding.ActivityMainBinding
@@ -12,7 +11,7 @@ import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.util.Locale
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var localData: LocalDataStore
     private var isExpanded = false
@@ -42,19 +41,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupNavigation() {
-        binding.bottomNavView.selectedItemId = R.id.nav_home
-        binding.bottomNavView.setOnItemSelectedListener { item ->
-            val destination = when (item.itemId) {
-                R.id.nav_analytics -> AnalyticsActivity::class.java
-                R.id.nav_add_transaction -> TransactionActivity::class.java
-                R.id.nav_budget -> BudgetActivity::class.java
-                R.id.nav_achievement -> AchievementActivity::class.java
-                R.id.nav_home -> null
-                else -> return@setOnItemSelectedListener false
-            }
-            destination?.let { startActivity(Intent(this, it)); finish() }
-            true
-        }
+        AppNavigation.bind(this, binding.bottomNavView, R.id.nav_home)
     }
 
     private fun setupExpandableBudget() {

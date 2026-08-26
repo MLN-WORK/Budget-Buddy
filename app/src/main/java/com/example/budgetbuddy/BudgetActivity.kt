@@ -6,7 +6,6 @@ import android.icu.util.Calendar
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.budgetbuddy.databinding.ActivityBudgetBinding
@@ -14,7 +13,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class BudgetActivity : AppCompatActivity() {
+class BudgetActivity : BaseActivity() {
     private lateinit var binding: ActivityBudgetBinding
     private lateinit var localData: LocalDataStore
     private lateinit var budgetCategoryAdapter: BudgetCategoryAdapter
@@ -54,19 +53,7 @@ class BudgetActivity : AppCompatActivity() {
     }
 
     private fun appNavigationSetup() {
-        binding.bottomNavView.selectedItemId = R.id.nav_budget
-        binding.bottomNavView.setOnItemSelectedListener { item ->
-            val destination = when (item.itemId) {
-                R.id.nav_home -> MainActivity::class.java
-                R.id.nav_analytics -> AnalyticsActivity::class.java
-                R.id.nav_add_transaction -> TransactionActivity::class.java
-                R.id.nav_achievement -> AchievementActivity::class.java
-                R.id.nav_budget -> null
-                else -> return@setOnItemSelectedListener false
-            }
-            destination?.let { startActivity(Intent(this, it)); finish() }
-            true
-        }
+        AppNavigation.bind(this, binding.bottomNavView, R.id.nav_budget)
     }
 
     private fun showCategoryBottomSheet(context: Context) {

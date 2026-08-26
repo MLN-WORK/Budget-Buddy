@@ -10,7 +10,6 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.example.budgetbuddy.databinding.ActivityTransactionBinding
@@ -20,7 +19,7 @@ import java.util.Calendar
 import java.util.Locale
 import java.util.UUID
 
-class TransactionActivity : AppCompatActivity() {
+class TransactionActivity : BaseActivity() {
     private lateinit var binding: ActivityTransactionBinding
     private lateinit var localData: LocalDataStore
     private var selectedDate = ""
@@ -107,19 +106,7 @@ class TransactionActivity : AppCompatActivity() {
     }
 
     private fun setupNavigation() {
-        binding.bottomNavView.selectedItemId = R.id.nav_add_transaction
-        binding.bottomNavView.setOnItemSelectedListener { item ->
-            val destination = when (item.itemId) {
-                R.id.nav_home -> MainActivity::class.java
-                R.id.nav_analytics -> AnalyticsActivity::class.java
-                R.id.nav_budget -> BudgetActivity::class.java
-                R.id.nav_achievement -> AchievementActivity::class.java
-                R.id.nav_add_transaction -> null
-                else -> return@setOnItemSelectedListener false
-            }
-            destination?.let { startActivity(Intent(this, it)); finish() }
-            true
-        }
+        AppNavigation.bind(this, binding.bottomNavView, R.id.nav_add_transaction)
         binding.btnExpense.setOnClickListener { selectExpense() }
         binding.btnIncome.setOnClickListener { selectIncome() }
     }

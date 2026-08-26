@@ -5,14 +5,14 @@ plugins {
 
 android {
     namespace = "com.example.budgetbuddy"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.budgetbuddy"
         minSdk = 27
-        targetSdk = 35
-        versionCode = 2
-        versionName = "2.0.0-offline"
+        targetSdk = 36
+        versionCode = 3
+        versionName = "2.1.0-offline"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

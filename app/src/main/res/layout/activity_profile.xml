@@ -79,7 +79,7 @@
                 android:maxLines="1"
                 android:paddingHorizontal="18dp"
                 android:textColor="@color/black"
-                android:textColorHint="@color/grey" />
+                android:textColorHint="@color/black" />
 
             <TextView
                 android:layout_width="match_parent"

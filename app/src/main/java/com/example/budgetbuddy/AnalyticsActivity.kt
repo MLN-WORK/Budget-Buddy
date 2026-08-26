@@ -9,7 +9,6 @@ import android.icu.util.Calendar
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import com.example.budgetbuddy.databinding.ActivityAnalyticsBinding
@@ -23,7 +22,7 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 
-class AnalyticsActivity : AppCompatActivity() {
+class AnalyticsActivity : BaseActivity() {
     private lateinit var binding: ActivityAnalyticsBinding
     private var startDate = ""
     private var endDate = ""
@@ -72,40 +71,8 @@ class AnalyticsActivity : AppCompatActivity() {
         appNavigationSetup()
     }//end oncreate
 
-    private fun appNavigationSetup(){
-        binding.bottomNavView.selectedItemId = R.id.nav_analytics
-        binding.bottomNavView.setOnItemSelectedListener { item ->
-            when(item.itemId)
-            {
-                R.id.nav_analytics -> {
-                    true
-                }
-                R.id.nav_home -> {
-                    startActivity(Intent(applicationContext, MainActivity::class.java))
-                    finish()
-                    true
-                }
-
-                R.id.nav_add_transaction ->{
-                    startActivity(Intent(applicationContext, TransactionActivity::class.java))
-                    finish()
-                    true
-                }
-
-                R.id.nav_budget ->{
-                    startActivity(Intent(applicationContext, BudgetActivity::class.java))
-                    finish()
-                    true
-                }
-
-                R.id.nav_achievement ->{
-                    startActivity(Intent(applicationContext, AchievementActivity::class.java))
-                    finish()
-                    true
-                }
-                else -> false
-            }//end when
-        }//end selected listener
+    private fun appNavigationSetup() {
+        AppNavigation.bind(this, binding.bottomNavView, R.id.nav_analytics)
     }
 
     private fun updateMonthDisplay() {

@@ -13,7 +13,6 @@ import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -24,7 +23,7 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
-class TransactionHistoryActivity : AppCompatActivity() {
+class TransactionHistoryActivity : BaseActivity() {
 
     private lateinit var tvStartDate: TextView
     private lateinit var tvEndDate: TextView
@@ -264,31 +263,12 @@ class TransactionHistoryActivity : AppCompatActivity() {
     }
 
     private fun setupBottomNav() {
-        bottomNav.selectedItemId = R.id.nav_home
-        bottomNav.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.nav_add_transaction -> {
-                    startActivity(Intent(this, TransactionActivity::class.java))
-                    finish()
-                    true
-                }
-
-                R.id.nav_home -> {
-                    startActivity(Intent(this, MainActivity::class.java))
-                    finish()
-                    true
-                }
-
-                R.id.nav_analytics -> {
-                    startActivity(Intent(this, AnalyticsActivity::class.java))
-                    finish()
-                    true
-                }
-
-                R.id.nav_budget -> true
-                else -> false
-            }
-        }
+        AppNavigation.bind(
+            this,
+            bottomNav,
+            R.id.nav_home,
+            selectedItemRepresentsCurrentScreen = false
+        )
     }
 }
 // ----------------------------------------------------------------

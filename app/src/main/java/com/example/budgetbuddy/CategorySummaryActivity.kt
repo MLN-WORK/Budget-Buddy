@@ -7,14 +7,14 @@ import android.util.Log
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.button.MaterialButton
 import java.text.SimpleDateFormat
 import java.util.*
 
-class CategorySummaryActivity : AppCompatActivity() {
+class CategorySummaryActivity : BaseActivity() {
 
     private lateinit var rvSummary: RecyclerView
     private lateinit var tvStartDate: TextView
@@ -58,6 +58,12 @@ class CategorySummaryActivity : AppCompatActivity() {
         rvSummary.adapter = summaryAdapter
         fetchSummary()
         setupDatePickers()
+        AppNavigation.bind(
+            this,
+            findViewById<BottomNavigationView>(R.id.bottomNavView),
+            R.id.nav_home,
+            selectedItemRepresentsCurrentScreen = false
+        )
     }
 
     private fun setupDatePickers() {

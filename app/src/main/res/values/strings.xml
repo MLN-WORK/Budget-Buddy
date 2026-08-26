@@ -39,6 +39,8 @@
     <string name="receipt_preview">Receipt preview</string>
     <string name="receipt_attached_tap_to_replace">Receipt attached — tap the image to replace it</string>
     <string name="camera_permission_needed">Camera permission is needed to take a receipt photo</string>
+    <string name="camera_unavailable">No camera application is available on this device</string>
+    <string name="camera_capture_failed">The receipt photo could not be saved. Please try again.</string>
     <string name="image_load_failed">The image could not be copied into Budget Buddy</string>
     <string name="delete_transaction">Delete transaction?</string>
     <string name="delete_transaction_message">This removes the transaction and recalculates its budget totals.</string>

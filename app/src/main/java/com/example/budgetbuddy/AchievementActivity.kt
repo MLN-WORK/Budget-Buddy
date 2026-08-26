@@ -1,21 +1,16 @@
 package com.example.budgetbuddy
 
 import AchievementAdapter
-import android.content.Intent
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.budgetbuddy.AchievementManager.achievements
 import com.example.budgetbuddy.databinding.ActivityAchievementBinding
 
-class AchievementActivity : AppCompatActivity() {
+class AchievementActivity : BaseActivity() {
     private lateinit var binding: ActivityAchievementBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-
         binding = ActivityAchievementBinding.inflate(layoutInflater)
         setContentView(binding.root)
         appNavigationSetup()
@@ -42,39 +37,7 @@ class AchievementActivity : AppCompatActivity() {
         )
     }
 
-    private fun appNavigationSetup(){
-        binding.bottomNavView.selectedItemId = R.id.nav_achievement
-        binding.bottomNavView.setOnItemSelectedListener { item ->
-            when(item.itemId)
-            {
-                R.id.nav_analytics -> {
-                    startActivity(Intent(applicationContext, AnalyticsActivity::class.java))
-                    finish()
-                    true
-                }
-                R.id.nav_home -> {
-                    startActivity(Intent(applicationContext, MainActivity::class.java))
-                    finish()
-                    true
-                }
-
-                R.id.nav_add_transaction ->{
-                    startActivity(Intent(applicationContext, TransactionActivity::class.java))
-                    finish()
-                    true
-                }
-
-                R.id.nav_budget ->{
-                    startActivity(Intent(applicationContext, BudgetActivity::class.java))
-                    finish()
-                    true
-                }
-
-                R.id.nav_achievement ->{
-                    true
-                }
-                else -> false
-            }//end when
-        }//end selected listener
+    private fun appNavigationSetup() {
+        AppNavigation.bind(this, binding.bottomNavView, R.id.nav_achievement)
     }
 }

@@ -23,6 +23,7 @@ Android may warn that the app came from outside the Play Store. This is expected
 ## What the app does
 
 - Works completely offline with no sign-in, email address, password, online verification, or cloud account.
+- Uses an immersive full-screen interface so Android system bars do not cover the app controls; swipe from an edge to reveal them temporarily.
 - Saves a local display name and currency that can be changed from the profile button on the Home screen.
 - Records income and expenses with a date, category, amount, and optional note.
 - Creates custom spending categories alongside the built-in categories.
@@ -61,9 +62,9 @@ Budget Buddy is a single-module native Android application written in Kotlin wit
 
 ### Technology
 
-- Kotlin 2.1 and Android SDK 35 (minimum SDK 27)
+- Kotlin 2.1 and Android SDK 36 (minimum SDK 27)
 - AndroidX, Material Components, View Binding, and Data Binding
-- Gradle 8.10.2, Android Gradle Plugin 8.8.2, and Kotlin DSL
+- Gradle 8.14.5, Android Gradle Plugin 8.13.2, and Kotlin DSL
 - MPAndroidChart and SpeedView for offline visualizations
 - Glide for local receipt images
 - JUnit 4 and AndroidX Espresso tests
@@ -91,7 +92,7 @@ The launcher entry point is `com.example.budgetbuddy.WelcomeActivity`.
 
 ### Build and test
 
-Prerequisites are JDK 11 or newer, Android SDK 35, and Android Studio or the Android command-line SDK. Dependency downloads require internet access during development; the built app does not.
+Prerequisites are JDK 17 or newer, Android SDK 36, and Android Studio or the Android command-line SDK. Dependency downloads require internet access during development; the built app does not.
 
 On Windows:
 

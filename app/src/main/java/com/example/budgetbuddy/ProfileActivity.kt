@@ -3,10 +3,9 @@ package com.example.budgetbuddy
 import android.content.Intent
 import android.os.Bundle
 import android.widget.ArrayAdapter
-import androidx.appcompat.app.AppCompatActivity
 import com.example.budgetbuddy.databinding.ActivityProfileBinding
 
-class ProfileActivity : AppCompatActivity() {
+class ProfileActivity : BaseActivity() {
     private lateinit var binding: ActivityProfileBinding
     private lateinit var localData: LocalDataStore
     private var settingsMode = false

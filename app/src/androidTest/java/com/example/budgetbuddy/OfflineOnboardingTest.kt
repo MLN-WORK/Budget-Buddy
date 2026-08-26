@@ -84,4 +84,25 @@ class OfflineOnboardingTest {
         assertTrue(localData.deleteTransaction(original.transactionId))
         assertEquals(0.0, localData.getBudget(month)?.categories?.get("Groceries")?.amountSpent ?: -1.0, 0.001)
     }
+
+    @Test
+    fun bottomNavigationConsistentlyOpensEveryPrimaryPage() {
+        LocalDataStore(context).saveProfile("Local Buddy", "R")
+        ActivityScenario.launch(MainActivity::class.java).use {
+            onView(withId(R.id.nav_budget)).perform(click())
+            onView(withId(R.id.tvHeader)).check(matches(withText(R.string.budget)))
+
+            onView(withId(R.id.nav_analytics)).perform(click())
+            onView(withId(R.id.tvHeader)).check(matches(withText(R.string.analytics)))
+
+            onView(withId(R.id.nav_add_transaction)).perform(click())
+            onView(withId(R.id.tvHeader)).check(matches(withText(R.string.transaction)))
+
+            onView(withId(R.id.nav_achievement)).perform(click())
+            onView(withId(R.id.achievementRecyclerView)).check(matches(isDisplayed()))
+
+            onView(withId(R.id.nav_home)).perform(click())
+            onView(withId(R.id.tvHeader)).check(matches(withText(R.string.home)))
+        }
+    }
 }
