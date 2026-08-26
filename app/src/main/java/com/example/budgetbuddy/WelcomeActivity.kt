@@ -9,14 +9,18 @@ class WelcomeActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (LocalDataStore(this).isProfileConfigured) {
+            startActivity(Intent(this, MainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            })
+            finish()
+            return
+        }
         binding = ActivityWelcomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val profileConfigured = LocalDataStore(this).isProfileConfigured
-        if (profileConfigured) binding.btnContinueOffline.setText(R.string.continue_to_budget)
         binding.btnContinueOffline.setOnClickListener {
-            val destination = if (profileConfigured) MainActivity::class.java else ProfileActivity::class.java
-            startActivity(Intent(this, destination))
+            startActivity(Intent(this, ProfileActivity::class.java))
         }
     }
 }

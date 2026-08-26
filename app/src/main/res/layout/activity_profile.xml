@@ -86,6 +86,32 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="22dp"
                 android:fontFamily="@font/outfit_bold"
+                android:labelFor="@id/edtBuddyName"
+                android:text="@string/buddy_name_label"
+                android:textColor="@color/black"
+                android:textSize="17sp" />
+
+            <EditText
+                android:id="@+id/edtBuddyName"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginTop="8dp"
+                android:autofillHints="none"
+                android:background="@drawable/bg_input"
+                android:fontFamily="@font/outfit"
+                android:hint="@string/buddy_name_hint"
+                android:inputType="text|textCapSentences"
+                android:maxLength="32"
+                android:maxLines="1"
+                android:paddingHorizontal="18dp"
+                android:textColor="@color/black"
+                android:textColorHint="@color/black" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="22dp"
+                android:fontFamily="@font/outfit_bold"
                 android:labelFor="@id/spCurrency"
                 android:text="@string/currency_label"
                 android:textColor="@color/black"
@@ -99,6 +125,18 @@
                 android:layout_marginTop="8dp"
                 android:entries="@array/currency_options"
                 android:paddingHorizontal="14dp" />
+
+            <CheckBox
+                android:id="@+id/cbDarkTheme"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="22dp"
+                android:buttonTint="@color/teal"
+                android:fontFamily="@font/outfit_bold"
+                android:minHeight="48dp"
+                android:text="@string/dark_theme"
+                android:textColor="@color/black"
+                android:textSize="17sp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSaveProfile"

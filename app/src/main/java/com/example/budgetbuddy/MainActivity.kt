@@ -1,9 +1,13 @@
 package com.example.budgetbuddy
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.icu.util.Calendar
 import android.os.Bundle
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.budgetbuddy.databinding.ActivityMainBinding
@@ -18,6 +22,12 @@ class MainActivity : BaseActivity() {
     private val formattedMonth: String
         get() = SimpleDateFormat("MMMM yyyy", Locale.getDefault()).format(Calendar.getInstance().time)
 
+    private val requestInitialCameraPermission = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (!granted) ToastUtil.showCustomToast(this, getString(R.string.camera_permission_needed))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -30,6 +40,7 @@ class MainActivity : BaseActivity() {
             startActivity(Intent(this, ProfileActivity::class.java).putExtra(ProfileActivity.EXTRA_SETTINGS_MODE, true))
         }
         refreshDashboard()
+        requestInitialPermissionsOnce()
         binding.btnRecordsHeader.setOnClickListener {
             startActivity(Intent(this, TransactionHistoryActivity::class.java))
         }
@@ -58,10 +69,23 @@ class MainActivity : BaseActivity() {
 
     private fun refreshDashboard() {
         binding.tvWelcomeName.text = getString(R.string.welcome_name, localData.displayName)
+        binding.tvBuddyName.text = localData.buddyName
+        binding.imgBuddy.contentDescription = localData.buddyName
         displayBalance()
         displayBudget()
         displayRecords()
         displayDonuts()
+    }
+
+    private fun requestInitialPermissionsOnce() {
+        if (!localData.shouldRequestInitialPermissions) return
+        localData.markInitialPermissionsRequested()
+        if (!packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)) return
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) return
+        binding.root.post {
+            ToastUtil.showCustomToast(this, getString(R.string.camera_permission_intro))
+            requestInitialCameraPermission.launch(Manifest.permission.CAMERA)
+        }
     }
 
     private fun displayBalance() {

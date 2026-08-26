@@ -2,9 +2,6 @@ package com.example.budgetbuddy
 
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
-import android.content.ContentValues.TAG
-import android.content.Intent
-import android.graphics.Color
 import android.icu.util.Calendar
 import android.os.Bundle
 import android.util.Log
@@ -28,8 +25,8 @@ class AnalyticsActivity : BaseActivity() {
     private var endDate = ""
     private var isExpanded = false
     private var currentMonth: Calendar = Calendar.getInstance()
-    val monthFormat = SimpleDateFormat("MMMM yyyy", Locale.getDefault())
-    val formattedMonth = monthFormat.format(currentMonth.time)
+    private val formattedMonth: String
+        get() = SimpleDateFormat("MMMM yyyy", Locale.getDefault()).format(currentMonth.time)
     private lateinit var repo: TransactionRepo
     private lateinit var localData: LocalDataStore
     private var showMaxInfo = false
@@ -42,6 +39,7 @@ class AnalyticsActivity : BaseActivity() {
         repo = TransactionRepo(this)
         localData = LocalDataStore(this)
         displayCurrency()
+        binding.imgBeetleJuice.contentDescription = localData.buddyName
         setupGaugeChart(formattedMonth)
         loadBarGraphData(formattedMonth, showMaxInfo)
 
@@ -51,7 +49,7 @@ class AnalyticsActivity : BaseActivity() {
         binding.btnShowMaxInfo.setOnClickListener{
             showMaxInfo = !showMaxInfo
             if (showMaxInfo) binding.btnShowMaxInfo.text = getString(R.string.reset) else binding.btnShowMaxInfo.text = getString(R.string.show_on_graph)
-            loadBarGraphData(formattedMonth, showMaxInfo)
+            loadBarGraphData(binding.tvCurrentMonth.text.toString(), showMaxInfo)
         }
         binding.btnBack.setOnClickListener{
             clearText()
@@ -142,7 +140,7 @@ class AnalyticsActivity : BaseActivity() {
         binding.tvFeedBack.text = ""
         binding.tvPercentage.text= ""
         binding.tvMinGoal.text = ""
-        binding.tvMinGoal.text = ""
+        binding.tvMaxGoal.text = ""
     }
 
     private fun loadAnalyticsView(){
@@ -159,8 +157,13 @@ class AnalyticsActivity : BaseActivity() {
         val displayedFormat = SimpleDateFormat("MMMM yyyy", Locale.getDefault())
         val outputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
+        val parsedMonth = runCatching { displayedFormat.parse(selectedMonth) }.getOrNull()
+        if (parsedMonth == null) {
+            setupBarGraph(emptyList(), emptyList())
+            return
+        }
         val calendar = Calendar.getInstance()
-        calendar.time = displayedFormat.parse(selectedMonth)
+        calendar.time = parsedMonth
         //first day of month
         calendar.set(Calendar.DAY_OF_MONTH, 1)
         val firstDay = outputFormat.format(calendar.time)
@@ -227,7 +230,7 @@ class AnalyticsActivity : BaseActivity() {
         xAxis.position = XAxis.XAxisPosition.BOTTOM
         xAxis.setDrawGridLines(false)
         xAxis.textSize = 15f
-        xAxis.textColor = Color.BLACK
+        xAxis.textColor = ContextCompat.getColor(this, R.color.black)
         xAxis.typeface = ResourcesCompat.getFont(applicationContext, R.font.outfit_regular)
         xAxis.granularity = 1f
         xAxis.valueFormatter = IndexAxisValueFormatter(categories)
@@ -236,7 +239,7 @@ class AnalyticsActivity : BaseActivity() {
         val yAxis = binding.categoryBarGraph.axisLeft
         yAxis.setDrawGridLines(false)
         yAxis.textSize = 15f
-        yAxis.textColor = Color.BLACK
+        yAxis.textColor = ContextCompat.getColor(this, R.color.black)
         yAxis.typeface = ResourcesCompat.getFont(applicationContext, R.font.outfit_regular)
         yAxis.axisMinimum = 0f
         yAxis.granularity = 1f
@@ -307,7 +310,7 @@ class AnalyticsActivity : BaseActivity() {
         val typedArray = resources.obtainTypedArray(R.array.bar_colours)
         val colourList = mutableListOf<Int>()
         for(i in 0 until typedArray.length()){
-            colourList.add(typedArray.getColor(i, Color.BLACK))
+            colourList.add(typedArray.getColor(i, ContextCompat.getColor(this, R.color.black)))
         }
         typedArray.recycle()
         return colourList
@@ -346,62 +349,65 @@ class AnalyticsActivity : BaseActivity() {
                     val minimumGoal = budget.minimumGoal
                     Log.d("GetMinGoal", "Min goal is $minimumGoal")
                     val totalSpent = budget.categories.values.sumOf { it.amountSpent ?: 0.0 }
-                    val percentageSpent = if (maximumGoal > 0) ((totalSpent / maximumGoal) * 100).toInt() else 0
+                    val percentageSpent = AnalyticsCalculator.spentPercentage(totalSpent, maximumGoal)
 
-                    //get minimum goal range [0 to mg]
-                    val mg = if (maximumGoal > 0) (minimumGoal/maximumGoal).coerceIn(0.0, 1.0) else 0.0
-                    val displayMG = mg *100
+                    val mg = AnalyticsCalculator.minimumGoalRatio(minimumGoal, maximumGoal)
+                    val displayMG = mg * 100f
 
-                    //define sections [minimum goal - maximum goal]
-                    if(percentageSpent >= 100){
-                        //if user goes over budget, add red section to end
-                        gauge.addSections(
-                            Section(0f, mg.toFloat(), ContextCompat.getColor(applicationContext, R.color.lightTeal), gauge.speedometerWidth),
-                            Section(mg.toFloat(), (mg + 0.01).toFloat(), Color.BLACK, gauge.speedometerWidth),
-                            Section((mg + 0.01).toFloat(), .98f, ContextCompat.getColor(applicationContext, R.color.lightPink), gauge.speedometerWidth),
-                            Section(.98f, 1f, ContextCompat.getColor(applicationContext, R.color.cherry), gauge.speedometerWidth))
-                        //set buddy image to angry buddy
-                    }
-                    else{
-                        gauge.addSections(
-                            Section(0f, mg.toFloat(), ContextCompat.getColor(applicationContext, R.color.lightTeal), gauge.speedometerWidth),
-                            Section(mg.toFloat(), (mg + 0.01).toFloat(), Color.BLACK, gauge.speedometerWidth),
-                            Section((mg + 0.01).toFloat(), 1f, ContextCompat.getColor(applicationContext, R.color.lightPink), gauge.speedometerWidth))
-                        //determine buddy images
-                    }
+                    val safeEnd = if (percentageSpent >= 100) minOf(mg, 0.98f) else mg
+                    val sections = mutableListOf<Section>()
+                    if (safeEnd > 0f) sections += Section(
+                        0f,
+                        safeEnd,
+                        ContextCompat.getColor(applicationContext, R.color.lightTeal),
+                        gauge.speedometerWidth
+                    )
+                    val warningEnd = if (percentageSpent >= 100) 0.98f else 1f
+                    if (safeEnd < warningEnd) sections += Section(
+                        safeEnd,
+                        warningEnd,
+                        ContextCompat.getColor(applicationContext, R.color.lightPink),
+                        gauge.speedometerWidth
+                    )
+                    if (percentageSpent >= 100) sections += Section(
+                        0.98f,
+                        1f,
+                        ContextCompat.getColor(applicationContext, R.color.cherry),
+                        gauge.speedometerWidth
+                    )
+                    gauge.addSections(*sections.toTypedArray())
 
                     //buddy images and text
                     val buddyPic = binding.imgBeetleJuice
                     when {
-                        percentageSpent.toFloat() in 0f..39f ->{
+                        percentageSpent >= 100 -> {
+                            buddyPic.setImageResource(R.drawable.angry_buddy)
+                            binding.tvFeedBack.setText(R.string.way_over_budget)
+                        }
+                        percentageSpent <= 39 ->{
                             buddyPic.setImageResource(R.drawable.peachy_buddy)
                             binding.tvFeedBack.setText(R.string.keep_spending)
                         }
-                        percentageSpent.toFloat() in 40f..65f -> {
+                        percentageSpent <= 65 -> {
                             buddyPic.setImageResource(R.drawable.neutral_buddy_1)
                             binding.tvFeedBack.setText(R.string.still_on_track)
-                        } //still on track
-                        percentageSpent.toFloat() in 66f..displayMG.toFloat()-> {
+                        }
+                        percentageSpent <= displayMG -> {
                             buddyPic.setImageResource(R.drawable.nervous_buddy)
                             binding.tvFeedBack.setText(R.string.slow_down)
-                        } //slow down
-                        percentageSpent.toFloat() in (displayMG + 1).toFloat().. 100f -> {
+                        }
+                        else -> {
                             buddyPic.setImageResource(R.drawable.sad_buddy)
                             binding.tvFeedBack.setText(R.string.not_saving)
-                        } //not saving money
-                        percentageSpent.toFloat() > 101f -> {
-                            buddyPic.setImageResource(R.drawable.angry_buddy)
-                            binding.tvFeedBack.setText(R.string.way_over_budget)
-                        } //way over budget
-                        else -> buddyPic.setImageResource(R.drawable.neutral_buddy_2)
+                        }
                     }
                     //set gauge value
-                    gauge.speedTo(percentageSpent.toFloat(), 1000)
+                    gauge.speedTo(AnalyticsCalculator.gaugeSpeed(percentageSpent), 1000)
                     //to display information to user in view
                     binding.btnMinMaxHeader.setText(getString(R.string.youSpent, percentageSpent.toFloat()))
                     binding.tvMinGoal.text = minimumGoal.toString()
                     binding.tvMaxGoal.text = maximumGoal.toString()
-                    binding.tvPercentage.setText(getString(R.string.you_only_wanna_spend, displayMG.toFloat()))
+                    binding.tvPercentage.setText(getString(R.string.you_only_wanna_spend, displayMG))
         }
 
         /* coincide with buddy face

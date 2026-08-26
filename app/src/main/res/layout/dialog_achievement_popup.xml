@@ -17,7 +17,7 @@
         android:src="@drawable/ic_close"
         android:contentDescription="@string/close"
         android:background="?attr/selectableItemBackgroundBorderless"
-        app:tint="@android:color/black"
+        app:tint="@color/black"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -40,7 +40,7 @@
         android:text="@string/achievement_title"
         android:textStyle="bold"
         android:textSize="18sp"
-        android:textColor="@android:color/black"
+        android:textColor="@color/black"
         android:fontFamily="@font/outfit_bold"
         app:layout_constraintTop_toBottomOf="@id/popupIcon"
         app:layout_constraintStart_toStartOf="parent"
@@ -54,7 +54,7 @@
         android:layout_height="wrap_content"
         android:text="@string/achievement_description_placeholder"
         android:textAlignment="center"
-        android:textColor="@android:color/black"
+        android:textColor="@color/black"
         android:textSize="14sp"
         android:fontFamily="@font/outfit_regular"
         app:layout_constraintTop_toBottomOf="@id/popupTitle"

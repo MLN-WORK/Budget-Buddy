@@ -48,6 +48,7 @@ class OfflineOnboardingTest {
 
     @Test
     fun profileNameAndCurrencyAreSavedOnlyOnDevice() {
+        LocalDataStore(context).markInitialPermissionsRequested()
         ActivityScenario.launch(ProfileActivity::class.java).use {
             onView(withId(R.id.edtDisplayName)).perform(replaceText("Local Buddy"), closeSoftKeyboard())
             onView(withId(R.id.btnSaveProfile)).perform(click())
@@ -55,7 +56,22 @@ class OfflineOnboardingTest {
             val localData = LocalDataStore(context)
             assertTrue(localData.isProfileConfigured)
             assertEquals("Local Buddy", localData.displayName)
+            assertEquals(LocalDataStore.DEFAULT_BUDDY_NAME, localData.buddyName)
             assertEquals("R", localData.currencySymbol)
+        }
+    }
+
+    @Test
+    fun buddyNameAcceptsNumbersAndSpecialCharacters() {
+        val customBuddyName = "Budster_#2026-€!@Budget-Buddy"
+        LocalDataStore(context).markInitialPermissionsRequested()
+        ActivityScenario.launch(ProfileActivity::class.java).use {
+            onView(withId(R.id.edtDisplayName)).perform(replaceText("Local User"), closeSoftKeyboard())
+            onView(withId(R.id.edtBuddyName)).perform(replaceText(customBuddyName), closeSoftKeyboard())
+            onView(withId(R.id.btnSaveProfile)).perform(click())
+
+            assertEquals(customBuddyName, LocalDataStore(context).buddyName)
+            assertTrue(customBuddyName.length <= LocalDataStore.MAX_BUDDY_NAME_LENGTH)
         }
     }
 
@@ -87,7 +103,10 @@ class OfflineOnboardingTest {
 
     @Test
     fun bottomNavigationConsistentlyOpensEveryPrimaryPage() {
-        LocalDataStore(context).saveProfile("Local Buddy", "R")
+        LocalDataStore(context).apply {
+            saveProfile("Local Buddy", "R")
+            markInitialPermissionsRequested()
+        }
         ActivityScenario.launch(MainActivity::class.java).use {
             onView(withId(R.id.nav_budget)).perform(click())
             onView(withId(R.id.tvHeader)).check(matches(withText(R.string.budget)))
@@ -103,6 +122,43 @@ class OfflineOnboardingTest {
 
             onView(withId(R.id.nav_home)).perform(click())
             onView(withId(R.id.tvHeader)).check(matches(withText(R.string.home)))
+        }
+    }
+
+    @Test
+    fun configuredProfileSkipsWelcomeOnLaterLaunches() {
+        LocalDataStore(context).apply {
+            saveProfile("Local Buddy", "R", "Budster #1!")
+            markInitialPermissionsRequested()
+        }
+        ActivityScenario.launch(WelcomeActivity::class.java).use {
+            onView(withId(R.id.tvHeader)).check(matches(withText(R.string.home)))
+            onView(withId(R.id.tvBuddyName)).check(matches(withText("Budster #1!")))
+        }
+    }
+
+    @Test
+    fun analyticsStaysOpenForBoundaryBudgetAndOverspending() {
+        val localData = LocalDataStore(context)
+        val month = SimpleDateFormat("MMMM yyyy", Locale.getDefault()).format(java.util.Date())
+        val date = SimpleDateFormat("yyyy-MM-dd", Locale.US).format(java.util.Date())
+        localData.apply {
+            saveProfile("Local Buddy", "R")
+            markInitialPermissionsRequested()
+            saveBudget(
+                month,
+                Budget(
+                    budgetAmount = 100.0,
+                    minimumGoal = 150.0,
+                    categories = mapOf("Groceries" to BudgetCategory("Groceries", allocation = 100.0))
+                )
+            )
+            saveTransaction(Transaction("overspend", categoryId = "Groceries", amount = 250.0, date = date))
+        }
+
+        ActivityScenario.launch(AnalyticsActivity::class.java).use {
+            onView(withId(R.id.tvHeader)).check(matches(withText(R.string.analytics)))
+            onView(withId(R.id.categoryBarGraph)).check(matches(isDisplayed()))
         }
     }
 }

@@ -20,9 +20,11 @@ class ProfileActivity : BaseActivity() {
         val options = resources.getStringArray(R.array.currency_options)
         binding.spCurrency.adapter = ArrayAdapter(
             this,
-            android.R.layout.simple_spinner_dropdown_item,
+            R.layout.spinner_item,
             options
-        )
+        ).apply { setDropDownViewResource(R.layout.spinner_simple_item) }
+        binding.edtBuddyName.setText(localData.buddyName)
+        binding.cbDarkTheme.isChecked = localData.isDarkThemeEnabled
         if (settingsMode) {
             binding.tvProfileTitle.setText(R.string.settings_title)
             binding.btnSaveProfile.setText(R.string.save_settings)
@@ -41,8 +43,24 @@ class ProfileActivity : BaseActivity() {
             binding.edtDisplayName.error = getString(R.string.name_required)
             return
         }
+        val buddyName = binding.edtBuddyName.text.toString().trim()
+        if (buddyName.isBlank()) {
+            binding.edtBuddyName.error = getString(R.string.buddy_name_required)
+            return
+        }
+        if (buddyName.length > LocalDataStore.MAX_BUDDY_NAME_LENGTH) {
+            binding.edtBuddyName.error = getString(R.string.buddy_name_too_long)
+            return
+        }
         val symbols = resources.getStringArray(R.array.currency_symbols)
-        localData.saveProfile(name, symbols[binding.spCurrency.selectedItemPosition])
+        val darkThemeEnabled = binding.cbDarkTheme.isChecked
+        localData.saveProfile(
+            displayName = name,
+            currencySymbol = symbols[binding.spCurrency.selectedItemPosition],
+            buddyName = buddyName,
+            darkThemeEnabled = darkThemeEnabled
+        )
+        BudgetBuddyApplication.applySavedTheme(darkThemeEnabled)
         if (settingsMode) {
             finish()
         } else {

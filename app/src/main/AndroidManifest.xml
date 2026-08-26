@@ -7,7 +7,15 @@
         android:required="false" />
 
     <uses-permission android:name="android.permission.CAMERA" />
+
+    <queries>
+        <intent>
+            <action android:name="android.media.action.IMAGE_CAPTURE" />
+        </intent>
+    </queries>
+
     <application
+        android:name=".BudgetBuddyApplication"
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"

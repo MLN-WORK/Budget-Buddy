@@ -2,10 +2,11 @@ package com.example.budgetbuddy
 
 import android.Manifest
 import android.app.Activity
+import android.content.ClipData
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
@@ -20,15 +21,16 @@ class AddImageActivity : BaseActivity() {
     private var selectedImage: File? = null
     private var pendingCameraImage: File? = null
 
-    private val takePicture = registerForActivityResult(ActivityResultContracts.TakePicture()) { saved ->
+    private val takePicture = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         val capturedImage = pendingCameraImage
-        if (saved && capturedImage?.isFile == true && capturedImage.length() > 0L) {
+        revokeCameraUriPermission(capturedImage)
+        if (capturedImage?.isFile == true && capturedImage.length() > 0L) {
             selectedImage = capturedImage
             showPreview(capturedImage)
             updateSaveButton()
         } else {
             capturedImage?.delete()
-            if (saved) toast(getString(R.string.camera_capture_failed))
+            if (result.resultCode == Activity.RESULT_OK) toast(getString(R.string.camera_capture_failed))
         }
         pendingCameraImage = null
     }
@@ -39,15 +41,19 @@ class AddImageActivity : BaseActivity() {
 
     private val pickImage = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         uri ?: return@registerForActivityResult
+        var destination: File? = null
         runCatching {
-            val destination = newReceiptFile()
+            destination = newReceiptFile()
             contentResolver.openInputStream(uri).use { input ->
-                destination.outputStream().use { output -> requireNotNull(input).copyTo(output) }
+                requireNotNull(destination).outputStream().use { output -> requireNotNull(input).copyTo(output) }
             }
             selectedImage = destination
-            showPreview(destination)
+            showPreview(requireNotNull(destination))
             updateSaveButton()
-        }.onFailure { toast(getString(R.string.image_load_failed)) }
+        }.onFailure {
+            destination?.delete()
+            toast(getString(R.string.image_load_failed))
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -81,15 +87,30 @@ class AddImageActivity : BaseActivity() {
     }
 
     private fun launchCamera() {
-        if (Intent(MediaStore.ACTION_IMAGE_CAPTURE).resolveActivity(packageManager) == null) {
+        val captureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        if (captureIntent.resolveActivity(packageManager) == null) {
             toast(getString(R.string.camera_unavailable))
             return
         }
         runCatching {
             val image = newReceiptFile()
+            val imageUri = FileProvider.getUriForFile(this, "$packageName.provider", image)
             pendingCameraImage = image
-            takePicture.launch(FileProvider.getUriForFile(this, "$packageName.provider", image))
+            captureIntent.apply {
+                putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
+                clipData = ClipData.newRawUri(getString(R.string.receipt_photo), imageUri)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+            }
+            packageManager.queryIntentActivities(captureIntent, PackageManager.MATCH_DEFAULT_ONLY).forEach {
+                grantUriPermission(
+                    it.activityInfo.packageName,
+                    imageUri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                )
+            }
+            takePicture.launch(captureIntent)
         }.onFailure {
+            revokeCameraUriPermission(pendingCameraImage)
             pendingCameraImage?.delete()
             pendingCameraImage = null
             toast(getString(R.string.camera_capture_failed))
@@ -97,8 +118,24 @@ class AddImageActivity : BaseActivity() {
     }
 
     private fun newReceiptFile(): File {
-        val directory = File(filesDir, "receipts").apply { mkdirs() }
+        val externalDirectory = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+            ?.let { File(it, "BudgetBuddy/Receipts") }
+            ?.takeIf { it.isDirectory || it.mkdirs() }
+        val directory = externalDirectory ?: File(filesDir, "receipts")
+        check(directory.isDirectory || directory.mkdirs()) { "Receipt directory is unavailable" }
         return File.createTempFile("receipt-${UUID.randomUUID()}-", ".jpg", directory)
+    }
+
+    private fun revokeCameraUriPermission(image: File?) {
+        val uri = image?.let {
+            runCatching { FileProvider.getUriForFile(this, "$packageName.provider", it) }.getOrNull()
+        } ?: return
+        runCatching {
+            revokeUriPermission(
+                uri,
+                Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+            )
+        }
     }
 
     private fun showPreview(image: File) {

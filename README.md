@@ -16,20 +16,26 @@ You do not need Android Studio, programming tools, an online account, or a techn
 2. Open the latest release and tap **Budget-Buddy.apk** under **Assets**.
 3. If Android asks for permission, allow your browser or file manager to install apps from this source.
 4. Open the downloaded file and tap **Install**.
-5. Open **Budget Buddy**, tap **Continue offline**, enter the name your buddy should use, and choose a currency.
+5. Open **Budget Buddy**, tap **Continue offline**, add your name, choose a currency, and keep the default buddy name **Budster the Budgeter** or replace it with your own.
+
+If an older Budget Buddy APK is already installed, install the new APK over it without uninstalling first. Your existing on-device budgets and transactions will remain available.
 
 Android may warn that the app came from outside the Play Store. This is expected for a directly downloaded APK. Only install the APK from this repository's official release page.
 
 ## What the app does
 
 - Works completely offline with no sign-in, email address, password, online verification, or cloud account.
+- Shows setup only on the first launch; later launches open the Home screen directly.
 - Uses an immersive full-screen interface so Android system bars do not cover the app controls; swipe from an edge to reveal them temporarily.
-- Saves a local display name and currency that can be changed from the profile button on the Home screen.
+- Introduces the companion as **Budster the Budgeter** and lets the user choose a custom buddy name of up to 32 characters, including numbers and special characters.
+- Saves the user name, buddy name, currency, and theme locally; all can be changed from the settings button on the Home screen.
+- Provides an optional inverted dark theme from the settings screen.
+- Keeps the same bottom navigation size, position, icons, and instant page transition across every primary screen.
 - Records income and expenses with a date, category, amount, and optional note.
 - Creates custom spending categories alongside the built-in categories.
 - Builds monthly category budgets and shows spending, remaining funds, income, expenses, and balance.
 - Recalculates budget totals whenever a transaction is added, edited, or deleted.
-- Attaches a receipt from the camera or gallery and keeps the copied image inside the app.
+- Requests the camera permission once on the first Home-screen visit, then stores camera and gallery receipts in an app-owned Pictures/Receipts folder.
 - Filters transaction history by type and date and summarizes spending by category.
 - Shows local charts, a spending gauge, and encouraging buddy moods.
 - Unlocks achievements, including a streak that requires budgets in three distinct consecutive months.
@@ -45,13 +51,13 @@ Uninstalling the app or clearing its app data permanently removes its records. T
 ## Requirements
 
 - Android 8.1 or newer
-- Camera permission only when taking a receipt photo
+- Camera permission prompt on the first Home-screen visit; denying it does not block budgeting or gallery selection
 - No internet connection, account, API, database, dataset, or external service
 
 ## Current limitations
 
 - Budget Buddy is intentionally a single-device, local-profile app.
-- Receipt images stay inside the app and cannot currently be exported.
+- Receipt images stay in app-owned storage and cannot currently be exported through the interface.
 - There is no automatic backup or restore after uninstalling or replacing the device.
 - Currency formatting uses the chosen symbol; it does not apply country-specific decimal or grouping rules.
 - The APK is distributed directly through repository releases rather than an app store.
@@ -75,6 +81,7 @@ Budget Buddy is a single-module native Android application written in Kotlin wit
 app/src/main/java/com/example/budgetbuddy/
   WelcomeActivity.kt                   Offline welcome screen
   ProfileActivity.kt                   Local profile and settings
+  BudgetBuddyApplication.kt           Saved light/dark theme setup
   LocalDataStore.kt                    App-private persistence and budget rebuilds
   FinanceCalculator.kt                 Pure finance calculations
   AchievementProgressCalculator.kt     Distinct-month streak calculation
@@ -83,12 +90,13 @@ app/src/main/java/com/example/budgetbuddy/
   TransactionHistoryActivity.kt        Filter, edit, and delete history
   BudgetActivity.kt                    Monthly category budgets
   AnalyticsActivity.kt                 Charts and spending gauge
+  AnalyticsCalculator.kt               Bounded, crash-safe gauge calculations
 app/src/main/res/                       Layouts, fonts, icons, and buddy artwork
 app/src/test/                           Host-side finance and streak tests
 app/src/androidTest/                    Offline onboarding UI tests
 ```
 
-The launcher entry point is `com.example.budgetbuddy.WelcomeActivity`.
+The launcher entry point is `com.example.budgetbuddy.WelcomeActivity`. It redirects configured users directly to the Home screen, so onboarding runs only once.
 
 ### Build and test
 

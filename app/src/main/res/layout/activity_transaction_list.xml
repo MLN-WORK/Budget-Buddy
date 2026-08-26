@@ -199,13 +199,15 @@
         android:id="@+id/bottomNavView"
         android:layout_width="match_parent"
         android:layout_height="70dp"
-        android:layout_marginHorizontal="15dp"
-        android:layout_marginVertical="30dp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="12dp"
         android:background="@drawable/bottom_nav_bg"
+        android:elevation="5dp"
         app:itemIconSize="30dp"
         app:itemIconTint="@drawable/nav_selector"
         app:itemRippleColor="@android:color/transparent"
         app:labelVisibilityMode="unlabeled"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:menu="@menu/navbar_menu"/>
+        app:menu="@menu/navbar_menu"
+        app:itemPaddingTop="0dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>

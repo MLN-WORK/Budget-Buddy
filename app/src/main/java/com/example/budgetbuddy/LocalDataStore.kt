@@ -17,15 +17,35 @@ class LocalDataStore(context: Context) {
     val displayName: String
         get() = preferences.getString(KEY_DISPLAY_NAME, DEFAULT_DISPLAY_NAME) ?: DEFAULT_DISPLAY_NAME
 
+    val buddyName: String
+        get() = preferences.getString(KEY_BUDDY_NAME, DEFAULT_BUDDY_NAME) ?: DEFAULT_BUDDY_NAME
+
+    val isDarkThemeEnabled: Boolean
+        get() = preferences.getBoolean(KEY_DARK_THEME, false)
+
     val isProfileConfigured: Boolean
         get() = preferences.getBoolean(KEY_PROFILE_CONFIGURED, false)
 
-    fun saveProfile(displayName: String, currencySymbol: String) {
+    fun saveProfile(
+        displayName: String,
+        currencySymbol: String,
+        buddyName: String = DEFAULT_BUDDY_NAME,
+        darkThemeEnabled: Boolean = isDarkThemeEnabled
+    ) {
         preferences.edit()
             .putString(KEY_DISPLAY_NAME, displayName.trim())
+            .putString(KEY_BUDDY_NAME, buddyName.trim().take(MAX_BUDDY_NAME_LENGTH))
             .putString(KEY_CURRENCY, currencySymbol)
+            .putBoolean(KEY_DARK_THEME, darkThemeEnabled)
             .putBoolean(KEY_PROFILE_CONFIGURED, true)
             .apply()
+    }
+
+    val shouldRequestInitialPermissions: Boolean
+        get() = !preferences.getBoolean(KEY_INITIAL_PERMISSION_REQUESTED, false)
+
+    fun markInitialPermissionsRequested() {
+        preferences.edit().putBoolean(KEY_INITIAL_PERMISSION_REQUESTED, true).apply()
     }
 
     fun getCategories(): List<Category> = PRESET_CATEGORIES + getCustomCategories()
@@ -211,9 +231,14 @@ class LocalDataStore(context: Context) {
 
     private fun deleteLocalReceipt(path: String?) {
         val receipt = path?.let(::File) ?: return
-        val receiptsDirectory = File(appContext.filesDir, "receipts").canonicalFile
+        val receiptDirectories = buildList {
+            add(File(appContext.filesDir, "receipts").canonicalFile)
+            appContext.getExternalFilesDir(android.os.Environment.DIRECTORY_PICTURES)?.let {
+                add(File(it, "BudgetBuddy/Receipts").canonicalFile)
+            }
+        }
         val candidate = runCatching { receipt.canonicalFile }.getOrNull() ?: return
-        if (candidate.parentFile == receiptsDirectory && candidate.isFile) candidate.delete()
+        if (candidate.parentFile?.let { it in receiptDirectories } == true && candidate.isFile) candidate.delete()
     }
 
     private fun String.toDisplayMonth(): String? = runCatching {
@@ -239,10 +264,15 @@ class LocalDataStore(context: Context) {
         private const val KEY_ACHIEVEMENTS = "achievements"
         private const val KEY_CURRENCY = "currency"
         private const val KEY_DISPLAY_NAME = "display_name"
+        private const val KEY_BUDDY_NAME = "buddy_name"
+        private const val KEY_DARK_THEME = "dark_theme"
         private const val KEY_PROFILE_CONFIGURED = "profile_configured"
+        private const val KEY_INITIAL_PERMISSION_REQUESTED = "initial_permission_requested"
         private const val KEY_BUDGET_MONTHS = "budget_months"
         private const val DEFAULT_CURRENCY = "R"
         private const val DEFAULT_DISPLAY_NAME = "Budget Buddy"
+        const val DEFAULT_BUDDY_NAME = "Budster the Budgeter"
+        const val MAX_BUDDY_NAME_LENGTH = 32
 
         val PRESET_CATEGORIES = listOf(
             Category("Groceries", "ic_shopping_basket"),

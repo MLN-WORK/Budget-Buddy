@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Deliberately inverted counterparts of the light Budget Buddy palette. -->
+    <color name="black">#FFFFFFFF</color>
+    <color name="white">#FF000000</color>
+    <color name="grey">#FFBFBFBF</color>
+    <color name="teal">#FFB9486C</color>
+    <color name="beige">#FF152034</color>
+    <color name="cream">#FF030A17</color>
+    <color name="lightTeal">#FF2C0C17</color>
+    <color name="lightPink">#FF054C07</color>
+    <color name="lightBlue">#FF4D140D</color>
+    <color name="lightYellow">#FF00063B</color>
+    <color name="lightPurple">#FF3D4C05</color>
+    <color name="lightGreen">#FF390F42</color>
+    <color name="cherry">#FF28C9C9</color>
+    <color name="moss">#FF9B5486</color>
+    <color name="teal_80">#CCB9486C</color>
+    <color name="teal_50">#80B9486C</color>
+    <color name="pastelPink">#FF00322D</color>
+    <color name="pastelPurple">#FF1E4118</color>
+    <color name="pastelYellow">#FF00134C</color>
+    <color name="pastelOrange">#FF003343</color>
+    <color name="pastelBlue">#FF48421A</color>
+    <color name="pastelGreen">#FF371936</color>
+</resources>

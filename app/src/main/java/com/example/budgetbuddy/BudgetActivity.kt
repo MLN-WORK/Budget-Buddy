@@ -93,14 +93,27 @@ class BudgetActivity : BaseActivity() {
 
     private fun saveBudget() {
         val minimumGoal = binding.edtMinimumGoal.text.toString().toDoubleOrNull()
-        if (minimumGoal == null || minimumGoal < 0 || selectedBudgetCategories.isEmpty()) {
-            ToastUtil.showCustomToast(this, "Add categories and enter a valid minimum goal")
+        if (minimumGoal == null || !minimumGoal.isFinite() || minimumGoal < 0 || selectedBudgetCategories.isEmpty()) {
+            ToastUtil.showCustomToast(this, getString(R.string.invalid_budget_values))
             return
         }
         val categories = budgetCategoryAdapter.getCategoryMap()
         val budgetAmount = categories.values.sumOf(BudgetCategory::allocation)
+        if (!budgetAmount.isFinite() || budgetAmount <= 0.0 ||
+            categories.values.any { !it.allocation.isFinite() || it.allocation < 0.0 } ||
+            minimumGoal > budgetAmount
+        ) {
+            ToastUtil.showCustomToast(this, getString(R.string.invalid_budget_range))
+            return
+        }
         val budget = Budget(budgetAmount, minimumGoal, categories)
-        localData.saveBudget(binding.tvCurrentMonth.text.toString(), budget)
+        val saved = runCatching {
+            localData.saveBudget(binding.tvCurrentMonth.text.toString(), budget)
+        }.isSuccess
+        if (!saved) {
+            ToastUtil.showCustomToast(this, getString(R.string.budget_save_failed))
+            return
+        }
         ToastUtil.showCustomToast(this, "Budget saved locally")
         AchievementManager.unlockAchievement("first_budget", this)
         AchievementManager.recordBudgetForMonth(binding.tvCurrentMonth.text.toString(), this)
