@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/cream">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavView"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@color/cream">
+
+            <!-- Top Banner -->
+            <FrameLayout
+                android:id="@+id/aiHeader"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:background="@color/teal"
+                android:layout_gravity="top"
+                android:layout_marginBottom="20dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
+                <TextView
+                    android:id="@+id/tvPgBanner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/view_summaries"
+                    android:textColor="@color/white"
+                    android:textSize="30sp"
+                    android:fontFamily="@font/outfit_bold"
+                    android:layout_gravity="center" />
+                <!-- Back Button -->
+                <ImageButton
+                    android:id="@+id/btnBackTHA"
+                    android:layout_width="50dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="start|center_vertical"
+                    android:src="@drawable/ic_back_arrow"
+                    android:backgroundTint="@color/teal"
+                    app:tint="@color/white"
+                    android:contentDescription="back to home screen"/>
+
+            </FrameLayout>
+
+            <!-- Toggle Button -->
+            <com.google.android.material.button.MaterialButtonToggleGroup
+                android:id="@+id/toggleButtonGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="0dp"
+                android:layout_gravity="center_horizontal"
+                app:singleSelection="true">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnTransactionTog"
+                    android:layout_width="165dp"
+                    android:layout_height="58dp"
+                    android:text="@string/by_transaction"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:backgroundTint="@color/teal"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    android:textAlignment="center"
+                    app:strokeColor="@color/black"
+                    android:fontFamily="@font/roboto_bold"
+                    android:textStyle="bold"
+                    app:strokeWidth="2dp"
+                    app:cornerRadius="12dp"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnCategoryTog"
+                    android:layout_width="165dp"
+                    android:layout_height="58dp"
+                    android:text="@string/by_category"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:textColor="@color/teal"
+                    android:textSize="14sp"
+                    android:textAlignment="center"
+                    app:strokeColor="@color/black"
+                    android:fontFamily="@font/roboto_bold"
+                    app:strokeWidth="2dp"
+                    app:cornerRadius="12dp"/>
+
+            </com.google.android.material.button.MaterialButtonToggleGroup>
+
+            <!-- Date Filters -->
+            <LinearLayout
+                android:layout_width="330dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="12dp"
+                android:layout_marginHorizontal="20dp"
+                android:layout_gravity="center"
+                android:weightSum="2">
+
+                <TextView
+                    android:id="@+id/tvStartDate"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_input"
+                    android:padding="12dp"
+                    android:text="@string/start_date"
+                    android:textAlignment="center"
+                    android:textColor="@color/black" />
+
+                <TextView
+                    android:id="@+id/tvEndDate"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_input"
+                    android:padding="12dp"
+                    android:text="@string/end_date"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:layout_marginStart="8dp" />
+            </LinearLayout>
+
+            <FrameLayout
+                android:layout_width="330dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/bg_input">
+
+                <!-- Radio Buttons -->
+                <RadioGroup
+                    android:id="@+id/rgTransactionFilter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_gravity="center_horizontal">
+
+                    <RadioButton
+                        android:id="@+id/rbAll"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="All"
+                        android:textColor="@color/black"
+                        app:buttonTint="@color/teal"
+                        android:paddingEnd="10dp"/>
+
+                    <RadioButton
+                        android:id="@+id/rbIncomes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Incomes"
+                        android:textColor="@color/black"
+                        app:buttonTint="@color/teal"
+                        android:paddingEnd="10dp"/>
+
+                    <RadioButton
+                        android:id="@+id/rbExpenses"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Expenses"
+                        android:textColor="@color/black"
+                        app:buttonTint="@color/teal"/>
+                </RadioGroup>
+
+            </FrameLayout>
+
+            <!-- RecyclerView -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvTransactions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:overScrollMode="never"
+                android:layout_marginHorizontal="20dp"/>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <!-- Bottom Nav -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavView"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_marginHorizontal="15dp"
+        android:layout_marginVertical="30dp"
+        android:background="@drawable/bottom_nav_bg"
+        app:itemIconSize="30dp"
+        app:itemIconTint="@drawable/nav_selector"
+        app:itemRippleColor="@android:color/transparent"
+        app:labelVisibilityMode="unlabeled"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:menu="@menu/navbar_menu"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

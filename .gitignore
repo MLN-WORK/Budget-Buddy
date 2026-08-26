@@ -1,0 +1,41 @@
+# Android Studio and machine-specific configuration
+.idea/
+.vscode/
+*.iml
+*.user
+*.suo
+local.properties
+
+# Gradle and build output
+.gradle/
+**/build/
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Generated packages, reports, and binaries
+*.apk
+*.aab
+*.dex
+*.class
+*.log
+coverage/
+TestResults/
+
+# Secrets and signing material
+.env
+.env.*
+!.env.example
+google-services.json
+*.jks
+*.keystore
+*.p12
+*.pfx
+*.pem
+
+# OS/editor leftovers and backups
+.DS_Store
+Thumbs.db
+*~
+*.bak
+*.old

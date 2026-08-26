@@ -1,0 +1,90 @@
+<resources>
+    <string name="app_name">Budget Buddy</string>
+    <string name="sign_in">Sign In</string>
+    <string name="register">Register</string>
+    <string name="full_name">Name</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="select_currency">Select Currency</string>
+    <string name="remember_me">Remember me</string>
+    <string name="forgot_password">Forgot password?</string>
+    <string name="email_address">Email address</string>
+
+    <string name="home">Home</string>
+    <string name="analytics">Analytics</string>
+    <string name="transaction">Transaction</string>
+    <string name="budget">Monthly Budget</string>
+    <string name="account">Account</string>
+    <string name="add_category">Add Category</string>
+    <string name="add_image">Add Image</string>
+
+    <string name="budget_overview">Budget Overview</string>
+    <string name="budget_by_category">Budget By Category</string>
+    <string name="total_budgeted">Total budgeted:</string>
+    <string name="previous_date">Previous date</string>
+    <string name="next_month">Next month</string>
+    <string name="set_spending_limit">Set spending limit</string>
+    <string name="maximum_spending_goal">Max spending goal:</string>
+    <string name="minimum_spending_goal">Min spending goal:</string>
+    <string name="save">Save</string>
+
+    <string name="balance">Balance</string>
+    <string name="income">Income</string>
+    <string name="expenses">Expenses</string>
+    <string name="budget_spent">Budget spent</string>
+    <string name="records">Records</string>
+
+    <string name="category_name">Category name</string>
+    <string name="select_category_icon">Select category icon</string>
+    <string name="no_money">0.00</string>
+    <string name="buddy">Buddy</string>
+    <string name="expand_collapse_button">Expand/Collapse Button</string>
+    <string name="expense">Expense</string>
+    <string name="select_a_date">Select a date</string>
+    <string name="select_a_category">Select a category</string>
+    <string name="total_allocated">R%1$.2f</string>
+    <string name="save_budget">Save budget</string>
+    <string name="select_repeat">Select repeat</string>
+    <string name="calendar_icon">Calendar icon</string>
+    <string name="take_a_photo">Take a Photo</string>
+    <string name="upload_from_gallery">Upload from Gallery</string>
+    <string name="coming_soon">Coming Soon</string>
+    <string name="selected_icon">Selected Icon</string>
+    <string name="start_date">Start Date</string>
+    <string name="end_date">End Date</string>
+
+    <string name="select_category_prompt">Select Category</string>
+    <string name="min_spending_goal">Min spending goal</string>
+
+    <string name="placeholder_image_description">Placeholder image</string>
+    <string name="no_image_available">No image available</string>
+
+    <string name="filter_expenses">Filter Expenses</string>
+    <string name="view_summaries">View Summaries</string>
+    <string name="by_transaction">Transaction</string>
+    <string name="by_category">Category</string>
+    <string name="achievement">Achievement</string>
+
+    <string-array name="transaction_filter_options">
+        <item>All transactions</item>
+        <item>Incomes only</item>
+        <item>Expenses only</item>
+    </string-array>
+
+    <string name="minSpendGoal">Minimum Spending Goal: R%1$.2f</string>
+    <string name="maxSpendGoal">Maximum Spending Goal: R%1$.2f</string>
+    <string name="youSpent">You Spent %.0f%% of Your Budget</string>
+    <string name="show_on_graph">Show on Graph</string>
+    <string name="reset">Reset</string>
+    <string name="my_achievements">My Achievements</string>
+    <string name="achievements_icon">Achievements Icon</string>
+    <string name="description">Description...</string>
+
+    <string name="keep_spending">You can keep spending</string>
+    <string name="still_on_track">You`re still on track</string>
+    <string name="slow_down">Slow down</string>
+    <string name="not_saving">Looks like you`re not gonna save much</string>
+    <string name="way_over_budget">You`re way over budget</string>
+    <string name="you_only_wanna_spend">You aim to spend %.0f%% of your budget</string>
+    <string name="looks_like_you_have_t_spent_any_money_yet">Looks like you have\'t spent any money yet</string>
+</resources>

@@ -1,0 +1,97 @@
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:fitsSystemWindows="true"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/teal"
+    tools:context=".AchievementActivity">
+
+    <!-- HEADER (1/4 of screen approx.) -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/pageHeader"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginBottom="15dp"
+        app:cardCornerRadius="0dp"
+        app:cardBackgroundColor="@color/beige"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="15dp"
+            android:paddingTop="40dp">
+            <TextView
+                android:id="@+id/tvCelebrate"
+                android:layout_width="230dp"
+                android:layout_height="wrap_content"
+                android:text="Let's celebrate progress!"
+                android:fontFamily="@font/outfit_bold"
+                android:textColor="@color/black"
+                android:textSize="25sp"
+                android:textAlignment="center"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/ivAchievementsIcon"
+                app:layout_constraintTop_toTopOf="parent"/>
+            <TextView
+                android:id="@+id/tvAchievements"
+                android:layout_width="230dp"
+                android:layout_height="wrap_content"
+                android:text="Achievements"
+                android:fontFamily="@font/outfit_bold"
+                android:textColor="@color/teal"
+                android:textSize="20sp"
+                android:textAlignment="center"
+                android:layout_marginTop="8dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/ivAchievementsIcon"
+                app:layout_constraintTop_toBottomOf="@+id/tvCelebrate"/>
+
+            <ImageView
+                android:id="@+id/ivAchievementsIcon"
+                android:layout_width="140dp"
+                android:layout_height="140dp"
+                android:layout_gravity="end"
+                android:layout_weight="0.3"
+                android:contentDescription="@string/achievements_icon"
+                android:src="@drawable/award_buddy"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- RECYCLER VIEW TAKES REMAINING 3/4 -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/achievementRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:padding="12dp"
+        android:clipToPadding="false"
+        android:layout_marginTop="15dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/pageHeader"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavView"/>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavView"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginVertical="3dp"
+        android:layout_marginHorizontal="20dp"
+        android:background="@drawable/bottom_nav_bg"
+        android:elevation="5dp"
+        app:menu="@menu/navbar_menu"
+        app:itemIconSize="30dp"
+        app:itemIconTint="@drawable/nav_selector"
+        app:itemRippleColor="@android:color/transparent"
+        app:labelVisibilityMode="unlabeled"
+        app:itemPaddingTop="0dp" />
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/cream"
+    android:paddingBottom="15dp"
+    tools:context=".MainActivity">
+    <!-- HOME HEADER-->
+    <FrameLayout
+        android:id="@+id/homeHeader"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:background="@color/teal"
+        android:layout_gravity="top"
+        android:layout_marginBottom="20dp"
+        app:layout_constraintTop_toTopOf="parent">
+        <TextView
+            android:id="@+id/tvHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/home"
+            android:textColor="@color/white"
+            android:textSize="30sp"
+            android:fontFamily="@font/outfit_bold"
+            android:layout_gravity="center" />
+
+<!--        <TextView-->
+<!--            android:id="@+id/tvUsername"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_gravity="end"-->
+<!--            android:paddingEnd="15dp"-->
+<!--            android:textSize="18sp"-->
+<!--            android:textColor="@color/white"-->
+<!--            android:textStyle="bold"/>-->
+    </FrameLayout>
+
+    <!-- SCROLLABLE PAGE LAYOUT -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/homeScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:paddingTop="15dp"
+        android:layout_marginBottom="40dp"
+        app:layout_constraintTop_toBottomOf="@+id/homeHeader"
+        app:layout_constraintBottom_toBottomOf="@+id/bottomNavView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:fillViewport="true">
+        <!--PAGE CONTENTS-->
+        <LinearLayout
+            android:id="@+id/pageContentsLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingHorizontal="20dp">
+
+            <!-- BALANCE OVERVIEW CARD -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/budgetOverviewCard"
+                android:layout_width="match_parent"
+                android:layout_height="220dp"
+                app:cardCornerRadius="20dp"
+                app:cardBackgroundColor="@color/beige"
+                app:strokeWidth="2dp"
+                app:strokeColor="@color/black">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <ImageView
+                        android:id="@+id/imgBuddy"
+                        android:layout_width="120dp"
+                        android:layout_height="120dp"
+                        app:srcCompat="@drawable/main_buddy"
+                        android:layout_gravity="center_vertical"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:layout_marginVertical="50dp"
+                        android:layout_marginHorizontal="20dp"
+                        android:contentDescription="@string/buddy"/>
+
+                    <!--BALANCE TEXT-->
+                    <LinearLayout
+                        android:layout_width="190dp"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:paddingVertical="10dp"
+                        android:paddingHorizontal="10dp">
+
+                        <TextView
+                            android:id="@+id/tvBalance"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/balance"
+                            android:textSize="18sp"
+                            android:textColor="@color/black"
+                            android:fontFamily="@font/roboto_bold" />
+
+                        <TextView
+                            android:id="@+id/tvBalanceAmount"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="30sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/black"
+                            android:fontFamily="@font/roboto_bold"/>
+
+                        <TextView
+                            android:id="@+id/tvIncome"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/income"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/black"
+                            android:fontFamily="@font/roboto_bold"/>
+
+                        <TextView
+                            android:id="@+id/tvIncomeAmount"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/moss"
+                            android:textSize="25sp"
+                            android:fontFamily="@font/roboto_bold"/>
+
+                        <TextView
+                            android:id="@+id/tvExpenses"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/expenses"
+                            android:textSize="18sp"
+                            android:textColor="@color/black"
+                            android:fontFamily="@font/roboto_bold" />
+
+                        <TextView
+                            android:id="@+id/tvExpensesAmount"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/cherry"
+                            android:textSize="25sp"
+                            android:fontFamily="@font/roboto_bold"/>
+                    </LinearLayout>
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- BUDGET SPENT CARD (expandable) -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/budgetSpentCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="15dp"
+                app:cardCornerRadius="20dp"
+                app:cardBackgroundColor="@color/beige"
+                app:strokeWidth="2dp"
+                app:strokeColor="@color/black">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingBottom="20dp">
+
+                    <!--HEADER & EXPAND/COLLAPSE BTN -->
+                    <Button
+                        android:id="@+id/btnBudgetSpentExpand"
+                        android:layout_width="match_parent"
+                        android:layout_height="55dp"
+                        style="@style/CustomDefaultButton"
+                        android:background="@drawable/rounded_teal_bg"
+                        android:text="@string/budget_spent"
+                        android:fontFamily="@font/outfit_bold"
+                        android:textSize="25sp"
+                        android:textColor="@color/white"
+                        android:layout_marginBottom="5dp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:drawableEnd="@drawable/ic_downward_arrow"
+                        android:drawableTint="@color/white" />
+
+                    <!-- Budget Spent Contents ALWAYS VISIBLE -->
+                    <LinearLayout
+                        android:id="@+id/visibleBudgetContent"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginHorizontal="20dp"
+                        android:layout_marginTop="10dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/btnBudgetSpentExpand">
+
+                        <TextView
+                            android:id="@+id/tvBudgetSpent"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/roboto_bold"
+                            android:textSize="15sp"
+                            android:textColor="@color/black"/>
+
+                        <TextView
+                            android:id="@+id/tvBudgetRemaining"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/roboto_bold"
+                            android:textSize="15sp"
+                            android:textColor="@color/black"/>
+
+                        <!-- Progress bar -->
+                        <ProgressBar
+                            android:id="@+id/pgBudgetBar"
+                            style="@android:style/Widget.ProgressBar.Horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="35dp"
+                            android:layout_gravity="center_horizontal"
+                            android:progressDrawable="@drawable/progress_bar"
+                            android:layout_marginTop="10dp"/>
+
+                    </LinearLayout>
+
+                    <!-- expandable HIDDEN CONTENTS show expenditure, progress bar-->
+                    <LinearLayout
+                        android:id="@+id/hiddenBudgetContent"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="gone"
+                        android:layout_margin="20dp"
+                        app:layout_constraintTop_toBottomOf="@+id/visibleBudgetContent">
+
+                        <!-- BUDGET EXPENDITURE STUFF donut charts-->
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/rvDonuts"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="8dp" />
+                    </LinearLayout>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- RECORDS CARD -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/recordsCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="20dp"
+                app:cardBackgroundColor="@color/beige"
+                app:strokeWidth="2dp"
+                app:strokeColor="@color/black"
+                android:layout_marginBottom="80dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="10dp">
+                    <!--HEADER-->
+                    <Button
+                        android:id="@+id/btnRecordsHeader"
+                        android:layout_width="match_parent"
+                        android:layout_height="55dp"
+                        style="@style/CustomDefaultButton"
+                        android:background="@drawable/rounded_teal_bg"
+                        android:text="@string/records"
+                        android:fontFamily="@font/outfit_bold"
+                        android:textSize="25sp"
+                        android:textColor="@color/white"
+                        android:layout_marginBottom="10dp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:drawableEnd="@drawable/ic_filter"
+                        android:drawableTint="@color/white" />
+
+                    <androidx.core.widget.NestedScrollView
+                        android:id="@+id/recordsScrollView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:layout_constraintTop_toBottomOf="@+id/btnRecordsHeader"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:fillViewport="true">
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/rvRecords"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:scrollbars="vertical"
+                            android:scrollbarStyle="insideInset"
+                            app:layout_constraintTop_toBottomOf="@+id/btnRecordsHeader"/>
+                    </androidx.core.widget.NestedScrollView>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!--NAVIGATION-->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavView"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginVertical="3dp"
+        android:layout_marginHorizontal="20dp"
+        android:background="@drawable/bottom_nav_bg"
+        android:elevation="5dp"
+        app:menu="@menu/navbar_menu"
+        app:itemIconSize="30dp"
+        app:itemIconTint="@drawable/nav_selector"
+        app:itemRippleColor="@android:color/transparent"
+        app:labelVisibilityMode="unlabeled"
+        app:itemPaddingTop="0dp" />
+</androidx.constraintlayout.widget.ConstraintLayout>

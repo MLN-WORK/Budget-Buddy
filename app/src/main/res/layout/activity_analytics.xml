@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/cream"
+    tools:context=".AnalyticsActivity">
+
+    <!-- PAGE HEADER-->
+    <FrameLayout
+        android:id="@+id/analyticsHeader"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/teal"
+        android:layout_gravity="top"
+        app:layout_constraintTop_toTopOf="parent">
+        <TextView
+            android:id="@+id/tvHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/analytics"
+            android:textColor="@color/white"
+            android:textSize="30sp"
+            android:fontFamily="@font/outfit_bold"
+            android:layout_gravity="center" />
+    </FrameLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:paddingBottom="15dp"
+        android:paddingHorizontal="20dp"
+        app:layout_constraintTop_toBottomOf="@id/analyticsHeader"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:fillViewport="true"
+        android:layout_marginBottom="20dp">
+
+        <LinearLayout
+            android:id="@+id/scrollableContent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <!--MONTH CARD-->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/monthSelectionCard"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginVertical="15dp"
+                app:cardCornerRadius="20dp"
+                app:cardBackgroundColor="@color/beige"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:strokeColor="@color/black"
+                app:strokeWidth="2dp">
+                <!--MONTH TEXT & BUTTONS -->
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center">
+                    <ImageButton
+                        android:id="@+id/btnBack"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:src="@drawable/ic_back_arrow"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        android:layout_marginStart="20dp"
+                        android:backgroundTint="@color/beige"
+                        android:contentDescription="@string/previous_date"/>
+                    <TextView
+                        android:id="@+id/tvCurrentMonth"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="25sp"
+                        android:text="Month"
+                        android:fontFamily="@font/outfit_bold"
+                        android:textColor="@color/black"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+                    <ImageButton
+                        android:id="@+id/btnForward"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:src="@drawable/ic_forward_arrow"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:layout_marginEnd="20dp"
+                        android:contentDescription="@string/next_month"
+                        android:backgroundTint="@color/beige" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- MIN MAX GOAL (GAUGE) CARD -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/minMaxGoalCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="15dp"
+                app:cardCornerRadius="20dp"
+                app:cardBackgroundColor="@color/beige"
+                app:strokeWidth="2dp"
+                app:strokeColor="@color/black"
+                app:layout_constraintTop_toBottomOf="@id/monthSelectionCard">
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <!--HEADER-->
+                    <Button
+                        android:id="@+id/btnMinMaxHeader"
+                        android:layout_width="match_parent"
+                        android:layout_height="55dp"
+                        style="@style/CustomDefaultButton"
+                        android:background="@drawable/rounded_teal_bg"
+                        android:text="@string/youSpent"
+                        android:fontFamily="@font/outfit_bold"
+                        android:textSize="15sp"
+                        android:textColor="@color/white"
+                        android:layout_marginBottom="5dp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:drawableEnd="@drawable/ic_downward_arrow"
+                        android:drawableTint="@color/white" />
+
+                    <!-- GAUGE CHART -->
+                    <com.github.anastr.speedviewlib.SpeedView
+                        android:id="@+id/minMaxGauge"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        app:layout_constraintDimensionRatio="2:1"
+                        app:sv_unit="%"
+                        app:sv_maxSpeed="100"
+                        app:sv_withTremble="false"
+                        app:sv_speedometerMode="TOP"
+                        app:sv_indicator="KiteIndicator"
+                        app:sv_sectionStyle="BUTT"
+                        app:sv_startDegree="180"
+                        app:sv_endDegree="360"
+                        app:sv_speedTextPosition="BOTTOM_CENTER"
+                        app:sv_backgroundCircleColor="@color/beige"
+                        app:sv_centerCircleRadius="15dp"
+                        app:sv_centerCircleColor="@color/black"
+                        app:sv_indicatorColor="@color/black"
+                        app:sv_indicatorWidth="10dp"
+                        app:sv_speedometerWidth="30dp"
+                        app:sv_markWidth="0dp"
+                        app:layout_constraintTop_toBottomOf="@+id/btnMinMaxHeader"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginHorizontal="35dp"/>
+
+                    <!-- expandable HIDDEN CONTENTS-->
+                    <LinearLayout
+                        android:id="@+id/hiddenAnalytics"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="gone"
+                        android:layout_margin="15dp"
+                        android:gravity="center_horizontal"
+                        app:layout_constraintTop_toBottomOf="@+id/minMaxGauge"
+                        app:layout_constraintBottom_toBottomOf="parent">
+                        <!-- Min Max Goal DETAILS-->
+                        <TextView
+                            android:id="@+id/tvFeedBack"
+                            android:layout_width="wrap_content"
+                            android:layout_height="30dp"
+                            android:textSize="20sp"
+                            android:text="Feedback"
+                            android:textColor="@color/black"
+                            android:textAlignment="center"
+                            android:fontFamily="@font/outfit_bold"
+                            android:layout_marginHorizontal="10dp"/>
+                        <TextView
+                            android:id="@+id/tvPercentage"
+                            android:layout_width="wrap_content"
+                            android:layout_height="50dp"
+                            android:textSize="20sp"
+                            android:text="You only wanna spend..."
+                            android:textColor="@color/black"
+                            android:textAlignment="center"
+                            android:fontFamily="@font/roboto_regular"
+                            android:layout_marginHorizontal="10dp"
+                            />
+                        <!--DIVIDER-->
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="2dp"
+                            android:background="@color/black"
+                            android:layout_marginVertical="10dp"
+                            app:layout_constraintTop_toBottomOf="@+id/minMaxGauge"/>
+                        <!--Minimum Goal & Currency-->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:background="@drawable/rounded_beige_bg"
+                            android:backgroundTint="@color/lightTeal"
+                            android:layout_marginHorizontal="15dp"
+                            android:padding="5dp"
+                            android:gravity="center_vertical">
+                            <TextView
+                                android:id="@+id/tvMinSpendGoal"
+                                android:layout_width="wrap_content"
+                                android:layout_height="30dp"
+                                android:textSize="19sp"
+                                android:text="@string/minimum_spending_goal"
+                                android:textColor="@color/black"
+                                android:fontFamily="@font/roboto_bold"
+                                android:layout_marginHorizontal="10dp"/>
+                            <TextView
+                                android:id="@+id/tvCurrency1"
+                                android:layout_width="wrap_content"
+                                android:layout_height="30dp"
+                                android:textSize="20sp"
+                                android:textColor="@color/black"
+                                android:fontFamily="@font/roboto_bold" />
+                            <TextView
+                                android:id="@+id/tvMinGoal"
+                                android:layout_width="wrap_content"
+                                android:layout_height="30dp"
+                                android:textSize="20sp"
+                                android:text="@string/no_money"
+                                android:textColor="@color/black"
+                                android:fontFamily="@font/roboto_bold"/>
+                        </LinearLayout>
+                        <!--Maximum Goal & Currency-->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:background="@drawable/rounded_beige_bg"
+                            android:backgroundTint="@color/lightPink"
+                            android:layout_marginHorizontal="15dp"
+                            android:layout_marginVertical="10dp"
+                            android:gravity="center_vertical"
+                            android:padding="5dp">
+                            <TextView
+                                android:id="@+id/tvMaxSpendGoal"
+                                android:layout_width="wrap_content"
+                                android:layout_height="30dp"
+                                android:textSize="19sp"
+                                android:text="@string/maximum_spending_goal"
+                                android:textColor="@color/black"
+                                android:fontFamily="@font/roboto_bold"
+                                android:layout_marginHorizontal="10dp"/>
+                            <TextView
+                                android:id="@+id/tvCurrency2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="30dp"
+                                android:textSize="20sp"
+                                android:textColor="@color/black"
+                                android:fontFamily="@font/roboto_bold" />
+                            <TextView
+                                android:id="@+id/tvMaxGoal"
+                                android:layout_width="wrap_content"
+                                android:layout_height="30dp"
+                                android:textSize="20sp"
+                                android:text="@string/no_money"
+                                android:textColor="@color/black"
+                                android:fontFamily="@font/roboto_bold"/>
+                        </LinearLayout>
+
+                        <Button
+                            android:id="@+id/btnShowMaxInfo"
+                            style="@style/CustomDefaultButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="50dp"
+                            android:layout_margin="15dp"
+                            android:paddingHorizontal="5dp"
+                            android:background="@drawable/bg_button_teal"
+                            android:text="@string/show_on_graph"
+                            android:textColor="@color/white"
+                            android:textAlignment="center"/>
+
+                    </LinearLayout>
+
+                    <!-- BUDDY PICS-->
+                    <ImageView
+                        android:id="@+id/imgBeetleJuice"
+                        android:layout_width="150dp"
+                        android:layout_height="130dp"
+                        app:srcCompat="@drawable/neutral_buddy_1"
+                        android:padding="0dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintBottom_toBottomOf="@+id/minMaxGauge"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- DATE PICKERS -->
+            <LinearLayout
+                android:id="@+id/datePickerLayout"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:orientation="horizontal"
+                android:layout_marginVertical="15dp">
+                <TextView
+                    android:id="@+id/tvStartDate"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_input"
+                    android:padding="12dp"
+                    android:text="@string/start_date"
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    android:fontFamily="@font/roboto_regular"
+                    android:layout_marginEnd="10dp"/>
+                <TextView
+                    android:id="@+id/tvEndDate"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_input"
+                    android:padding="12dp"
+                    android:text="@string/end_date"
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    android:fontFamily="@font/roboto_regular"
+                    android:layout_marginStart="10dp"/>
+            </LinearLayout>
+
+            <!-- BAR GRAPH -->
+            <com.github.mikephil.charting.charts.HorizontalBarChart
+                android:id="@+id/categoryBarGraph"
+                android:layout_width="match_parent"
+                android:layout_height="350dp"
+                android:background="@color/cream">
+            </com.github.mikephil.charting.charts.HorizontalBarChart>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavView"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginVertical="3dp"
+        android:layout_marginHorizontal="20dp"
+        android:background="@drawable/bottom_nav_bg"
+        android:elevation="5dp"
+        app:menu="@menu/navbar_menu"
+        app:itemIconSize="30dp"
+        app:itemIconTint="@drawable/nav_selector"
+        app:itemRippleColor="@android:color/transparent"
+        app:labelVisibilityMode="unlabeled"
+        app:itemPaddingTop="0dp" />
+</androidx.constraintlayout.widget.ConstraintLayout>

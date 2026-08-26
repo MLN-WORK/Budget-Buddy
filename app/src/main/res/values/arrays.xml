@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="category_options">
+        <item>Select category</item>
+        <item>Groceries</item>
+        <item>Transport</item>
+        <item>Entertainment</item>
+        <item>Salary</item>
+        <item>Health</item>
+        <item>Household</item>
+        <item>Miscellaneous</item>
+    </string-array>
+
+    <string-array name="repeat_options">
+        <item>Repeating options</item>
+        <item>Does not repeat</item>
+        <item>Daily</item>
+        <item>Weekly</item>
+        <item>Monthly</item>
+    </string-array>
+
+    <array name="bar_colours">
+        <item>@color/lightGreen</item>
+        <item>@color/lightBlue</item>
+        <item>@color/lightPink</item>
+        <item>@color/lightTeal</item>
+        <item>@color/lightPurple</item>
+        <item>@color/teal</item>
+        <item>@color/beige</item>
+        <item>@color/lightYellow</item>
+    </array>
+
+</resources>
