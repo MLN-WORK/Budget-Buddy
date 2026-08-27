@@ -122,7 +122,7 @@ object AchievementManager {
         val spent = localData.getTransactions("$monthKey-01", "$monthKey-31")
             .filterNot(Transaction::isIncome)
             .sumOf(Transaction::amount)
-        if (spent <= budget.budgetAmount) unlockOrProgress("stay_within_budget", context)
+        if (spent <= budget.maximumSpendingBudget) unlockOrProgress("stay_within_budget", context)
     }
 
     fun restore(context: Context) {

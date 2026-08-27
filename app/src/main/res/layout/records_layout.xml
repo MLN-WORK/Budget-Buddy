@@ -8,7 +8,7 @@ android:orientation="vertical">
         android:layout_width="match_parent"
         android:orientation="horizontal"
         android:padding="15dp"
-        android:background="@color/beige">
+        android:background="?attr/budgetSurfaceColor">
 
             <ImageView
             android:id="@+id/imgRecordIcon"
@@ -31,7 +31,7 @@ android:orientation="vertical">
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
-                android:textColor="@color/black"
+                android:textColor="?attr/budgetTextColor"
                 android:fontFamily="@font/roboto_bold"
                 android:layout_marginStart="10dp"/>
             <TextView
@@ -40,7 +40,7 @@ android:orientation="vertical">
                 android:layout_height="wrap_content"
                 android:textSize="15sp"
                 android:fontFamily="@font/roboto_regular"
-                android:textColor="@color/black"
+                android:textColor="?attr/budgetTextColor"
                 android:layout_marginStart="10dp"/>
         </LinearLayout>
         <TextView
@@ -50,7 +50,7 @@ android:orientation="vertical">
             android:layout_gravity="center_vertical"
             android:layout_marginHorizontal="10dp"
             android:textSize="20sp"
-            android:textColor="@color/black"
+            android:textColor="?attr/budgetTextColor"
             android:gravity="center_vertical"
             android:fontFamily="@font/roboto_bold"/>
     </LinearLayout>

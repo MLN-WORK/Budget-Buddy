@@ -2,7 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/cream"
+    android:background="?attr/budgetBackgroundColor"
     android:fillViewport="true">
 
     <LinearLayout
@@ -37,7 +37,7 @@
             android:fontFamily="@font/outfit_bold"
             android:gravity="center"
             android:text="@string/default_buddy_introduction"
-            android:textColor="@color/black"
+            android:textColor="?attr/budgetTextColor"
             android:textSize="20sp" />
 
         <TextView
@@ -47,7 +47,7 @@
             android:gravity="center"
             android:layout_marginTop="22dp"
             android:text="@string/welcome_title"
-            android:textColor="@color/teal"
+            android:textColor="?attr/budgetPrimaryColor"
             android:textSize="30sp" />
 
         <TextView
@@ -57,7 +57,7 @@
             android:fontFamily="@font/outfit"
             android:gravity="center"
             android:text="@string/welcome_message"
-            android:textColor="@color/black"
+            android:textColor="?attr/budgetTextColor"
             android:textSize="18sp" />
 
         <com.google.android.material.button.MaterialButton
@@ -69,7 +69,7 @@
             android:fontFamily="@font/outfit_bold"
             android:gravity="center"
             android:text="@string/continue_offline"
-            android:textColor="@color/white"
+            android:textColor="?attr/budgetOnPrimaryColor"
             android:textSize="19sp" />
 
         <TextView
@@ -79,7 +79,7 @@
             android:fontFamily="@font/outfit"
             android:gravity="center"
             android:text="@string/offline_explanation"
-            android:textColor="@color/black"
+            android:textColor="?attr/budgetTextColor"
             android:textSize="15sp" />
     </LinearLayout>
 </ScrollView>

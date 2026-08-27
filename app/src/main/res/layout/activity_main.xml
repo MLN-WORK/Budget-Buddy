@@ -5,14 +5,14 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/cream"
+    android:background="?attr/budgetBackgroundColor"
     tools:context=".MainActivity">
     <!-- HOME HEADER-->
     <FrameLayout
         android:id="@+id/homeHeader"
         android:layout_width="match_parent"
         android:layout_height="55dp"
-        android:background="@color/teal"
+        android:background="?attr/budgetPrimaryColor"
         android:layout_gravity="top"
         android:layout_marginBottom="20dp"
         app:layout_constraintTop_toTopOf="parent">
@@ -21,7 +21,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/home"
-            android:textColor="@color/white"
+            android:textColor="?attr/budgetOnPrimaryColor"
             android:textSize="30sp"
             android:fontFamily="@font/outfit_bold"
             android:layout_gravity="center" />
@@ -36,7 +36,7 @@
             android:contentDescription="@string/open_settings"
             android:padding="12dp"
             android:src="@drawable/ic_account"
-            app:tint="@color/white" />
+            app:tint="?attr/budgetOnPrimaryColor" />
     </FrameLayout>
 
     <!-- SCROLLABLE PAGE LAYOUT -->
@@ -64,7 +64,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"
                 android:fontFamily="@font/outfit_bold"
-                android:textColor="@color/teal"
+                android:textColor="?attr/budgetPrimaryColor"
                 android:textSize="22sp"
                 tools:text="Hi, Buddy!" />
 
@@ -74,38 +74,40 @@
                 android:layout_width="match_parent"
                 android:layout_height="220dp"
                 app:cardCornerRadius="20dp"
-                app:cardBackgroundColor="@color/beige"
+                app:cardBackgroundColor="?attr/budgetSurfaceColor"
                 app:strokeWidth="2dp"
-                app:strokeColor="@color/black">
+                app:strokeColor="?attr/budgetTextColor">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
                     <ImageView
                         android:id="@+id/imgBuddy"
-                        android:layout_width="120dp"
-                        android:layout_height="120dp"
+                        android:layout_width="140dp"
+                        android:layout_height="140dp"
                         app:srcCompat="@drawable/main_buddy"
-                        android:layout_gravity="center_vertical"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
-                        android:layout_marginVertical="50dp"
-                        android:layout_marginHorizontal="20dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
                         android:contentDescription="@string/buddy"/>
 
                     <TextView
                         android:id="@+id/tvBuddyName"
-                        android:layout_width="140dp"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="10dp"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginBottom="8dp"
                         android:ellipsize="end"
                         android:fontFamily="@font/outfit_bold"
                         android:gravity="center"
                         android:maxLines="2"
-                        android:textColor="@color/black"
+                        android:textColor="?attr/budgetTextColor"
                         android:textSize="14sp"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="@id/imgBuddy"
+                        app:layout_constraintStart_toStartOf="@id/imgBuddy"
+                        app:layout_constraintTop_toBottomOf="@id/imgBuddy"
                         tools:text="Budster the Budgeter" />
 
                     <!--BALANCE TEXT-->
@@ -124,7 +126,7 @@
                             android:layout_height="wrap_content"
                             android:text="@string/balance"
                             android:textSize="18sp"
-                            android:textColor="@color/black"
+                            android:textColor="?attr/budgetTextColor"
                             android:fontFamily="@font/roboto_bold" />
 
                         <TextView
@@ -133,7 +135,7 @@
                             android:layout_height="wrap_content"
                             android:textSize="30sp"
                             android:textStyle="bold"
-                            android:textColor="@color/black"
+                            android:textColor="?attr/budgetTextColor"
                             android:fontFamily="@font/roboto_bold"/>
 
                         <TextView
@@ -143,7 +145,7 @@
                             android:text="@string/income"
                             android:textSize="18sp"
                             android:textStyle="bold"
-                            android:textColor="@color/black"
+                            android:textColor="?attr/budgetTextColor"
                             android:fontFamily="@font/roboto_bold"/>
 
                         <TextView
@@ -160,7 +162,7 @@
                             android:layout_height="wrap_content"
                             android:text="@string/expenses"
                             android:textSize="18sp"
-                            android:textColor="@color/black"
+                            android:textColor="?attr/budgetTextColor"
                             android:fontFamily="@font/roboto_bold" />
 
                         <TextView
@@ -183,9 +185,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="15dp"
                 app:cardCornerRadius="20dp"
-                app:cardBackgroundColor="@color/beige"
+                app:cardBackgroundColor="?attr/budgetSurfaceColor"
                 app:strokeWidth="2dp"
-                app:strokeColor="@color/black">
+                app:strokeColor="?attr/budgetTextColor">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
@@ -202,11 +204,11 @@
                         android:text="@string/budget_spent"
                         android:fontFamily="@font/outfit_bold"
                         android:textSize="25sp"
-                        android:textColor="@color/white"
+                        android:textColor="?attr/budgetOnPrimaryColor"
                         android:layout_marginBottom="5dp"
                         app:layout_constraintTop_toTopOf="parent"
                         android:drawableEnd="@drawable/ic_downward_arrow"
-                        android:drawableTint="@color/white" />
+                        android:drawableTint="?attr/budgetOnPrimaryColor" />
 
                     <!-- Budget Spent Contents ALWAYS VISIBLE -->
                     <LinearLayout
@@ -225,7 +227,7 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/roboto_bold"
                             android:textSize="15sp"
-                            android:textColor="@color/black"/>
+                            android:textColor="?attr/budgetTextColor"/>
 
                         <TextView
                             android:id="@+id/tvBudgetRemaining"
@@ -233,7 +235,7 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/roboto_bold"
                             android:textSize="15sp"
-                            android:textColor="@color/black"/>
+                            android:textColor="?attr/budgetTextColor"/>
 
                         <!-- Progress bar -->
                         <ProgressBar
@@ -274,9 +276,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="20dp"
-                app:cardBackgroundColor="@color/beige"
+                app:cardBackgroundColor="?attr/budgetSurfaceColor"
                 app:strokeWidth="2dp"
-                app:strokeColor="@color/black"
+                app:strokeColor="?attr/budgetTextColor"
                 android:layout_marginBottom="80dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -293,11 +295,11 @@
                         android:text="@string/records"
                         android:fontFamily="@font/outfit_bold"
                         android:textSize="25sp"
-                        android:textColor="@color/white"
+                        android:textColor="?attr/budgetOnPrimaryColor"
                         android:layout_marginBottom="10dp"
                         app:layout_constraintTop_toTopOf="parent"
                         android:drawableEnd="@drawable/ic_filter"
-                        android:drawableTint="@color/white" />
+                        android:drawableTint="?attr/budgetOnPrimaryColor" />
 
                     <androidx.core.widget.NestedScrollView
                         android:id="@+id/recordsScrollView"

@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         android:text="@string/successful"
         android:textSize="16sp"
-        android:textColor="@color/black"
+        android:textColor="?attr/budgetTextColor"
         android:gravity="center"/>
 
 </LinearLayout>

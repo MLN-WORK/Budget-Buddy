@@ -10,9 +10,9 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.example.budgetbuddy.databinding.ActivityTransactionBinding
+import com.google.android.material.color.MaterialColors
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -127,9 +127,16 @@ class TransactionActivity : BaseActivity() {
     }
 
     private fun setupCategorySpinner() {
-        val currentSelection = preferredCategoryName ?: (binding.spinnerCategory.selectedItem as? Category)?.name
+        val prompts = setOf(
+            getString(R.string.select_a_category),
+            getString(R.string.select_optional_income_category)
+        )
+        val currentSelection = (preferredCategoryName ?: (binding.spinnerCategory.selectedItem as? Category)?.name)
+            ?.takeUnless { it in prompts || it == TransactionCategoryPolicy.DEFAULT_INCOME_CATEGORY }
         val categories = buildList {
-            add(Category(getString(R.string.select_a_category), ""))
+            add(Category(getString(
+                if (isIncome) R.string.select_optional_income_category else R.string.select_a_category
+            ), ""))
             addAll(localData.getCategories())
             add(Category(getString(R.string.add_category_spinner), ""))
         }
@@ -167,16 +174,18 @@ class TransactionActivity : BaseActivity() {
         isIncome = false
         binding.btnExpense.setBackgroundResource(R.drawable.bg_toggle_left_selected)
         binding.btnIncome.setBackgroundResource(R.drawable.bg_toggle_right_unselected)
-        binding.btnExpense.setTextColor(ContextCompat.getColor(this, R.color.white))
-        binding.btnIncome.setTextColor(ContextCompat.getColor(this, R.color.black))
+        binding.btnExpense.setTextColor(MaterialColors.getColor(binding.root, R.attr.budgetOnPrimaryColor))
+        binding.btnIncome.setTextColor(MaterialColors.getColor(binding.root, R.attr.budgetTextColor))
+        if (::localData.isInitialized) setupCategorySpinner()
     }
 
     private fun selectIncome() {
         isIncome = true
         binding.btnIncome.setBackgroundResource(R.drawable.bg_toggle_right_selected)
         binding.btnExpense.setBackgroundResource(R.drawable.bg_toggle_left_unselected)
-        binding.btnIncome.setTextColor(ContextCompat.getColor(this, R.color.white))
-        binding.btnExpense.setTextColor(ContextCompat.getColor(this, R.color.black))
+        binding.btnIncome.setTextColor(MaterialColors.getColor(binding.root, R.attr.budgetOnPrimaryColor))
+        binding.btnExpense.setTextColor(MaterialColors.getColor(binding.root, R.attr.budgetTextColor))
+        if (::localData.isInitialized) setupCategorySpinner()
     }
 
     private fun initDate() {
@@ -218,8 +227,11 @@ class TransactionActivity : BaseActivity() {
             toast(getString(R.string.enter_valid_amount))
             return
         }
-        val selected = binding.spinnerCategory.selectedItem as? Category
-        if (selected == null || binding.spinnerCategory.selectedItemPosition == 0 || selected.name == getString(R.string.add_category_spinner)) {
+        val selected = (binding.spinnerCategory.selectedItem as? Category)?.takeIf {
+            binding.spinnerCategory.selectedItemPosition > 0 &&
+                it.name != getString(R.string.add_category_spinner)
+        }
+        if (!isIncome && selected == null) {
             toast(getString(R.string.please_select_category))
             return
         }
@@ -227,7 +239,9 @@ class TransactionActivity : BaseActivity() {
         val transaction = Transaction(
             transactionId = original?.transactionId ?: UUID.randomUUID().toString(),
             userId = LocalDataStore.LOCAL_USER_ID,
-            categoryId = selected.name,
+            categoryId = requireNotNull(
+                TransactionCategoryPolicy.persistedCategory(isIncome, selected?.name)
+            ),
             amount = amount,
             date = selectedDate,
             note = binding.etDescription.text.toString().takeIf(String::isNotBlank),

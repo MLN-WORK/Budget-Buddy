@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/cream"
+    android:background="?attr/budgetBackgroundColor"
     tools:context=".TransactionActivity">
 
     <!--HEADER-->
@@ -13,7 +13,7 @@
         android:id="@+id/homeHeader"
         android:layout_width="match_parent"
         android:layout_height="55dp"
-        android:background="@color/teal"
+        android:background="?attr/budgetPrimaryColor"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -26,7 +26,7 @@
             android:fontFamily="@font/outfit_bold"
             android:gravity="center"
             android:text="@string/transaction"
-            android:textColor="@color/white"
+            android:textColor="?attr/budgetOnPrimaryColor"
             android:textSize="30sp"
             android:layout_gravity="center"/>
     </FrameLayout>
@@ -62,7 +62,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:text="@string/expense"
-                    android:textColor="@color/black"/>
+                    android:textColor="?attr/budgetTextColor"/>
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btnIncome"
                     style="@style/Widget.AppCompat.Button.Borderless"
@@ -70,7 +70,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:text="@string/income"
-                    android:textColor="@color/black"/>
+                    android:textColor="?attr/budgetTextColor"/>
             </LinearLayout>
 
             <!-- ENTER AMOUNT -->
@@ -88,7 +88,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/roboto_regular"
-                    android:textColor="@color/black"
+                    android:textColor="?attr/budgetTextColor"
                     android:textSize="20sp"
                     tools:text="$"
                     android:layout_marginEnd="4dp"/>
@@ -100,8 +100,8 @@
                 android:layout_weight="1"
                 android:background="@android:color/transparent"
                 android:inputType="numberDecimal"
-                android:textColor="@color/black"
-                android:textColorHint="@color/black"
+                android:textColor="?attr/budgetTextColor"
+                android:textColorHint="?attr/budgetTextColor"
                 android:textSize="20sp"
                 android:hint="@string/no_money"/>
             </LinearLayout>
@@ -122,6 +122,7 @@
                     android:layout_width="0dp"
                     android:layout_height="50dp"
                     android:layout_weight="1"
+                    android:background="@android:color/transparent"
                     android:prompt="@string/select_category_prompt"/>
                 <ImageButton
                     android:id="@+id/btnQuickAddCategory"
@@ -133,7 +134,7 @@
                     android:src="@drawable/ic_add_circle"
                     android:scaleType="fitCenter"
                     android:padding="5dp"
-                    app:tint="@color/black"/>
+                    app:tint="?attr/budgetTextColor"/>
             </LinearLayout>
 
             <LinearLayout
@@ -153,7 +154,7 @@
                     android:layout_weight="1"
                     android:fontFamily="@font/roboto_regular"
                     android:text="@string/select_a_date"
-                    android:textColor="@color/black"
+                    android:textColor="?attr/budgetTextColor"
                     android:textSize="18sp"/>
 
                 <ImageView
@@ -162,7 +163,7 @@
                     android:layout_height="24dp"
                     android:contentDescription="@string/calendar_icon"
                     android:src="@drawable/ic_calendar"
-                    app:tint="@color/black"/>
+                    app:tint="?attr/budgetTextColor"/>
             </LinearLayout>
 
             <!--DESCRIPTION-->
@@ -176,8 +177,8 @@
                 android:hint="@string/description"
                 android:inputType="textMultiLine"
                 android:padding="8dp"
-                android:textColor="@color/black"
-                android:textColorHint="@color/black"
+                android:textColor="?attr/budgetTextColor"
+                android:textColorHint="?attr/budgetTextColor"
                 android:textSize="18sp"
                 android:layout_marginBottom="15dp"/>
 
@@ -190,9 +191,9 @@
                 android:layout_marginTop="15dp"
                 android:background="@drawable/bg_button_teal"
                 android:drawableStart="@drawable/ic_camera"
-                android:drawableTint="@color/white"
+                android:drawableTint="?attr/budgetOnPrimaryColor"
                 android:text="@string/add_image"
-                android:textColor="@color/white"
+                android:textColor="?attr/budgetOnPrimaryColor"
                 android:layout_gravity="center"/>
 
             <ImageView
@@ -215,7 +216,7 @@
                 android:fontFamily="@font/outfit"
                 android:gravity="center"
                 android:text="@string/receipt_attached_tap_to_replace"
-                android:textColor="@color/teal"
+                android:textColor="?attr/budgetPrimaryColor"
                 android:textSize="14sp"
                 android:visibility="gone"
                 tools:visibility="visible" />
@@ -229,7 +230,7 @@
                 android:background="@drawable/bg_button_teal"
                 android:text="@string/save"
                 android:textAlignment="center"
-                android:textColor="@color/white" />
+                android:textColor="?attr/budgetOnPrimaryColor" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 

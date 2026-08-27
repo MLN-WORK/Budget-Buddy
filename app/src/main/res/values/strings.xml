@@ -25,6 +25,8 @@
     <string name="buddy_name_required">Please give your buddy a name</string>
     <string name="buddy_name_too_long">Buddy names can be up to 32 characters</string>
     <string name="dark_theme">Use dark theme</string>
+    <string name="material_you_theme">Use Material You colors</string>
+    <string name="material_you_description">Uses colors inspired by your wallpaper on Android 12 and newer.</string>
     <string name="currency_label">Display currency</string>
     <string name="search_currency_hint">Search by currency name, code, or symbol</string>
     <string name="select_valid_currency">Choose a currency from the search results</string>
@@ -112,8 +114,11 @@
     <string name="previous_date">Previous date</string>
     <string name="next_month">Next month</string>
     <string name="set_spending_limit">Set spending limit</string>
-    <string name="maximum_spending_goal">Max spending goal:</string>
-    <string name="minimum_spending_goal">Min spending goal:</string>
+    <string name="maximum_spending_goal">Monthly maximum:</string>
+    <string name="minimum_spending_goal">Category budgets:</string>
+    <string name="maximum_monthly_budget">Maximum monthly spending</string>
+    <string name="budget_categories_exceed_maximum">Category budgets exceed your monthly maximum by %1$s%2$.2f</string>
+    <string name="budget_categories_exceed_maximum_preview">Category budgets exceed your monthly maximum</string>
     <string name="save">Save</string>
 
     <string name="balance">Balance</string>
@@ -130,10 +135,11 @@
     <string name="expense">Expense</string>
     <string name="select_a_date">Select a date</string>
     <string name="select_a_category">Select a category</string>
+    <string name="select_optional_income_category">Income category (optional)</string>
     <string name="total_allocated">R%1$.2f</string>
     <string name="save_budget">Save budget</string>
     <string name="invalid_budget_values">Add at least one category and enter valid amounts</string>
-    <string name="invalid_budget_range">The budget must be above zero, and the minimum goal cannot exceed it</string>
+    <string name="invalid_budget_range">Enter a maximum above zero and valid category amounts</string>
     <string name="budget_save_failed">The budget could not be saved. Please check the amounts and try again.</string>
     <string name="select_repeat">Select repeat</string>
     <string name="calendar_icon">Calendar icon</string>
@@ -145,7 +151,7 @@
     <string name="end_date">End Date</string>
 
     <string name="select_category_prompt">Select Category</string>
-    <string name="min_spending_goal">Min spending goal</string>
+    <string name="min_spending_goal">Maximum monthly spending</string>
 
     <string name="placeholder_image_description">Placeholder image</string>
     <string name="no_image_available">No image available</string>
@@ -180,7 +186,8 @@
     <string name="budget_mood_neutral">Budster is neutral — between 15%% and 49%% of your budget remains</string>
     <string name="budget_mood_angry">Budster is angry — less than 15%% of your budget remains</string>
     <string name="analytics_no_budget_mood">Set a monthly budget to see how Budster feels</string>
-    <string name="you_only_wanna_spend">You aim to spend %.0f%% of your budget</string>
+    <string name="you_only_wanna_spend">Your category budgets use %.0f%% of your monthly maximum</string>
+    <string name="category_budget_percentage">Your category budgets use %1$d%% of your monthly maximum</string>
     <string name="looks_like_you_have_t_spent_any_money_yet">Looks like you have\'t spent any money yet</string>
 
 </resources>

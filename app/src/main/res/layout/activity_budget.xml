@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/cream"
+    android:background="?attr/budgetBackgroundColor"
     tools:context=".BudgetActivity">
 
     <!-- PAGE HEADER-->
@@ -13,7 +13,7 @@
         android:id="@+id/budgetHeader"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@color/teal"
+        android:background="?attr/budgetPrimaryColor"
         android:layout_gravity="top"
         app:layout_constraintTop_toTopOf="parent">
         <TextView
@@ -21,7 +21,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/budget"
-            android:textColor="@color/white"
+            android:textColor="?attr/budgetOnPrimaryColor"
             android:textSize="30sp"
             android:fontFamily="@font/outfit_bold"
             android:layout_gravity="center" />
@@ -51,10 +51,10 @@
                 android:layout_height="60dp"
                 android:layout_marginVertical="15dp"
                 app:cardCornerRadius="20dp"
-                app:cardBackgroundColor="@color/beige"
+                app:cardBackgroundColor="?attr/budgetSurfaceColor"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:strokeColor="@color/black"
+                app:strokeColor="?attr/budgetTextColor"
                 app:strokeWidth="2dp">
                 <!--MONTH TEXT & BUTTONS -->
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -71,7 +71,7 @@
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         android:layout_marginStart="20dp"
-                        android:backgroundTint="@color/beige"
+                        android:backgroundTint="?attr/budgetSurfaceColor"
                         android:contentDescription="@string/previous_date"/>
 
                     <TextView
@@ -81,7 +81,7 @@
                         android:textSize="25sp"
                         android:text="@string/month"
                         android:fontFamily="@font/roboto_bold"
-                        android:textColor="@color/black"
+                        android:textColor="?attr/budgetTextColor"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
@@ -97,7 +97,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         android:layout_marginEnd="20dp"
                         android:contentDescription="@string/next_month"
-                        android:backgroundTint="@color/beige" />
+                        android:backgroundTint="?attr/budgetSurfaceColor" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </com.google.android.material.card.MaterialCardView>
@@ -109,9 +109,9 @@
                 android:layout_height="250dp"
                 android:layout_marginVertical="15dp"
                 app:cardCornerRadius="20dp"
-                app:cardBackgroundColor="@color/beige"
+                app:cardBackgroundColor="?attr/budgetSurfaceColor"
                 app:strokeWidth="2dp"
-                app:strokeColor="@color/black"
+                app:strokeColor="?attr/budgetTextColor"
                 app:layout_constraintTop_toBottomOf="@id/monthSelectionCard">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -125,7 +125,7 @@
                         android:background="@drawable/rounded_teal_bg"
                         android:text="@string/budget_overview"
                         android:gravity="center_vertical"
-                        android:textColor="@color/white"
+                        android:textColor="?attr/budgetOnPrimaryColor"
                         android:textSize="25sp"
                         android:fontFamily="@font/outfit_bold"
                         android:paddingStart="20dp"
@@ -143,28 +143,32 @@
                         android:layout_margin="20dp"/>
                     <TextView
                         android:id="@+id/tvTotal"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:text="@string/total_budgeted"
-                        android:textColor="@color/black"
+                        android:textColor="?attr/budgetTextColor"
                         android:textSize="20sp"
                         android:fontFamily="@font/roboto_regular"
                         app:layout_constraintTop_toBottomOf="@+id/tvOverview"
+                        app:layout_constraintStart_toEndOf="@id/imgBuddyBO"
                         app:layout_constraintEnd_toEndOf="parent"
-                        android:layout_marginHorizontal="20dp"
-                        android:layout_marginVertical="15dp"/>
+                        android:gravity="end"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="20dp"
+                        android:layout_marginTop="15dp"/>
 
                     <LinearLayout
+                        android:id="@+id/totalBudgetAmount"
                         android:layout_width="wrap_content"
                         android:layout_height="60dp"
                         android:orientation="horizontal"
                         android:gravity="center_vertical"
                         android:background="@drawable/rounded_beige_bg"
-                        android:backgroundTint="@color/cream"
+                        android:backgroundTint="?attr/budgetBackgroundColor"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/tvTotal"
                         android:layout_marginHorizontal="20dp"
-                        android:layout_marginVertical="10dp"
+                        android:layout_marginTop="10dp"
                         android:padding="5dp"
                         android:paddingHorizontal="8dp">
 
@@ -173,7 +177,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="30sp"
-                            android:textColor="@color/black"
+                            android:textColor="?attr/budgetTextColor"
                             android:fontFamily="@font/roboto_bold"/>
 
                         <TextView
@@ -181,12 +185,30 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="30sp"
-                            android:textColor="@color/black"
-                            android:textColorHint="@color/black"
+                            android:textColor="?attr/budgetTextColor"
+                            android:textColorHint="?attr/budgetTextColor"
                             android:fontFamily="@font/roboto_bold"
                             android:paddingStart="10dp"
                             android:hint="@string/no_money"/>
                     </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tvBudgetWarning"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="6dp"
+                        android:layout_marginEnd="20dp"
+                        android:fontFamily="@font/roboto_bold"
+                        android:gravity="end"
+                        android:text="@string/budget_categories_exceed_maximum_preview"
+                        android:textColor="@color/cherry"
+                        android:textSize="13sp"
+                        android:visibility="gone"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/imgBuddyBO"
+                        app:layout_constraintTop_toBottomOf="@id/totalBudgetAmount"
+                        tools:visibility="visible" />
 
 <!--                    <TextView-->
 <!--                        android:id="@+id/tvTotalBudgeted"-->
@@ -194,11 +216,11 @@
 <!--                        android:layout_height="50dp"-->
 <!--                        android:textAlignment="center"-->
 <!--                        android:text="R0.00"-->
-<!--                        android:textColor="@color/black"-->
+<!--                        android:textColor="?attr/budgetTextColor"-->
 <!--                        android:textSize="30sp"-->
 <!--                        android:fontFamily="@font/roboto_bold"-->
 <!--                        android:background="@drawable/rounded_beige_bg"-->
-<!--                        android:backgroundTint="@color/cream"-->
+<!--                        android:backgroundTint="?attr/budgetBackgroundColor"-->
 <!--                        app:layout_constraintEnd_toEndOf="parent"-->
 <!--                        app:layout_constraintTop_toBottomOf="@+id/tvTotal"-->
 <!--                        android:layout_marginHorizontal="20dp"-->
@@ -212,10 +234,10 @@
                         android:layout_height="50dp"
                         android:text="@string/save"
                         android:fontFamily="@font/roboto_bold"
-                        android:textColor="@color/white"
-                        app:iconTint="@color/white"
+                        android:textColor="?attr/budgetOnPrimaryColor"
+                        app:iconTint="?attr/budgetOnPrimaryColor"
                         app:icon="@drawable/ic_cash_coins"
-                        android:backgroundTint="@color/teal"
+                        android:backgroundTint="?attr/budgetPrimaryColor"
                         android:padding="1dp"
                         android:layout_marginVertical="10dp"
                         android:layout_marginHorizontal="20dp"
@@ -231,9 +253,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="15dp"
                 app:cardCornerRadius="20dp"
-                app:cardBackgroundColor="@color/beige"
+                app:cardBackgroundColor="?attr/budgetSurfaceColor"
                 app:strokeWidth="2dp"
-                app:strokeColor="@color/black"
+                app:strokeColor="?attr/budgetTextColor"
                 app:layout_constraintTop_toBottomOf="@id/budgetOverviewCard">
                 <!--contents-->
                 <LinearLayout
@@ -247,7 +269,7 @@
                         android:background="@drawable/rounded_teal_bg"
                         android:text="@string/budget_by_category"
                         android:gravity="center_vertical"
-                        android:textColor="@color/white"
+                        android:textColor="?attr/budgetOnPrimaryColor"
                         android:textSize="25sp"
                         android:fontFamily="@font/outfit_bold"
                         android:paddingStart="20dp"
@@ -255,71 +277,71 @@
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
-                        android:layout_height="60dp"
-                        android:paddingTop="5dp"
-                        android:layout_marginBottom="5dp">
+                        android:layout_height="76dp"
+                        android:paddingHorizontal="20dp"
+                        android:paddingVertical="12dp">
                         <TextView
-                            android:layout_width="170dp"
+                            android:id="@+id/tvMaximumBudgetLabel"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:text="@string/min_spending_goal"
+                            android:text="@string/maximum_monthly_budget"
                             android:textSize="18sp"
-                            android:textColor="@color/black"
+                            android:textColor="?attr/budgetTextColor"
                             android:fontFamily="@font/roboto_bold"
                             app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toStartOf="@id/maximumBudgetInput"
                             app:layout_constraintTop_toTopOf="parent"
-                            android:layout_marginHorizontal="20dp"
-                            android:layout_marginVertical="10dp"/>
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            android:layout_marginEnd="12dp"/>
 
                         <LinearLayout
-                            android:layout_width="140dp"
-                            android:layout_height="50dp"
+                            android:id="@+id/maximumBudgetInput"
+                            android:layout_width="150dp"
+                            android:layout_height="52dp"
                             android:orientation="horizontal"
                             android:background="@drawable/bg_input"
-                            android:layout_marginHorizontal="15dp"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
                             android:gravity="center_vertical"
-                            android:paddingHorizontal="10dp">
+                            android:paddingHorizontal="12dp">
 
                             <TextView
                                 android:id="@+id/tvCurrency1"
                                 android:layout_width="wrap_content"
-                                android:layout_height="50dp"
+                                android:layout_height="wrap_content"
                                 android:textSize="20sp"
                                 android:text="@string/default_currency_symbol"
-                                android:textColor="@color/black"
+                                android:textColor="?attr/budgetTextColor"
                                 android:fontFamily="@font/roboto_bold"
-                                android:layout_marginVertical="2dp"
-                                android:paddingVertical="10dp"/>
+                                android:gravity="center_vertical"
+                                android:includeFontPadding="false"
+                                android:layout_marginEnd="6dp"/>
 
                             <EditText
-                                android:id="@+id/edtMinimumGoal"
-                                android:layout_width="match_parent"
-                                android:layout_height="50dp"
+                                android:id="@+id/edtMaximumBudget"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:background="@android:color/transparent"
+                                android:gravity="center_vertical|end"
+                                android:imeOptions="actionDone"
+                                android:includeFontPadding="false"
+                                android:importantForAutofill="no"
+                                android:inputType="numberDecimal"
+                                android:maxLines="1"
+                                android:singleLine="true"
                                 android:textSize="20sp"
-                                android:textColor="@color/black"
-                                android:textColorHint="@color/black"
+                                android:textColor="?attr/budgetTextColor"
+                                android:textColorHint="?attr/budgetTextColor"
                                 android:fontFamily="@font/roboto_bold"
-                                android:paddingStart="5dp"
+                                android:padding="0dp"
+                                android:selectAllOnFocus="true"
                                 android:hint="@string/no_money"
                                 tools:ignore="RtlSymmetry" />
 
                         </LinearLayout>
 
-<!--                        <EditText-->
-<!--                            android:id="@+id/edtMinimumGoal"-->
-<!--                            android:layout_width="150dp"-->
-<!--                            android:layout_height="50dp"-->
-<!--                            android:background="@drawable/bg_input"-->
-<!--                            android:hint="@string/no_money"-->
-<!--                            android:textSize="20sp"-->
-<!--                            android:fontFamily="@font/roboto_regular"-->
-<!--                            android:textColor="@color/black"-->
-<!--                            android:textColorHint="@color/black"-->
-<!--                            android:paddingStart="15dp"-->
-<!--                            android:layout_marginHorizontal="15dp"-->
-<!--                            app:layout_constraintEnd_toEndOf="parent"-->
-<!--                            app:layout_constraintTop_toTopOf="parent"/>-->
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <!--LIST OF CATEGORIES -->
@@ -327,12 +349,7 @@
                         android:id="@+id/rvBudgetCategories"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@color/beige"/>
-                    <!--DIVIDER-->
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="2dp"
-                        android:background="@color/black" />
+                        android:background="?attr/budgetSurfaceColor"/>
                     <Button
                         android:id="@+id/btnAddCategory"
                         style="@style/CustomDefaultButton"
@@ -340,9 +357,9 @@
                         android:layout_height="60dp"
                         android:background="@drawable/rounded_beige_bottom_bg"
                         android:text="@string/add_category"
-                        android:textColor="@color/black"
+                        android:textColor="?attr/budgetTextColor"
                         android:textStyle="bold"
-                        android:drawableLeft="@drawable/ic_add_circle" />
+                        android:drawableStart="@drawable/ic_add_circle" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 

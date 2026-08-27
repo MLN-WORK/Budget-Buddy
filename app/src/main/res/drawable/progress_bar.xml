@@ -3,10 +3,10 @@
     <!-- Background -->
     <item android:id="@android:id/background">
         <shape android:shape="rectangle">
-            <solid android:color="@color/beige"/>
+            <solid android:color="?attr/budgetSurfaceColor"/>
             <stroke
                 android:width="2dp"
-                android:color="@color/black"/>
+                android:color="?attr/budgetTextColor"/>
             <corners android:radius="10dp"/>
         </shape>
     </item>
@@ -15,10 +15,10 @@
     <item android:id="@android:id/progress">
         <clip>
             <shape android:shape="rectangle">
-                <solid android:color="@color/teal"/>
+                <solid android:color="?attr/budgetPrimaryColor"/>
                 <stroke
                     android:width="2dp"
-                    android:color="@color/black"/>
+                    android:color="?attr/budgetTextColor"/>
                 <corners android:radius="10dp"/>
             </shape>
         </clip>

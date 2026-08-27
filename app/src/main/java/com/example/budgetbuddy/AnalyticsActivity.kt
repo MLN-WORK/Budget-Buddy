@@ -9,6 +9,7 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import com.example.budgetbuddy.databinding.ActivityAnalyticsBinding
+import com.google.android.material.color.MaterialColors
 import com.github.anastr.speedviewlib.components.Section
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
@@ -30,6 +31,7 @@ class AnalyticsActivity : BaseActivity() {
     private lateinit var repo: TransactionRepo
     private lateinit var localData: LocalDataStore
     private var showMaxInfo = false
+    private var firstResume = true
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,6 +70,15 @@ class AnalyticsActivity : BaseActivity() {
         //navigation
         appNavigationSetup()
     }//end oncreate
+
+    override fun onResume() {
+        super.onResume()
+        if (firstResume) {
+            firstResume = false
+        } else if (::localData.isInitialized) {
+            loadAnalyticsView()
+        }
+    }
 
     private fun appNavigationSetup() {
         AppNavigation.bind(this, binding.bottomNavView, R.id.nav_analytics)
@@ -230,7 +241,7 @@ class AnalyticsActivity : BaseActivity() {
         xAxis.position = XAxis.XAxisPosition.BOTTOM
         xAxis.setDrawGridLines(false)
         xAxis.textSize = 15f
-        xAxis.textColor = ContextCompat.getColor(this, R.color.black)
+        xAxis.textColor = MaterialColors.getColor(binding.root, R.attr.budgetTextColor)
         xAxis.typeface = ResourcesCompat.getFont(applicationContext, R.font.outfit_regular)
         xAxis.granularity = 1f
         xAxis.valueFormatter = IndexAxisValueFormatter(categories)
@@ -239,7 +250,7 @@ class AnalyticsActivity : BaseActivity() {
         val yAxis = binding.categoryBarGraph.axisLeft
         yAxis.setDrawGridLines(false)
         yAxis.textSize = 15f
-        yAxis.textColor = ContextCompat.getColor(this, R.color.black)
+        yAxis.textColor = MaterialColors.getColor(binding.root, R.attr.budgetTextColor)
         yAxis.typeface = ResourcesCompat.getFont(applicationContext, R.font.outfit_regular)
         yAxis.axisMinimum = 0f
         yAxis.granularity = 1f
@@ -275,7 +286,10 @@ class AnalyticsActivity : BaseActivity() {
         }
 
         val dataSet = BarDataSet(entries, "[Spending & Budget Usage]")
-        dataSet.setColors(ContextCompat.getColor(applicationContext, R.color.teal), ContextCompat.getColor(applicationContext, R.color.lightPink)) // spent, remaining
+        dataSet.setColors(
+            MaterialColors.getColor(binding.root, R.attr.budgetPrimaryColor),
+            ContextCompat.getColor(this, R.color.lightPink)
+        ) // spent, remaining
         dataSet.setDrawValues(true)
         dataSet.stackLabels = arrayOf("Spent", "Remaining to Max")
 
@@ -310,7 +324,12 @@ class AnalyticsActivity : BaseActivity() {
         val typedArray = resources.obtainTypedArray(R.array.bar_colours)
         val colourList = mutableListOf<Int>()
         for(i in 0 until typedArray.length()){
-            colourList.add(typedArray.getColor(i, ContextCompat.getColor(this, R.color.black)))
+            colourList.add(
+                typedArray.getColor(
+                    i,
+                    MaterialColors.getColor(binding.root, R.attr.budgetTextColor)
+                )
+            )
         }
         typedArray.recycle()
         return colourList
@@ -337,7 +356,13 @@ class AnalyticsActivity : BaseActivity() {
         if (budget == null) {
                     gauge.clearSections()
                     gauge.addSections(
-                        Section(0f, 1f, ContextCompat.getColor(applicationContext, R.color.cream), gauge.speedometerWidth))
+                        Section(
+                            0f,
+                            1f,
+                            MaterialColors.getColor(binding.root, R.attr.budgetBackgroundColor),
+                            gauge.speedometerWidth
+                        )
+                    )
                     gauge.speedTo(0f, 1000)
                     binding.btnMinMaxHeader.setText(getString(R.string.youSpent, 0.0))
                     binding.tvMinGoal.setText(R.string.no_money)
@@ -345,16 +370,17 @@ class AnalyticsActivity : BaseActivity() {
                     binding.imgBeetleJuice.setImageResource(R.drawable.neutral_buddy_1)
                     binding.tvFeedBack.setText(R.string.analytics_no_budget_mood)
         } else {
-                    val maximumGoal = budget.budgetAmount
+                    val maximumGoal = budget.maximumSpendingBudget
                     Log.d("GetMaxGoal", "Max goal is $maximumGoal")
 
-                    val minimumGoal = budget.minimumGoal
-                    Log.d("GetMinGoal", "Min goal is $minimumGoal")
-                    val totalSpent = budget.categories.values.sumOf { it.amountSpent ?: 0.0 }
+                    val categoryTotal = budget.budgetAmount
+                    val totalSpent = displayMonthToKey(month)
+                        ?.let(localData::getBalance)
+                        ?.totalExpenses
+                        ?: 0.0
                     val percentageSpent = AnalyticsCalculator.spentPercentage(totalSpent, maximumGoal)
 
-                    val mg = AnalyticsCalculator.minimumGoalRatio(minimumGoal, maximumGoal)
-                    val displayMG = mg * 100f
+                    val allocationPercentage = BudgetLimitCalculator.allocationPercentage(categoryTotal, maximumGoal)
 
                     // Spending 0–50% leaves at least half the budget, 50–85% leaves
                     // 15–49%, and anything beyond 85% leaves less than 15%.
@@ -384,9 +410,9 @@ class AnalyticsActivity : BaseActivity() {
                     gauge.speedTo(AnalyticsCalculator.gaugeSpeed(percentageSpent), 1000)
                     //to display information to user in view
                     binding.btnMinMaxHeader.setText(getString(R.string.youSpent, percentageSpent.toFloat()))
-                    binding.tvMinGoal.text = minimumGoal.toString()
-                    binding.tvMaxGoal.text = maximumGoal.toString()
-                    binding.tvPercentage.setText(getString(R.string.you_only_wanna_spend, displayMG))
+                    binding.tvMinGoal.text = getString(R.string.plain_decimal_amount, categoryTotal)
+                    binding.tvMaxGoal.text = getString(R.string.plain_decimal_amount, maximumGoal)
+                    binding.tvPercentage.text = getString(R.string.category_budget_percentage, allocationPercentage)
         }
 
     }//end setupGaugeChart
@@ -396,6 +422,12 @@ class AnalyticsActivity : BaseActivity() {
         binding.tvCurrency1.text = localData.currencySymbol
         binding.tvCurrency2.text = localData.currencySymbol
     }
+
+    private fun displayMonthToKey(displayMonth: String): String? = runCatching {
+        val input = SimpleDateFormat("MMMM yyyy", Locale.getDefault()).apply { isLenient = false }
+        val output = SimpleDateFormat("yyyy-MM", Locale.US)
+        output.format(requireNotNull(input.parse(displayMonth)))
+    }.getOrNull()
 }
 
 /* Gauge sections mirror Budster's mood thresholds based on monthly budget remaining. */

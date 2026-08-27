@@ -86,7 +86,7 @@ class OfflineOnboardingTest {
             month,
             Budget(
                 budgetAmount = 500.0,
-                minimumGoal = 50.0,
+                maximumSpendingBudget = 500.0,
                 categories = mapOf("Groceries" to BudgetCategory("Groceries", allocation = 500.0))
             )
         )
@@ -150,7 +150,7 @@ class OfflineOnboardingTest {
                 month,
                 Budget(
                     budgetAmount = 100.0,
-                    minimumGoal = 150.0,
+                    maximumSpendingBudget = 100.0,
                     categories = mapOf("Groceries" to BudgetCategory("Groceries", allocation = 100.0))
                 )
             )
@@ -160,6 +160,52 @@ class OfflineOnboardingTest {
         ActivityScenario.launch(AnalyticsActivity::class.java).use {
             onView(withId(R.id.tvHeader)).check(matches(withText(R.string.analytics)))
             onView(withId(R.id.categoryBarGraph)).check(matches(isDisplayed()))
+        }
+    }
+
+    @Test
+    fun analyticsIncludesExpensesOutsideBudgetCategories() {
+        val localData = LocalDataStore(context)
+        val month = SimpleDateFormat("MMMM yyyy", Locale.getDefault()).format(java.util.Date())
+        val date = SimpleDateFormat("yyyy-MM-dd", Locale.US).format(java.util.Date())
+        localData.apply {
+            saveProfile("Local Buddy", "R")
+            markInitialPermissionsRequested()
+            saveBudget(
+                month,
+                Budget(
+                    budgetAmount = 100.0,
+                    maximumSpendingBudget = 200.0,
+                    categories = mapOf("Groceries" to BudgetCategory("Groceries", allocation = 100.0))
+                )
+            )
+            saveTransaction(
+                Transaction("unexpected", categoryId = "Unexpected", amount = 50.0, date = date)
+            )
+        }
+
+        ActivityScenario.launch(AnalyticsActivity::class.java).use {
+            onView(withId(R.id.btnMinMaxHeader)).check(
+                matches(withText(context.getString(R.string.youSpent, 25f)))
+            )
+        }
+    }
+
+    @Test
+    fun incomeCanBeSavedWithoutSelectingCategory() {
+        LocalDataStore(context).apply {
+            saveProfile("Local Buddy", "R")
+            markInitialPermissionsRequested()
+        }
+
+        ActivityScenario.launch(TransactionActivity::class.java).use {
+            onView(withId(R.id.btnIncome)).perform(click())
+            onView(withId(R.id.etAmount)).perform(replaceText("125.50"), closeSoftKeyboard())
+            onView(withId(R.id.btnSave)).perform(click())
+
+            val saved = LocalDataStore(context).getTransactions().single()
+            assertTrue(saved.isIncome)
+            assertEquals(TransactionCategoryPolicy.DEFAULT_INCOME_CATEGORY, saved.categoryId)
         }
     }
 }

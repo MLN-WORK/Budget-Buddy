@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/cream"
+    android:background="?attr/budgetBackgroundColor"
     tools:context=".ProfileActivity">
 
     <ImageButton
@@ -19,7 +19,7 @@
         android:src="@drawable/ic_back_arrow"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/teal" />
+        app:tint="?attr/budgetPrimaryColor" />
 
     <ScrollView
         android:layout_width="0dp"
@@ -53,7 +53,7 @@
                 android:fontFamily="@font/outfit_bold"
                 android:gravity="center"
                 android:text="@string/local_profile_title"
-                android:textColor="@color/teal"
+                android:textColor="?attr/budgetPrimaryColor"
                 android:textSize="28sp" />
 
             <TextView
@@ -63,7 +63,7 @@
                 android:fontFamily="@font/outfit"
                 android:gravity="center"
                 android:text="@string/profile_explanation"
-                android:textColor="@color/black"
+                android:textColor="?attr/budgetTextColor"
                 android:textSize="17sp" />
 
             <EditText
@@ -78,8 +78,8 @@
                 android:inputType="textPersonName|textCapWords"
                 android:maxLines="1"
                 android:paddingHorizontal="18dp"
-                android:textColor="@color/black"
-                android:textColorHint="@color/black" />
+                android:textColor="?attr/budgetTextColor"
+                android:textColorHint="?attr/budgetTextColor" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -88,7 +88,7 @@
                 android:fontFamily="@font/outfit_bold"
                 android:labelFor="@id/edtBuddyName"
                 android:text="@string/buddy_name_label"
-                android:textColor="@color/black"
+                android:textColor="?attr/budgetTextColor"
                 android:textSize="17sp" />
 
             <EditText
@@ -104,8 +104,8 @@
                 android:maxLength="32"
                 android:maxLines="1"
                 android:paddingHorizontal="18dp"
-                android:textColor="@color/black"
-                android:textColorHint="@color/black" />
+                android:textColor="?attr/budgetTextColor"
+                android:textColorHint="?attr/budgetTextColor" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -114,7 +114,7 @@
                 android:fontFamily="@font/outfit_bold"
                 android:labelFor="@id/spCurrency"
                 android:text="@string/currency_label"
-                android:textColor="@color/black"
+                android:textColor="?attr/budgetTextColor"
                 android:textSize="17sp" />
 
             <AutoCompleteTextView
@@ -132,22 +132,43 @@
                 android:inputType="text"
                 android:maxLines="1"
                 android:paddingHorizontal="18dp"
-                android:popupBackground="@color/white"
+                android:popupBackground="?attr/budgetInputColor"
                 android:singleLine="true"
-                android:textColor="@color/black"
-                android:textColorHint="@color/black" />
+                android:textColor="?attr/budgetTextColor"
+                android:textColorHint="?attr/budgetTextColor" />
 
             <CheckBox
                 android:id="@+id/cbDarkTheme"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="22dp"
-                android:buttonTint="@color/teal"
+                android:buttonTint="?attr/budgetPrimaryColor"
                 android:fontFamily="@font/outfit_bold"
                 android:minHeight="48dp"
                 android:text="@string/dark_theme"
-                android:textColor="@color/black"
+                android:textColor="?attr/budgetTextColor"
                 android:textSize="17sp" />
+
+            <CheckBox
+                android:id="@+id/cbMaterialYou"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:buttonTint="?attr/budgetPrimaryColor"
+                android:fontFamily="@font/outfit_bold"
+                android:minHeight="48dp"
+                android:text="@string/material_you_theme"
+                android:textColor="?attr/budgetTextColor"
+                android:textSize="17sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:fontFamily="@font/outfit"
+                android:text="@string/material_you_description"
+                android:textColor="@color/grey"
+                android:textSize="14sp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSaveProfile"
@@ -158,7 +179,7 @@
                 android:fontFamily="@font/outfit_bold"
                 android:gravity="center"
                 android:text="@string/save_and_continue"
-                android:textColor="@color/white"
+                android:textColor="?attr/budgetOnPrimaryColor"
                 android:textSize="19sp" />
         </LinearLayout>
     </ScrollView>

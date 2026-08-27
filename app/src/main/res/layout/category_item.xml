@@ -19,5 +19,5 @@
         android:text="@string/category_name"
         android:fontFamily="@font/roboto_regular"
         android:textSize="20sp"
-        android:textColor="@color/black"/>
+        android:textColor="?attr/budgetTextColor"/>
 </LinearLayout>

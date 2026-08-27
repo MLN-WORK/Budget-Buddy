@@ -6,14 +6,14 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/cream"
+    android:background="?attr/budgetBackgroundColor"
     tools:context=".AddImageActivity">
 
     <FrameLayout
         android:id="@+id/aiHeader"
         android:layout_width="match_parent"
         android:layout_height="55dp"
-        android:background="@color/teal"
+        android:background="?attr/budgetPrimaryColor"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -24,7 +24,7 @@
             android:layout_gravity="center"
             android:fontFamily="@font/outfit_bold"
             android:text="@string/add_image"
-            android:textColor="@color/white"
+            android:textColor="?attr/budgetOnPrimaryColor"
             android:textSize="30sp" />
 
         <ImageButton
@@ -36,7 +36,7 @@
             android:contentDescription="@string/back"
             android:padding="12dp"
             android:src="@drawable/ic_back_arrow"
-            app:tint="@color/white" />
+            app:tint="?attr/budgetOnPrimaryColor" />
     </FrameLayout>
 
     <ScrollView
@@ -93,9 +93,9 @@
                     android:layout_height="150dp"
                     android:layout_marginEnd="6dp"
                     android:layout_weight="1"
-                    app:cardBackgroundColor="@color/beige"
+                    app:cardBackgroundColor="?attr/budgetSurfaceColor"
                     app:cardCornerRadius="20dp"
-                    app:strokeColor="@color/black"
+                    app:strokeColor="?attr/budgetTextColor"
                     app:strokeWidth="2dp">
 
                     <LinearLayout
@@ -120,7 +120,7 @@
                             android:fontFamily="@font/outfit_bold"
                             android:gravity="center"
                             android:text="@string/take_a_photo"
-                            android:textColor="@color/black"
+                            android:textColor="?attr/budgetTextColor"
                             android:textSize="17sp" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -131,9 +131,9 @@
                     android:layout_height="150dp"
                     android:layout_marginStart="6dp"
                     android:layout_weight="1"
-                    app:cardBackgroundColor="@color/beige"
+                    app:cardBackgroundColor="?attr/budgetSurfaceColor"
                     app:cardCornerRadius="20dp"
-                    app:strokeColor="@color/black"
+                    app:strokeColor="?attr/budgetTextColor"
                     app:strokeWidth="2dp">
 
                     <LinearLayout
@@ -158,7 +158,7 @@
                             android:fontFamily="@font/outfit_bold"
                             android:gravity="center"
                             android:text="@string/upload_from_gallery"
-                            android:textColor="@color/black"
+                            android:textColor="?attr/budgetTextColor"
                             android:textSize="17sp" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -173,7 +173,7 @@
                 android:fontFamily="@font/outfit_bold"
                 android:gravity="center"
                 android:text="@string/save"
-                android:textColor="@color/white"
+                android:textColor="?attr/budgetOnPrimaryColor"
                 android:textSize="22sp" />
         </LinearLayout>
     </ScrollView>

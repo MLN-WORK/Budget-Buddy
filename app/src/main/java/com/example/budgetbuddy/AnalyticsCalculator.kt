@@ -12,11 +12,6 @@ object AnalyticsCalculator {
             .coerceAtLeast(0)
     }
 
-    fun minimumGoalRatio(minimumGoal: Double, maximumBudget: Double): Float {
-        if (!minimumGoal.isFinite() || !maximumBudget.isFinite() || maximumBudget <= 0.0) return 0f
-        return (minimumGoal / maximumBudget).toFloat().coerceIn(0f, 1f)
-    }
-
     fun gaugeSpeed(percentage: Int): Float = percentage.coerceIn(0, 100).toFloat()
 
     fun remainingPercentage(totalSpent: Double, maximumBudget: Double): Int {

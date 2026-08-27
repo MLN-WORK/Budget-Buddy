@@ -99,8 +99,9 @@ class MainActivity : BaseActivity() {
 
     private fun displayBudget() {
         val budget = localData.getBudget(formattedMonth)
-        val spent = budget?.categories?.values?.sumOf { it.amountSpent ?: 0.0 } ?: 0.0
-        val total = budget?.budgetAmount ?: 0.0
+        val monthKey = SimpleDateFormat("yyyy-MM", Locale.US).format(Calendar.getInstance().time)
+        val spent = localData.getBalance(monthKey).totalExpenses
+        val total = budget?.maximumSpendingBudget ?: 0.0
         val remaining = total - spent
         val symbol = localData.currencySymbol
         binding.tvBudgetSpent.text = getString(R.string.spent_amount, symbol, spent)

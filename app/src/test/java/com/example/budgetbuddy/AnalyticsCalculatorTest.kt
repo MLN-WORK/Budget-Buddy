@@ -5,14 +5,6 @@ import org.junit.Test
 
 class AnalyticsCalculatorTest {
     @Test
-    fun goalRatioIsAlwaysSafeForGaugeSections() {
-        assertEquals(0f, AnalyticsCalculator.minimumGoalRatio(-50.0, 100.0))
-        assertEquals(0.5f, AnalyticsCalculator.minimumGoalRatio(50.0, 100.0))
-        assertEquals(1f, AnalyticsCalculator.minimumGoalRatio(150.0, 100.0))
-        assertEquals(0f, AnalyticsCalculator.minimumGoalRatio(Double.NaN, 100.0))
-    }
-
-    @Test
     fun percentageCanReportOverspendingWhileGaugeSpeedStaysInBounds() {
         val percentage = AnalyticsCalculator.spentPercentage(250.0, 100.0)
         assertEquals(250, percentage)

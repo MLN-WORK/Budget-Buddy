@@ -7,6 +7,7 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.color.MaterialColors
 
 class AchievementAdapter(
     private val achievements: List<Achievement>
@@ -34,8 +35,12 @@ class AchievementAdapter(
 
         holder.achievementTitle.text = achievement.title
 
-        val titleColorRes = if (achievement.isCompleted) R.color.black else R.color.grey
-        holder.achievementTitle.setTextColor(holder.itemView.context.getColor(titleColorRes))
+        val titleColor = if (achievement.isCompleted) {
+            MaterialColors.getColor(holder.itemView, R.attr.budgetTextColor)
+        } else {
+            holder.itemView.context.getColor(R.color.grey)
+        }
+        holder.achievementTitle.setTextColor(titleColor)
 
         holder.achievementIcon.setImageResource(achievement.badgeResId)
         holder.achievementIcon.alpha = if (achievement.isCompleted) 1f else 0.6f

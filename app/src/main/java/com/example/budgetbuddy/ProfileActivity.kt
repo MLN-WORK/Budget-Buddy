@@ -33,6 +33,7 @@ class ProfileActivity : BaseActivity() {
         binding.spCurrency.setText(savedCurrency.displayLabel, false)
         binding.edtBuddyName.setText(localData.buddyName)
         binding.cbDarkTheme.isChecked = localData.isDarkThemeEnabled
+        binding.cbMaterialYou.isChecked = localData.isMaterialYouEnabled
         if (settingsMode) {
             binding.tvProfileTitle.setText(R.string.settings_title)
             binding.btnSaveProfile.setText(R.string.save_settings)
@@ -66,21 +67,19 @@ class ProfileActivity : BaseActivity() {
             return
         }
         val darkThemeEnabled = binding.cbDarkTheme.isChecked
+        val materialYouEnabled = binding.cbMaterialYou.isChecked
         localData.saveProfile(
             displayName = name,
             currencySymbol = currency.symbol,
             buddyName = buddyName,
             darkThemeEnabled = darkThemeEnabled,
+            materialYouEnabled = materialYouEnabled,
             currencyCode = currency.code
         )
         BudgetBuddyApplication.applySavedTheme(darkThemeEnabled)
-        if (settingsMode) {
-            finish()
-        } else {
-            startActivity(Intent(this, MainActivity::class.java).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            })
-        }
+        startActivity(Intent(this, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        })
     }
 
     companion object {

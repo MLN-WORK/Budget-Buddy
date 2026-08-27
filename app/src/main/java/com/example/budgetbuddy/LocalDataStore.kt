@@ -27,6 +27,9 @@ class LocalDataStore(context: Context) {
     val isDarkThemeEnabled: Boolean
         get() = preferences.getBoolean(KEY_DARK_THEME, false)
 
+    val isMaterialYouEnabled: Boolean
+        get() = preferences.getBoolean(KEY_MATERIAL_YOU, false)
+
     val isProfileConfigured: Boolean
         get() = preferences.getBoolean(KEY_PROFILE_CONFIGURED, false)
 
@@ -35,6 +38,7 @@ class LocalDataStore(context: Context) {
         currencySymbol: String,
         buddyName: String = DEFAULT_BUDDY_NAME,
         darkThemeEnabled: Boolean = isDarkThemeEnabled,
+        materialYouEnabled: Boolean = isMaterialYouEnabled,
         currencyCode: String = CurrencyCatalog.findBySymbol(currencySymbol)?.code
             ?: CurrencyCatalog.DEFAULT_CODE
     ) {
@@ -44,6 +48,7 @@ class LocalDataStore(context: Context) {
             .putString(KEY_CURRENCY, currencySymbol)
             .putString(KEY_CURRENCY_CODE, currencyCode)
             .putBoolean(KEY_DARK_THEME, darkThemeEnabled)
+            .putBoolean(KEY_MATERIAL_YOU, materialYouEnabled)
             .putBoolean(KEY_PROFILE_CONFIGURED, true)
             .apply()
     }
@@ -197,7 +202,7 @@ class LocalDataStore(context: Context) {
 
     private fun Budget.toJson() = JSONObject()
         .put("budgetAmount", budgetAmount)
-        .put("minimumGoal", minimumGoal)
+        .put("maximumSpendingBudget", maximumSpendingBudget)
         .put("categories", JSONObject().also { values ->
             categories.forEach { (name, category) ->
                 values.put(name, JSONObject()
@@ -222,7 +227,14 @@ class LocalDataStore(context: Context) {
                 amountSpent = value.optDouble("amountSpent")
             )
         }
-        return Budget(optDouble("budgetAmount"), optDouble("minimumGoal"), categories)
+        val categoryTotal = optDouble("budgetAmount").takeIf { it.isFinite() && it >= 0.0 }
+            ?: categories.values.sumOf(BudgetCategory::allocation)
+        val maximumBudget = optDouble("maximumSpendingBudget", Double.NaN)
+            .takeIf { it.isFinite() && it > 0.0 }
+            // Legacy budgets stored a minimum goal with different semantics. Defaulting to the
+            // category total gives existing users a safe monthly maximum without changing data.
+            ?: categoryTotal
+        return Budget(categoryTotal, maximumBudget, categories)
     }
 
     private fun readBudgets() = runCatching {
@@ -266,6 +278,7 @@ class LocalDataStore(context: Context) {
         private const val KEY_DISPLAY_NAME = "display_name"
         private const val KEY_BUDDY_NAME = "buddy_name"
         private const val KEY_DARK_THEME = "dark_theme"
+        private const val KEY_MATERIAL_YOU = "material_you"
         private const val KEY_PROFILE_CONFIGURED = "profile_configured"
         private const val KEY_INITIAL_PERMISSION_REQUESTED = "initial_permission_requested"
         private const val KEY_BUDGET_MONTHS = "budget_months"

@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/teal"
+    android:background="?attr/budgetPrimaryColor"
     tools:context=".AchievementActivity">
 
     <!-- HEADER (1/4 of screen approx.) -->
@@ -17,7 +17,7 @@
         android:layout_height="200dp"
         android:layout_marginBottom="15dp"
         app:cardCornerRadius="0dp"
-        app:cardBackgroundColor="@color/beige"
+        app:cardBackgroundColor="?attr/budgetSurfaceColor"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -32,7 +32,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/celebrate_progress"
                 android:fontFamily="@font/outfit_bold"
-                android:textColor="@color/black"
+                android:textColor="?attr/budgetTextColor"
                 android:textSize="25sp"
                 android:textAlignment="center"
                 app:layout_constraintStart_toStartOf="parent"
@@ -44,7 +44,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/achievements"
                 android:fontFamily="@font/outfit_bold"
-                android:textColor="@color/teal"
+                android:textColor="?attr/budgetPrimaryColor"
                 android:textSize="20sp"
                 android:textAlignment="center"
                 android:layout_marginTop="8dp"

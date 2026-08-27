@@ -1,66 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="60dp"
-    android:orientation="horizontal"
-    android:background="@drawable/rounded_beige_bg"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="72dp"
+    android:background="?attr/budgetSurfaceColor"
+    android:paddingHorizontal="20dp"
+    android:paddingVertical="10dp">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
+    <View
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="?attr/budgetTextColor"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/imgBudgetCategoryIcon"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/circle_background"
+        android:contentDescription="@string/budget_category_icon"
+        android:padding="3dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_currency"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvBudgetCategoryName"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal">
-        <!--DIVIDER-->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:background="@color/black"
-            app:layout_constraintTop_toTopOf="parent"/>
-        <ImageView
-            android:id="@+id/imgBudgetCategoryIcon"
-            android:contentDescription="@string/budget_category_icon"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:src="@drawable/ic_currency"
-            android:background="@drawable/circle_background"
-            android:adjustViewBounds="true"
-            android:scaleType="fitXY"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginVertical="10dp"
-            android:layout_marginStart="20dp"/>
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:ellipsize="end"
+        android:fontFamily="@font/roboto_bold"
+        android:maxLines="1"
+        android:text="@string/add_category"
+        android:textColor="?attr/budgetTextColor"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/categoryAllocationInput"
+        app:layout_constraintStart_toEndOf="@id/imgBudgetCategoryIcon"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/categoryAllocationInput"
+        android:layout_width="136dp"
+        android:layout_height="48dp"
+        android:background="@drawable/bg_input"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/tvBudgetCategoryName"
+            android:id="@+id/tvCategoryCurrency"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/add_category"
+            android:layout_marginEnd="5dp"
             android:fontFamily="@font/roboto_bold"
-            android:textSize="20sp"
-            android:textColor="@color/black"
-            app:layout_constraintStart_toEndOf="@+id/imgBudgetCategoryIcon"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginStart="10dp"/>
+            android:includeFontPadding="false"
+            android:textColor="?attr/budgetTextColor"
+            android:textSize="17sp"
+            tools:text="R$" />
 
         <EditText
             android:id="@+id/edtCategoryAllocation"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:hint="@string/no_money"
-            android:textColorHint="@color/black"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
             android:fontFamily="@font/roboto_bold"
-            android:textSize="20sp"
-            android:textAlignment="center"
-            android:textColor="@color/black"
-            android:background="@drawable/bg_input"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginEnd="20dp"
-            android:layout_marginVertical="10dp"
-            android:paddingHorizontal="5dp"/>
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</LinearLayout>
+            android:gravity="center_vertical|end"
+            android:hint="@string/no_money"
+            android:imeOptions="actionDone"
+            android:includeFontPadding="false"
+            android:importantForAutofill="no"
+            android:inputType="numberDecimal"
+            android:maxLines="1"
+            android:padding="0dp"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:textColor="?attr/budgetTextColor"
+            android:textColorHint="?attr/budgetTextColor"
+            android:textSize="17sp" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

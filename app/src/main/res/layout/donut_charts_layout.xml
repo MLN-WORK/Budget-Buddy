@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="16sp"
-        android:textColor="@color/black"
+        android:textColor="?attr/budgetTextColor"
         android:textStyle="bold"
         android:layout_gravity="center"
         android:layout_marginBottom="5dp"/>
@@ -27,8 +27,8 @@
         app:indicatorSize="100dp"
         app:trackThickness="15dp"
         app:indicatorInset="0dp"
-        app:trackColor="@color/cream"
-        app:indicatorColor="@color/teal"
+        app:trackColor="?attr/budgetBackgroundColor"
+        app:indicatorColor="?attr/budgetPrimaryColor"
         android:layout_gravity="center" />
 
     <!-- Amount left -->
@@ -37,7 +37,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="16sp"
-        android:textColor="@color/black"
+        android:textColor="?attr/budgetTextColor"
         android:layout_gravity="center"
         android:layout_marginTop="5dp"
         android:layout_marginBottom="20dp"/>
