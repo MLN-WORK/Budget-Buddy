@@ -24,16 +24,19 @@ class TransactionActivity : BaseActivity() {
     private lateinit var localData: LocalDataStore
     private var selectedDate = ""
     private var selectedPhotoPath: String? = null
+    private var draftPhotoPath: String? = null
     private var isIncome = false
     private var editingTransaction: Transaction? = null
     private var preferredCategoryName: String? = null
-    private var userCurrencySymbol = "R"
+    private var userCurrencySymbol = CurrencyCatalog.DEFAULT_SYMBOL
 
     private val imagePicker = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             val returned = result.data?.getStringExtra(AddImageActivity.EXTRA_IMAGE_PATH)?.let(::File)
             if (ReceiptStorage.isUsableOwnedReceipt(this, returned)) {
+                ReceiptStorage.deleteIfOwned(this, draftPhotoPath)
                 selectedPhotoPath = returned?.absolutePath
+                draftPhotoPath = returned?.absolutePath
                 showReceipt()
             } else {
                 toast(getString(R.string.image_load_failed))
@@ -71,6 +74,7 @@ class TransactionActivity : BaseActivity() {
             binding.tvDate.text = selectedDate
             isIncome = it.getBoolean(STATE_IS_INCOME, false)
             selectedPhotoPath = it.getString(STATE_PHOTO_PATH)
+            draftPhotoPath = it.getString(STATE_DRAFT_PHOTO_PATH)
             preferredCategoryName = it.getString(STATE_CATEGORY)
             if (isIncome) selectIncome() else selectExpense()
             setupCategorySpinner()
@@ -90,7 +94,13 @@ class TransactionActivity : BaseActivity() {
         outState.putString(STATE_DATE, selectedDate)
         outState.putBoolean(STATE_IS_INCOME, isIncome)
         outState.putString(STATE_PHOTO_PATH, selectedPhotoPath)
+        outState.putString(STATE_DRAFT_PHOTO_PATH, draftPhotoPath)
         outState.putString(STATE_CATEGORY, (binding.spinnerCategory.selectedItem as? Category)?.name)
+    }
+
+    override fun onDestroy() {
+        if (isFinishing) ReceiptStorage.deleteIfOwned(this, draftPhotoPath)
+        super.onDestroy()
     }
 
     private fun loadTransactionForEditing() {
@@ -226,6 +236,7 @@ class TransactionActivity : BaseActivity() {
         )
         runCatching { localData.saveTransaction(transaction) }
             .onSuccess {
+                draftPhotoPath = null
                 toast(getString(if (original == null) R.string.transaction_saved else R.string.transaction_updated))
                 AchievementManager.unlockAchievement("first_transaction", this)
                 AchievementManager.checkStayWithinBudgetForMonth(LocalDataStore.LOCAL_USER_ID, selectedDate.take(7), this)
@@ -255,6 +266,7 @@ class TransactionActivity : BaseActivity() {
         private const val STATE_DATE = "selectedDate"
         private const val STATE_IS_INCOME = "isIncome"
         private const val STATE_PHOTO_PATH = "photoPath"
+        private const val STATE_DRAFT_PHOTO_PATH = "draftPhotoPath"
         private const val STATE_CATEGORY = "category"
     }
 }

@@ -26,6 +26,8 @@
     <string name="buddy_name_too_long">Buddy names can be up to 32 characters</string>
     <string name="dark_theme">Use dark theme</string>
     <string name="currency_label">Display currency</string>
+    <string name="search_currency_hint">Search by currency name, code, or symbol</string>
+    <string name="select_valid_currency">Choose a currency from the search results</string>
     <string name="save_and_continue">Save and continue</string>
     <string name="save_settings">Save settings</string>
     <string name="name_required">Please enter a name</string>
@@ -59,7 +61,7 @@
     <string name="month">Month</string>
     <string name="feedback">Feedback</string>
     <string name="spending_prompt">You only wanna spend...</string>
-    <string name="default_currency_symbol">R</string>
+    <string name="default_currency_symbol">€</string>
     <string name="back_to_home">Back to home screen</string>
     <string name="filter_by_category">Filter by category</string>
     <string name="all">All</string>
@@ -174,27 +176,11 @@
     <string name="slow_down">Slow down</string>
     <string name="not_saving">Looks like you`re not gonna save much</string>
     <string name="way_over_budget">You`re way over budget</string>
+    <string name="budget_mood_happy">Budster is happy — at least half of your budget remains</string>
+    <string name="budget_mood_neutral">Budster is neutral — between 15%% and 49%% of your budget remains</string>
+    <string name="budget_mood_angry">Budster is angry — less than 15%% of your budget remains</string>
+    <string name="analytics_no_budget_mood">Set a monthly budget to see how Budster feels</string>
     <string name="you_only_wanna_spend">You aim to spend %.0f%% of your budget</string>
     <string name="looks_like_you_have_t_spent_any_money_yet">Looks like you have\'t spent any money yet</string>
 
-    <string-array name="currency_options">
-        <item>South African rand (R)</item>
-        <item>US dollar ($)</item>
-        <item>Euro (€)</item>
-        <item>British pound (£)</item>
-        <item>Japanese yen (¥)</item>
-        <item>Brazilian real (R$)</item>
-        <item>Indian rupee (₹)</item>
-        <item>Nigerian naira (₦)</item>
-    </string-array>
-    <string-array name="currency_symbols">
-        <item>R</item>
-        <item>$</item>
-        <item>€</item>
-        <item>£</item>
-        <item>¥</item>
-        <item>R$</item>
-        <item>₹</item>
-        <item>₦</item>
-    </string-array>
 </resources>

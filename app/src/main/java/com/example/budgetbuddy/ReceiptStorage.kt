@@ -2,7 +2,6 @@ package com.example.budgetbuddy
 
 import android.content.Context
 import android.net.Uri
-import android.os.Environment
 import android.webkit.MimeTypeMap
 import java.io.File
 
@@ -10,6 +9,9 @@ import java.io.File
 object ReceiptStorage {
     fun createCameraDestination(context: Context): File =
         File.createTempFile("camera-", ".jpg", writableDirectory(context))
+
+    fun finalizeCameraCapture(context: Context, source: File): File =
+        normalizeOwnedSource(context, source)
 
     fun importFromGallery(context: Context, source: Uri): File {
         val extension = context.contentResolver.getType(source)
@@ -20,7 +22,8 @@ object ReceiptStorage {
         val input = requireNotNull(context.contentResolver.openInputStream(source)) {
             "The selected image cannot be opened"
         }
-        return ReceiptFileCopier.copy(input, directory, extension)
+        val imported = ReceiptFileCopier.copy(input, directory, extension)
+        return normalizeOwnedSource(context, imported)
     }
 
     fun isUsableOwnedReceipt(context: Context, file: File?): Boolean =
@@ -38,18 +41,23 @@ object ReceiptStorage {
         } == true
     }
 
-    private fun writableDirectory(context: Context): File {
-        val external = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-            ?.let { File(it, "BudgetBuddy/Receipts") }
-            ?.takeIf { it.isDirectory || it.mkdirs() }
-        return (external ?: File(context.filesDir, "receipts")).also {
-            check(it.isDirectory || it.mkdirs()) { "Receipt storage is unavailable" }
+    private fun normalizeOwnedSource(context: Context, source: File): File {
+        require(isOwnedReceipt(context, source)) { "The receipt source is not app-owned" }
+        return try {
+            ReceiptImageNormalizer.normalize(source, writableDirectory(context))
+        } finally {
+            source.delete()
         }
     }
 
+    private fun writableDirectory(context: Context): File =
+        File(context.filesDir, "receipts").also {
+            check(it.isDirectory || it.mkdirs()) { "Receipt storage is unavailable" }
+        }
+
     private fun ownedDirectories(context: Context): List<File> = buildList {
         runCatching { File(context.filesDir, "receipts").canonicalFile }.getOrNull()?.let(::add)
-        context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.let { root ->
+        context.getExternalFilesDir(android.os.Environment.DIRECTORY_PICTURES)?.let { root ->
             runCatching { File(root, "BudgetBuddy/Receipts").canonicalFile }.getOrNull()?.let(::add)
         }
     }

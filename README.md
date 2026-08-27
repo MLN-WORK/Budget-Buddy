@@ -28,7 +28,7 @@ Android may warn that the app came from outside the Play Store. This is expected
 - Shows setup only on the first launch; later launches open the Home screen directly.
 - Uses an immersive full-screen interface so Android system bars do not cover the app controls; swipe from an edge to reveal them temporarily.
 - Introduces the companion as **Budster the Budgeter** and lets the user choose a custom buddy name of up to 32 characters, including numbers and special characters.
-- Saves the user name, buddy name, currency, and theme locally; all can be changed from the settings button on the Home screen.
+- Saves the user name, buddy name, currency, and theme locally; all can be changed from the settings button on the Home screen. New profiles default to Euro, and the offline currency list can be searched by name, ISO code, or symbol.
 - Provides an optional inverted dark theme from the settings screen.
 - Keeps the same bottom navigation size, position, icons, and instant page transition across every primary screen, including Home.
 - Records income and expenses with a date, category, amount, and optional note.
@@ -36,9 +36,9 @@ Android may warn that the app came from outside the Play Store. This is expected
 - Builds monthly category budgets and shows spending, remaining funds, income, expenses, and balance.
 - Recalculates budget totals whenever a transaction is added, edited, or deleted.
 - Requests the camera permission once on the first Home-screen visit, captures receipts through Android’s standard camera flow, and uses Android’s privacy-friendly photo picker for gallery images.
-- Copies gallery images on a background worker into app-owned receipt storage, validates every saved file, limits imports to 30 MB, and cleans up abandoned or partial copies.
+- Decodes and normalizes both camera and gallery receipts into rotated, size-bounded local JPEG files on a background worker, then validates each image before it can be attached. Failed, abandoned, replaced, and partial drafts are cleaned up.
 - Filters transaction history by type and date and summarizes spending by category.
-- Shows local charts, a spending gauge, and encouraging buddy moods.
+- Shows local charts and a spending gauge. Budster is happy while at least 50% of the monthly budget remains, neutral from 15% through 49%, and angry below 15% or when over budget.
 - Shows a dedicated badge for every achievement, with a lock overlay until it is earned, and includes a streak that requires budgets in three distinct consecutive months.
 
 In transaction history, tap a transaction to edit it. Press and hold a transaction to delete it and rebuild the related budget totals.
@@ -81,7 +81,8 @@ Budget Buddy is a single-module native Android application written in Kotlin wit
 ```text
 app/src/main/java/com/example/budgetbuddy/
   WelcomeActivity.kt                   Offline welcome screen
-  ProfileActivity.kt                   Local profile and settings
+  ProfileActivity.kt                   Local profile and searchable currency settings
+  CurrencyCatalog.kt                   Offline currency names, ISO codes, and symbols
   BudgetBuddyApplication.kt           Saved light/dark theme setup
   LocalDataStore.kt                    App-private persistence and budget rebuilds
   FinanceCalculator.kt                 Pure finance calculations
@@ -91,6 +92,7 @@ app/src/main/java/com/example/budgetbuddy/
   AddImageActivity.kt                  Camera and Android photo-picker screen
   ReceiptStorage.kt                    App-owned receipt validation and cleanup
   ReceiptFileCopier.kt                 Atomic, size-limited gallery copying
+  ReceiptImageNormalizer.kt            Safe JPEG decoding, orientation, and scaling
   TransactionHistoryActivity.kt        Filter, edit, and delete history
   BudgetActivity.kt                    Monthly category budgets
   AnalyticsActivity.kt                 Charts and spending gauge

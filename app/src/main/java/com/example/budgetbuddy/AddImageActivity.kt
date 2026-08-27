@@ -21,23 +21,17 @@ class AddImageActivity : BaseActivity() {
     private val imageWorker = Executors.newSingleThreadExecutor()
     private var selectedImage: File? = null
     private var pendingCameraImage: File? = null
+    private var processingCameraImage: File? = null
     private var importInProgress = false
     private var resultDelivered = false
 
     private val takePicture = registerForActivityResult(ActivityResultContracts.TakePicture()) { captured ->
         val image = pendingCameraImage
         pendingCameraImage = null
-        runCatching {
-            if ((captured || image?.length()?.let { it > 0L } == true) &&
-                ReceiptStorage.isUsableOwnedReceipt(this, image)
-            ) {
-                replaceSelection(requireNotNull(image))
-            } else {
-                image?.delete()
-                toast(getString(R.string.camera_capture_failed))
-            }
-        }.onFailure {
-            image?.delete()
+        if ((captured || image?.length()?.let { it > 0L } == true) && image != null) {
+            processCameraImage(image)
+        } else {
+            ReceiptStorage.deleteIfOwned(this, image?.absolutePath)
             toast(getString(R.string.camera_capture_failed))
         }
     }
@@ -96,6 +90,7 @@ class AddImageActivity : BaseActivity() {
         if (isFinishing && !resultDelivered) {
             ReceiptStorage.deleteIfOwned(this, selectedImage?.absolutePath)
             ReceiptStorage.deleteIfOwned(this, pendingCameraImage?.absolutePath)
+            ReceiptStorage.deleteIfOwned(this, processingCameraImage?.absolutePath)
         }
         super.onDestroy()
     }
@@ -127,6 +122,28 @@ class AddImageActivity : BaseActivity() {
                 imported
                     .onSuccess(::replaceSelection)
                     .onFailure { toast(getString(R.string.image_load_failed)) }
+            }
+        }
+    }
+
+    private fun processCameraImage(image: File) {
+        if (importInProgress) return
+        processingCameraImage = image
+        setLoading(true)
+        imageWorker.execute {
+            val normalized = runCatching {
+                ReceiptStorage.finalizeCameraCapture(applicationContext, image)
+            }
+            runOnUiThread {
+                processingCameraImage = null
+                if (isDestroyed || isFinishing) {
+                    normalized.getOrNull()?.let { ReceiptStorage.deleteIfOwned(this, it.absolutePath) }
+                    return@runOnUiThread
+                }
+                setLoading(false)
+                normalized
+                    .onSuccess(::replaceSelection)
+                    .onFailure { toast(getString(R.string.camera_capture_failed)) }
             }
         }
     }

@@ -57,7 +57,8 @@ class OfflineOnboardingTest {
             assertTrue(localData.isProfileConfigured)
             assertEquals("Local Buddy", localData.displayName)
             assertEquals(LocalDataStore.DEFAULT_BUDDY_NAME, localData.buddyName)
-            assertEquals("R", localData.currencySymbol)
+            assertEquals("€", localData.currencySymbol)
+            assertEquals("EUR", localData.currencyCode)
         }
     }
 

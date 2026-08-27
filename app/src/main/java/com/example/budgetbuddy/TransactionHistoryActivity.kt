@@ -348,11 +348,13 @@ class TransactionHistoryActivity : BaseActivity() {
 
             if (!txn.photoPath.isNullOrBlank()) {
                 val imgFile = File(txn.photoPath)
-                if (imgFile.exists()) {
+                if (ReceiptStorage.isUsableOwnedReceipt(context, imgFile)) {
                     holder.ivPhoto.visibility = View.VISIBLE
                     Glide.with(holder.itemView)
                         .load(imgFile)
                         .placeholder(R.drawable.placeholder_image)
+                        .error(R.drawable.placeholder_image)
+                        .fitCenter()
                         .into(holder.ivPhoto)
                 } else {
                     holder.ivPhoto.visibility = View.GONE

@@ -13,6 +13,11 @@ class LocalDataStore(context: Context) {
     val currencySymbol: String
         get() = preferences.getString(KEY_CURRENCY, DEFAULT_CURRENCY) ?: DEFAULT_CURRENCY
 
+    val currencyCode: String
+        get() = preferences.getString(KEY_CURRENCY_CODE, null)
+            ?: CurrencyCatalog.findBySymbol(currencySymbol)?.code
+            ?: CurrencyCatalog.DEFAULT_CODE
+
     val displayName: String
         get() = preferences.getString(KEY_DISPLAY_NAME, DEFAULT_DISPLAY_NAME) ?: DEFAULT_DISPLAY_NAME
 
@@ -29,12 +34,15 @@ class LocalDataStore(context: Context) {
         displayName: String,
         currencySymbol: String,
         buddyName: String = DEFAULT_BUDDY_NAME,
-        darkThemeEnabled: Boolean = isDarkThemeEnabled
+        darkThemeEnabled: Boolean = isDarkThemeEnabled,
+        currencyCode: String = CurrencyCatalog.findBySymbol(currencySymbol)?.code
+            ?: CurrencyCatalog.DEFAULT_CODE
     ) {
         preferences.edit()
             .putString(KEY_DISPLAY_NAME, displayName.trim())
             .putString(KEY_BUDDY_NAME, buddyName.trim().take(MAX_BUDDY_NAME_LENGTH))
             .putString(KEY_CURRENCY, currencySymbol)
+            .putString(KEY_CURRENCY_CODE, currencyCode)
             .putBoolean(KEY_DARK_THEME, darkThemeEnabled)
             .putBoolean(KEY_PROFILE_CONFIGURED, true)
             .apply()
@@ -254,13 +262,14 @@ class LocalDataStore(context: Context) {
         private const val KEY_BUDGETS = "budgets"
         private const val KEY_ACHIEVEMENTS = "achievements"
         private const val KEY_CURRENCY = "currency"
+        private const val KEY_CURRENCY_CODE = "currency_code"
         private const val KEY_DISPLAY_NAME = "display_name"
         private const val KEY_BUDDY_NAME = "buddy_name"
         private const val KEY_DARK_THEME = "dark_theme"
         private const val KEY_PROFILE_CONFIGURED = "profile_configured"
         private const val KEY_INITIAL_PERMISSION_REQUESTED = "initial_permission_requested"
         private const val KEY_BUDGET_MONTHS = "budget_months"
-        private const val DEFAULT_CURRENCY = "R"
+        private const val DEFAULT_CURRENCY = CurrencyCatalog.DEFAULT_SYMBOL
         private const val DEFAULT_DISPLAY_NAME = "Budget Buddy"
         const val DEFAULT_BUDDY_NAME = "Budster the Budgeter"
         const val MAX_BUDDY_NAME_LENGTH = 32

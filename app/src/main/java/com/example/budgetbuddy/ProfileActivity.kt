@@ -2,13 +2,13 @@ package com.example.budgetbuddy
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.ArrayAdapter
 import com.example.budgetbuddy.databinding.ActivityProfileBinding
 
 class ProfileActivity : BaseActivity() {
     private lateinit var binding: ActivityProfileBinding
     private lateinit var localData: LocalDataStore
     private var settingsMode = false
+    private var selectedCurrency: CurrencyOption? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -17,20 +17,26 @@ class ProfileActivity : BaseActivity() {
         localData = LocalDataStore(this)
         settingsMode = intent.getBooleanExtra(EXTRA_SETTINGS_MODE, false)
 
-        val options = resources.getStringArray(R.array.currency_options)
-        binding.spCurrency.adapter = ArrayAdapter(
-            this,
-            R.layout.spinner_item,
-            options
-        ).apply { setDropDownViewResource(R.layout.spinner_simple_item) }
+        binding.spCurrency.setAdapter(CurrencySearchAdapter(this))
+        binding.spCurrency.threshold = 0
+        binding.spCurrency.setOnItemClickListener { parent, _, position, _ ->
+            selectedCurrency = parent.getItemAtPosition(position) as? CurrencyOption
+        }
+        binding.spCurrency.setOnClickListener { binding.spCurrency.showDropDown() }
+        binding.spCurrency.setOnFocusChangeListener { _, focused ->
+            if (focused) binding.spCurrency.showDropDown()
+        }
+        val savedCurrency = CurrencyCatalog.findByCode(localData.currencyCode)
+            ?: CurrencyCatalog.findBySymbol(localData.currencySymbol)
+            ?: requireNotNull(CurrencyCatalog.findByCode(CurrencyCatalog.DEFAULT_CODE))
+        selectedCurrency = savedCurrency
+        binding.spCurrency.setText(savedCurrency.displayLabel, false)
         binding.edtBuddyName.setText(localData.buddyName)
         binding.cbDarkTheme.isChecked = localData.isDarkThemeEnabled
         if (settingsMode) {
             binding.tvProfileTitle.setText(R.string.settings_title)
             binding.btnSaveProfile.setText(R.string.save_settings)
             binding.edtDisplayName.setText(localData.displayName)
-            val symbols = resources.getStringArray(R.array.currency_symbols)
-            binding.spCurrency.setSelection(symbols.indexOf(localData.currencySymbol).coerceAtLeast(0))
         }
 
         binding.btnBack.setOnClickListener { finish() }
@@ -52,13 +58,20 @@ class ProfileActivity : BaseActivity() {
             binding.edtBuddyName.error = getString(R.string.buddy_name_too_long)
             return
         }
-        val symbols = resources.getStringArray(R.array.currency_symbols)
+        val currency = selectedCurrency
+            ?.takeIf { it.displayLabel.equals(binding.spCurrency.text.toString().trim(), ignoreCase = true) }
+            ?: CurrencyCatalog.findExact(binding.spCurrency.text.toString())
+        if (currency == null) {
+            binding.spCurrency.error = getString(R.string.select_valid_currency)
+            return
+        }
         val darkThemeEnabled = binding.cbDarkTheme.isChecked
         localData.saveProfile(
             displayName = name,
-            currencySymbol = symbols[binding.spCurrency.selectedItemPosition],
+            currencySymbol = currency.symbol,
             buddyName = buddyName,
-            darkThemeEnabled = darkThemeEnabled
+            darkThemeEnabled = darkThemeEnabled,
+            currencyCode = currency.code
         )
         BudgetBuddyApplication.applySavedTheme(darkThemeEnabled)
         if (settingsMode) {

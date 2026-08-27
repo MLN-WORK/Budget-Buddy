@@ -117,14 +117,25 @@
                 android:textColor="@color/black"
                 android:textSize="17sp" />
 
-            <Spinner
+            <AutoCompleteTextView
                 android:id="@+id/spCurrency"
-                style="@style/CustomSpinner"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_marginTop="8dp"
-                android:entries="@array/currency_options"
-                android:paddingHorizontal="14dp" />
+                android:background="@drawable/bg_input"
+                android:completionThreshold="0"
+                android:drawableEnd="@drawable/ic_downward_arrow"
+                android:dropDownHeight="wrap_content"
+                android:dropDownVerticalOffset="4dp"
+                android:fontFamily="@font/outfit"
+                android:hint="@string/search_currency_hint"
+                android:inputType="text"
+                android:maxLines="1"
+                android:paddingHorizontal="18dp"
+                android:popupBackground="@color/white"
+                android:singleLine="true"
+                android:textColor="@color/black"
+                android:textColorHint="@color/black" />
 
             <CheckBox
                 android:id="@+id/cbDarkTheme"

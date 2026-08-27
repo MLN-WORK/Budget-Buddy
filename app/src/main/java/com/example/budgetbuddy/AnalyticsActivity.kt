@@ -342,6 +342,8 @@ class AnalyticsActivity : BaseActivity() {
                     binding.btnMinMaxHeader.setText(getString(R.string.youSpent, 0.0))
                     binding.tvMinGoal.setText(R.string.no_money)
                     binding.tvMaxGoal.setText(R.string.no_money)
+                    binding.imgBeetleJuice.setImageResource(R.drawable.neutral_buddy_1)
+                    binding.tvFeedBack.setText(R.string.analytics_no_budget_mood)
         } else {
                     val maximumGoal = budget.budgetAmount
                     Log.d("GetMaxGoal", "Max goal is $maximumGoal")
@@ -354,51 +356,28 @@ class AnalyticsActivity : BaseActivity() {
                     val mg = AnalyticsCalculator.minimumGoalRatio(minimumGoal, maximumGoal)
                     val displayMG = mg * 100f
 
-                    val safeEnd = if (percentageSpent >= 100) minOf(mg, 0.98f) else mg
-                    val sections = mutableListOf<Section>()
-                    if (safeEnd > 0f) sections += Section(
-                        0f,
-                        safeEnd,
-                        ContextCompat.getColor(applicationContext, R.color.lightTeal),
-                        gauge.speedometerWidth
+                    // Spending 0–50% leaves at least half the budget, 50–85% leaves
+                    // 15–49%, and anything beyond 85% leaves less than 15%.
+                    gauge.addSections(
+                        Section(0f, 0.5f, ContextCompat.getColor(applicationContext, R.color.lightTeal), gauge.speedometerWidth),
+                        Section(0.5f, 0.85f, ContextCompat.getColor(applicationContext, R.color.lightPink), gauge.speedometerWidth),
+                        Section(0.85f, 1f, ContextCompat.getColor(applicationContext, R.color.cherry), gauge.speedometerWidth)
                     )
-                    val warningEnd = if (percentageSpent >= 100) 0.98f else 1f
-                    if (safeEnd < warningEnd) sections += Section(
-                        safeEnd,
-                        warningEnd,
-                        ContextCompat.getColor(applicationContext, R.color.lightPink),
-                        gauge.speedometerWidth
-                    )
-                    if (percentageSpent >= 100) sections += Section(
-                        0.98f,
-                        1f,
-                        ContextCompat.getColor(applicationContext, R.color.cherry),
-                        gauge.speedometerWidth
-                    )
-                    gauge.addSections(*sections.toTypedArray())
 
-                    //buddy images and text
+                    // Budster reacts to the percentage of the monthly budget still remaining.
                     val buddyPic = binding.imgBeetleJuice
-                    when {
-                        percentageSpent >= 100 -> {
-                            buddyPic.setImageResource(R.drawable.angry_buddy)
-                            binding.tvFeedBack.setText(R.string.way_over_budget)
+                    when (AnalyticsCalculator.buddyMood(totalSpent, maximumGoal)) {
+                        AnalyticsCalculator.BuddyMood.HAPPY -> {
+                            buddyPic.setImageResource(R.drawable.happy_buddy)
+                            binding.tvFeedBack.setText(R.string.budget_mood_happy)
                         }
-                        percentageSpent <= 39 ->{
-                            buddyPic.setImageResource(R.drawable.peachy_buddy)
-                            binding.tvFeedBack.setText(R.string.keep_spending)
-                        }
-                        percentageSpent <= 65 -> {
+                        AnalyticsCalculator.BuddyMood.NEUTRAL -> {
                             buddyPic.setImageResource(R.drawable.neutral_buddy_1)
-                            binding.tvFeedBack.setText(R.string.still_on_track)
+                            binding.tvFeedBack.setText(R.string.budget_mood_neutral)
                         }
-                        percentageSpent <= displayMG -> {
-                            buddyPic.setImageResource(R.drawable.nervous_buddy)
-                            binding.tvFeedBack.setText(R.string.slow_down)
-                        }
-                        else -> {
-                            buddyPic.setImageResource(R.drawable.sad_buddy)
-                            binding.tvFeedBack.setText(R.string.not_saving)
+                        AnalyticsCalculator.BuddyMood.ANGRY -> {
+                            buddyPic.setImageResource(R.drawable.angry_buddy)
+                            binding.tvFeedBack.setText(R.string.budget_mood_angry)
                         }
                     }
                     //set gauge value
@@ -410,13 +389,6 @@ class AnalyticsActivity : BaseActivity() {
                     binding.tvPercentage.setText(getString(R.string.you_only_wanna_spend, displayMG))
         }
 
-        /* coincide with buddy face
-        * PEACHY (0% - 50%) green
-        * GOOD (50% - 80%)
-        * SWEATING (80% - 90%)
-        * SAD (100% up) red
-        */
-
     }//end setupGaugeChart
 
     //fetching and displaying currency
@@ -426,10 +398,4 @@ class AnalyticsActivity : BaseActivity() {
     }
 }
 
-/* GAUGE CHART NOTES:
-    Sections - colour ranges to divide gauge values
-        SECTION 1 (light teal) = safe zone, represents minimum goal range for budget
-        SECTION 2 (black) = hit minimum goal, represents exact minimum goal value
-        SECTION 3 (pink) = slightly less safe zone, above minimum goal or exactly maximum goal, still within budget
-        SECTION 4 (red) = danger zone, user exceeded budget
- */
+/* Gauge sections mirror Budster's mood thresholds based on monthly budget remaining. */
