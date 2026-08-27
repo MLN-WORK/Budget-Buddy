@@ -1,6 +1,8 @@
 package com.example.budgetbuddy
 
 import android.content.Context
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Filter
 
@@ -26,4 +28,10 @@ class CurrencySearchAdapter(context: Context) :
     }
 
     override fun getFilter(): Filter = currencyFilter
+
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View =
+        super.getView(position, convertView, parent).also(RuntimePaletteApplier::applyIfCustom)
+
+    override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View =
+        super.getDropDownView(position, convertView, parent).also(RuntimePaletteApplier::applyIfCustom)
 }

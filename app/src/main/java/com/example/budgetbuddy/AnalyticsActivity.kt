@@ -11,6 +11,7 @@ import androidx.core.content.res.ResourcesCompat
 import com.example.budgetbuddy.databinding.ActivityAnalyticsBinding
 import com.google.android.material.color.MaterialColors
 import com.github.anastr.speedviewlib.components.Section
+import com.github.anastr.speedviewlib.components.indicators.NeedleIndicator
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
@@ -347,6 +348,12 @@ class AnalyticsActivity : BaseActivity() {
     * © 2017 Anas Altair – Licensed under Apache 2.0*/
     private fun setupGaugeChart(month:String){
         val gauge = binding.minMaxGauge
+        val indicatorColor = MaterialColors.getColor(binding.root, R.attr.budgetTextColor)
+        gauge.indicator = NeedleIndicator(this).apply {
+            color = indicatorColor
+            width = 14f * resources.displayMetrics.density
+        }
+        gauge.centerCircleColor = indicatorColor
         gauge.clearSections()
         /*percentage spent = amount spent / max Goal * 100
         minGoal = min goal from budget
@@ -381,13 +388,14 @@ class AnalyticsActivity : BaseActivity() {
                     val percentageSpent = AnalyticsCalculator.spentPercentage(totalSpent, maximumGoal)
 
                     val allocationPercentage = BudgetLimitCalculator.allocationPercentage(categoryTotal, maximumGoal)
+                    val gaugePalette = localData.gaugePalette
 
                     // Spending 0–50% leaves at least half the budget, 50–85% leaves
                     // 15–49%, and anything beyond 85% leaves less than 15%.
                     gauge.addSections(
-                        Section(0f, 0.5f, ContextCompat.getColor(applicationContext, R.color.lightTeal), gauge.speedometerWidth),
-                        Section(0.5f, 0.85f, ContextCompat.getColor(applicationContext, R.color.lightPink), gauge.speedometerWidth),
-                        Section(0.85f, 1f, ContextCompat.getColor(applicationContext, R.color.cherry), gauge.speedometerWidth)
+                        Section(0f, 0.5f, gaugePalette.good, gauge.speedometerWidth),
+                        Section(0.5f, 0.85f, gaugePalette.okay, gauge.speedometerWidth),
+                        Section(0.85f, 1f, gaugePalette.bad, gauge.speedometerWidth)
                     )
 
                     // Budster reacts to the percentage of the monthly budget still remaining.

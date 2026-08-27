@@ -314,6 +314,7 @@ class TransactionHistoryActivity : BaseActivity() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TransactionVH {
             val view = LayoutInflater.from(parent.context)
                 .inflate(R.layout.item_transaction, parent, false)
+            RuntimePaletteApplier.applyIfCustom(view)
             return TransactionVH(view)
         }
 

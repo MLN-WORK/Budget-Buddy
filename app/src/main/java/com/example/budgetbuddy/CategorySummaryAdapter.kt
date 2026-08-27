@@ -18,6 +18,7 @@ class CategorySummaryAdapter(private val currencySymbol: String) :
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategorySummaryViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_category_summary, parent, false)
+        RuntimePaletteApplier.applyIfCustom(view)
         return CategorySummaryViewHolder(view)
     }
 

@@ -27,6 +27,7 @@ class AchievementAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AchievementViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_achievement, parent, false)
+        RuntimePaletteApplier.applyIfCustom(view)
         return AchievementViewHolder(view)
     }
 

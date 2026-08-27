@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/budgetBackgroundColor"
+    tools:context=".ThemeColorsActivity">
+
+    <LinearLayout
+        android:id="@+id/themeHeader"
+        android:layout_width="0dp"
+        android:layout_height="64dp"
+        android:background="?attr/budgetPrimaryColor"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/back"
+            android:padding="14dp"
+            android:src="@drawable/ic_back_arrow"
+            app:tint="?attr/budgetOnPrimaryColor" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="@font/outfit_bold"
+            android:gravity="center"
+            android:text="@string/themes_and_colors"
+            android:textColor="?attr/budgetOnPrimaryColor"
+            android:textSize="26sp" />
+
+        <Space
+            android:layout_width="52dp"
+            android:layout_height="1dp" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/themeHeader">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="24dp"
+            android:paddingTop="22dp"
+            android:paddingBottom="40dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/outfit_bold"
+                android:text="@string/app_theme"
+                android:textColor="?attr/budgetTextColor"
+                android:textSize="24sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/outfit"
+                android:text="@string/app_theme_description"
+                android:textColor="@color/grey"
+                android:textSize="15sp" />
+
+            <RadioGroup
+                android:id="@+id/themeRadioGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:orientation="vertical">
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rbThemeLight"
+                    style="@style/ThemeChoiceRadio"
+                    android:text="@string/theme_light" />
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rbThemeDark"
+                    style="@style/ThemeChoiceRadio"
+                    android:text="@string/theme_dark" />
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rbThemeMaterialYou"
+                    style="@style/ThemeChoiceRadio"
+                    android:text="@string/theme_material_you" />
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rbThemeAmoled"
+                    style="@style/ThemeChoiceRadio"
+                    android:text="@string/theme_amoled" />
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rbThemeCustom"
+                    style="@style/ThemeChoiceRadio"
+                    android:text="@string/theme_custom" />
+            </RadioGroup>
+
+            <TextView
+                android:id="@+id/tvMaterialAvailability"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/outfit"
+                android:textColor="@color/grey"
+                android:textSize="14sp"
+                tools:text="Material You is available on this device." />
+
+            <LinearLayout
+                android:id="@+id/customThemeControls"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:background="@drawable/bg_rectangle"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/outfit_bold"
+                    android:text="@string/custom_accent_color"
+                    android:textColor="?attr/budgetTextColor"
+                    android:textSize="18sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <View
+                        android:id="@+id/swatchAccent"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:contentDescription="@string/custom_accent_color" />
+
+                    <TextView
+                        android:id="@+id/tvAccentHex"
+                        style="@style/ColorHexLabel"
+                        tools:text="#46B793" />
+                </LinearLayout>
+
+                <com.example.budgetbuddy.ColorPickerView
+                    android:id="@+id/pickerAccent"
+                    android:layout_width="match_parent"
+                    android:layout_height="190dp"
+                    android:contentDescription="@string/custom_accent_color" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="@font/outfit_bold"
+                    android:text="@string/custom_main_color"
+                    android:textColor="?attr/budgetTextColor"
+                    android:textSize="18sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <View
+                        android:id="@+id/swatchMain"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:contentDescription="@string/custom_main_color" />
+
+                    <TextView
+                        android:id="@+id/tvMainHex"
+                        style="@style/ColorHexLabel"
+                        tools:text="#FCF5E8" />
+                </LinearLayout>
+
+                <com.example.budgetbuddy.ColorPickerView
+                    android:id="@+id/pickerMain"
+                    android:layout_width="match_parent"
+                    android:layout_height="190dp"
+                    android:contentDescription="@string/custom_main_color" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginTop="28dp"
+                android:background="?attr/budgetTextColor"
+                android:alpha="0.18" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:fontFamily="@font/outfit_bold"
+                android:text="@string/gauge_colors"
+                android:textColor="?attr/budgetTextColor"
+                android:textSize="24sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/outfit"
+                android:text="@string/gauge_colors_description"
+                android:textColor="@color/grey"
+                android:textSize="15sp" />
+
+            <RadioGroup
+                android:id="@+id/gaugeRadioGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:orientation="vertical">
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rbGaugeDefault"
+                    style="@style/ThemeChoiceRadio"
+                    android:text="@string/gauge_default" />
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rbGaugeColorBlind"
+                    style="@style/ThemeChoiceRadio"
+                    android:text="@string/gauge_color_blind" />
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rbGaugeCustom"
+                    style="@style/ThemeChoiceRadio"
+                    android:text="@string/gauge_custom" />
+            </RadioGroup>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="14dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="92dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/outfit"
+                    android:text="@string/gauge_default_preview"
+                    android:textColor="?attr/budgetTextColor"
+                    android:textSize="13sp" />
+
+                <View style="@style/GaugePreviewGood" />
+                <View style="@style/GaugePreviewOkay" />
+                <View style="@style/GaugePreviewBad" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="14dp"
+                android:layout_marginTop="6dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="92dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/outfit"
+                    android:text="@string/gauge_accessible_preview"
+                    android:textColor="?attr/budgetTextColor"
+                    android:textSize="13sp" />
+
+                <View style="@style/GaugePreviewAccessibleGood" />
+                <View style="@style/GaugePreviewAccessibleOkay" />
+                <View style="@style/GaugePreviewAccessibleBad" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/customGaugeControls"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:background="@drawable/bg_rectangle"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <TextView
+                    style="@style/ColorPickerHeading"
+                    android:text="@string/gauge_good_color" />
+
+                <LinearLayout style="@style/ColorSwatchRow">
+                    <View
+                        android:id="@+id/swatchGaugeGood"
+                        style="@style/ColorSwatch"
+                        android:contentDescription="@string/gauge_good_color" />
+                    <TextView
+                        android:id="@+id/tvGaugeGoodHex"
+                        style="@style/ColorHexLabel"
+                        tools:text="#2E7D32" />
+                </LinearLayout>
+
+                <com.example.budgetbuddy.ColorPickerView
+                    android:id="@+id/pickerGaugeGood"
+                    android:layout_width="match_parent"
+                    android:layout_height="190dp"
+                    android:contentDescription="@string/gauge_good_color" />
+
+                <TextView
+                    style="@style/ColorPickerHeading"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/gauge_okay_color" />
+
+                <LinearLayout style="@style/ColorSwatchRow">
+                    <View
+                        android:id="@+id/swatchGaugeOkay"
+                        style="@style/ColorSwatch"
+                        android:contentDescription="@string/gauge_okay_color" />
+                    <TextView
+                        android:id="@+id/tvGaugeOkayHex"
+                        style="@style/ColorHexLabel"
+                        tools:text="#F9A825" />
+                </LinearLayout>
+
+                <com.example.budgetbuddy.ColorPickerView
+                    android:id="@+id/pickerGaugeOkay"
+                    android:layout_width="match_parent"
+                    android:layout_height="190dp"
+                    android:contentDescription="@string/gauge_okay_color" />
+
+                <TextView
+                    style="@style/ColorPickerHeading"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/gauge_bad_color" />
+
+                <LinearLayout style="@style/ColorSwatchRow">
+                    <View
+                        android:id="@+id/swatchGaugeBad"
+                        style="@style/ColorSwatch"
+                        android:contentDescription="@string/gauge_bad_color" />
+                    <TextView
+                        android:id="@+id/tvGaugeBadHex"
+                        style="@style/ColorHexLabel"
+                        tools:text="#C62828" />
+                </LinearLayout>
+
+                <com.example.budgetbuddy.ColorPickerView
+                    android:id="@+id/pickerGaugeBad"
+                    android:layout_width="match_parent"
+                    android:layout_height="190dp"
+                    android:contentDescription="@string/gauge_bad_color" />
+            </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSaveAppearance"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:layout_marginTop="30dp"
+                android:backgroundTint="?attr/budgetPrimaryColor"
+                android:fontFamily="@font/outfit_bold"
+                android:text="@string/save_theme_colors"
+                android:textColor="?attr/budgetOnPrimaryColor"
+                android:textSize="18sp"
+                app:cornerRadius="16dp" />
+        </LinearLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

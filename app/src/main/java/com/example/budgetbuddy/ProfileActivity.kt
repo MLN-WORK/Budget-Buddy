@@ -32,8 +32,6 @@ class ProfileActivity : BaseActivity() {
         selectedCurrency = savedCurrency
         binding.spCurrency.setText(savedCurrency.displayLabel, false)
         binding.edtBuddyName.setText(localData.buddyName)
-        binding.cbDarkTheme.isChecked = localData.isDarkThemeEnabled
-        binding.cbMaterialYou.isChecked = localData.isMaterialYouEnabled
         if (settingsMode) {
             binding.tvProfileTitle.setText(R.string.settings_title)
             binding.btnSaveProfile.setText(R.string.save_settings)
@@ -41,7 +39,28 @@ class ProfileActivity : BaseActivity() {
         }
 
         binding.btnBack.setOnClickListener { finish() }
+        binding.btnThemesColors.visibility = if (settingsMode) android.view.View.VISIBLE else android.view.View.GONE
+        binding.tvThemeSummary.visibility = if (settingsMode) android.view.View.VISIBLE else android.view.View.GONE
+        binding.btnThemesColors.setOnClickListener {
+            startActivity(Intent(this, ThemeColorsActivity::class.java))
+        }
         binding.btnSaveProfile.setOnClickListener { saveProfile() }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (::localData.isInitialized) {
+            binding.tvThemeSummary.text = getString(
+                R.string.current_theme,
+                when (localData.appThemeMode) {
+                    AppThemeMode.LIGHT -> getString(R.string.theme_light)
+                    AppThemeMode.DARK -> getString(R.string.theme_dark)
+                    AppThemeMode.MATERIAL_YOU -> getString(R.string.theme_material_you)
+                    AppThemeMode.AMOLED -> getString(R.string.theme_amoled)
+                    AppThemeMode.CUSTOM -> getString(R.string.theme_custom)
+                }
+            )
+        }
     }
 
     private fun saveProfile() {
@@ -66,17 +85,12 @@ class ProfileActivity : BaseActivity() {
             binding.spCurrency.error = getString(R.string.select_valid_currency)
             return
         }
-        val darkThemeEnabled = binding.cbDarkTheme.isChecked
-        val materialYouEnabled = binding.cbMaterialYou.isChecked
         localData.saveProfile(
             displayName = name,
             currencySymbol = currency.symbol,
             buddyName = buddyName,
-            darkThemeEnabled = darkThemeEnabled,
-            materialYouEnabled = materialYouEnabled,
             currencyCode = currency.code
         )
-        BudgetBuddyApplication.applySavedTheme(darkThemeEnabled)
         startActivity(Intent(this, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         })

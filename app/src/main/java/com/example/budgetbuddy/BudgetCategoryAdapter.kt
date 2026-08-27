@@ -24,6 +24,7 @@ class BudgetCategoryAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BudgetViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.budget_category_item, parent,false)
+        RuntimePaletteApplier.applyIfCustom(view)
         return BudgetViewHolder(view)
     }
 

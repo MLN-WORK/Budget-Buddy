@@ -20,6 +20,7 @@ class CategoryAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.category_item, parent, false)
+        RuntimePaletteApplier.applyIfCustom(view)
         return CategoryViewHolder(view)
     }
 

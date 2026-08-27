@@ -25,10 +25,44 @@ class LocalDataStore(context: Context) {
         get() = preferences.getString(KEY_BUDDY_NAME, DEFAULT_BUDDY_NAME) ?: DEFAULT_BUDDY_NAME
 
     val isDarkThemeEnabled: Boolean
-        get() = preferences.getBoolean(KEY_DARK_THEME, false)
+        get() = when (appThemeMode) {
+            AppThemeMode.DARK, AppThemeMode.AMOLED -> true
+            AppThemeMode.CUSTOM -> AppearanceDefaults.perceivedLuminance(customMainColor) < 0.45
+            else -> false
+        }
 
     val isMaterialYouEnabled: Boolean
-        get() = preferences.getBoolean(KEY_MATERIAL_YOU, false)
+        get() = appThemeMode == AppThemeMode.MATERIAL_YOU
+
+    val appThemeMode: AppThemeMode
+        get() = AppThemeMode.fromStored(
+            preferences.getString(KEY_APP_THEME_MODE, null),
+            preferences.getBoolean(KEY_DARK_THEME, false),
+            preferences.getBoolean(KEY_MATERIAL_YOU, false)
+        )
+
+    val customAccentColor: Int
+        get() = preferences.getInt(KEY_CUSTOM_ACCENT, AppearanceDefaults.CUSTOM_ACCENT)
+
+    val customMainColor: Int
+        get() = preferences.getInt(KEY_CUSTOM_MAIN, AppearanceDefaults.CUSTOM_MAIN)
+
+    val gaugePaletteMode: GaugePaletteMode
+        get() = GaugePaletteMode.fromStored(preferences.getString(KEY_GAUGE_PALETTE_MODE, null))
+
+    val customGaugePalette: GaugePalette
+        get() = GaugePalette(
+            good = preferences.getInt(KEY_GAUGE_GOOD, AppearanceDefaults.DEFAULT_GAUGE.good),
+            okay = preferences.getInt(KEY_GAUGE_OKAY, AppearanceDefaults.DEFAULT_GAUGE.okay),
+            bad = preferences.getInt(KEY_GAUGE_BAD, AppearanceDefaults.DEFAULT_GAUGE.bad)
+        )
+
+    val gaugePalette: GaugePalette
+        get() = when (gaugePaletteMode) {
+            GaugePaletteMode.DEFAULT -> AppearanceDefaults.DEFAULT_GAUGE
+            GaugePaletteMode.COLOR_BLIND -> AppearanceDefaults.COLOR_BLIND_GAUGE
+            GaugePaletteMode.CUSTOM -> customGaugePalette
+        }
 
     val isProfileConfigured: Boolean
         get() = preferences.getBoolean(KEY_PROFILE_CONFIGURED, false)
@@ -37,19 +71,55 @@ class LocalDataStore(context: Context) {
         displayName: String,
         currencySymbol: String,
         buddyName: String = DEFAULT_BUDDY_NAME,
-        darkThemeEnabled: Boolean = isDarkThemeEnabled,
-        materialYouEnabled: Boolean = isMaterialYouEnabled,
+        darkThemeEnabled: Boolean? = null,
+        materialYouEnabled: Boolean? = null,
         currencyCode: String = CurrencyCatalog.findBySymbol(currencySymbol)?.code
             ?: CurrencyCatalog.DEFAULT_CODE
     ) {
-        preferences.edit()
+        val editor = preferences.edit()
             .putString(KEY_DISPLAY_NAME, displayName.trim())
             .putString(KEY_BUDDY_NAME, buddyName.trim().take(MAX_BUDDY_NAME_LENGTH))
             .putString(KEY_CURRENCY, currencySymbol)
             .putString(KEY_CURRENCY_CODE, currencyCode)
-            .putBoolean(KEY_DARK_THEME, darkThemeEnabled)
-            .putBoolean(KEY_MATERIAL_YOU, materialYouEnabled)
             .putBoolean(KEY_PROFILE_CONFIGURED, true)
+        if (darkThemeEnabled != null || materialYouEnabled != null) {
+            val material = materialYouEnabled == true
+            val dark = darkThemeEnabled == true && !material
+            editor
+                .putBoolean(KEY_DARK_THEME, dark)
+                .putBoolean(KEY_MATERIAL_YOU, material)
+                .putString(
+                    KEY_APP_THEME_MODE,
+                    if (material) AppThemeMode.MATERIAL_YOU.name
+                    else if (dark) AppThemeMode.DARK.name
+                    else AppThemeMode.LIGHT.name
+                )
+        }
+        editor.apply()
+    }
+
+    fun saveAppearance(
+        themeMode: AppThemeMode,
+        customAccent: Int,
+        customMain: Int,
+        gaugeMode: GaugePaletteMode,
+        customGauge: GaugePalette
+    ) {
+        preferences.edit()
+            .putString(KEY_APP_THEME_MODE, themeMode.name)
+            .putBoolean(
+                KEY_DARK_THEME,
+                themeMode == AppThemeMode.DARK || themeMode == AppThemeMode.AMOLED ||
+                    (themeMode == AppThemeMode.CUSTOM &&
+                        AppearanceDefaults.perceivedLuminance(customMain) < 0.45)
+            )
+            .putBoolean(KEY_MATERIAL_YOU, themeMode == AppThemeMode.MATERIAL_YOU)
+            .putInt(KEY_CUSTOM_ACCENT, customAccent)
+            .putInt(KEY_CUSTOM_MAIN, customMain)
+            .putString(KEY_GAUGE_PALETTE_MODE, gaugeMode.name)
+            .putInt(KEY_GAUGE_GOOD, customGauge.good)
+            .putInt(KEY_GAUGE_OKAY, customGauge.okay)
+            .putInt(KEY_GAUGE_BAD, customGauge.bad)
             .apply()
     }
 
@@ -279,6 +349,13 @@ class LocalDataStore(context: Context) {
         private const val KEY_BUDDY_NAME = "buddy_name"
         private const val KEY_DARK_THEME = "dark_theme"
         private const val KEY_MATERIAL_YOU = "material_you"
+        private const val KEY_APP_THEME_MODE = "app_theme_mode"
+        private const val KEY_CUSTOM_ACCENT = "custom_accent"
+        private const val KEY_CUSTOM_MAIN = "custom_main"
+        private const val KEY_GAUGE_PALETTE_MODE = "gauge_palette_mode"
+        private const val KEY_GAUGE_GOOD = "gauge_good"
+        private const val KEY_GAUGE_OKAY = "gauge_okay"
+        private const val KEY_GAUGE_BAD = "gauge_bad"
         private const val KEY_PROFILE_CONFIGURED = "profile_configured"
         private const val KEY_INITIAL_PERMISSION_REQUESTED = "initial_permission_requested"
         private const val KEY_BUDGET_MONTHS = "budget_months"

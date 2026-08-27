@@ -24,6 +24,7 @@ class TransactionAdapterForHome(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TransactionViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.records_layout, parent, false)
+        RuntimePaletteApplier.applyIfCustom(view)
         return TransactionViewHolder(view)
     }
 

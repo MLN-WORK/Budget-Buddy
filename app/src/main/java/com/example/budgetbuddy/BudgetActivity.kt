@@ -62,6 +62,7 @@ class BudgetActivity : BaseActivity() {
     private fun showCategoryBottomSheet(context: Context) {
         val dialog = BottomSheetDialog(context)
         val view = LayoutInflater.from(context).inflate(R.layout.dialog_select_category, null)
+        RuntimePaletteApplier.applyIfCustom(view)
         val recyclerView = view.findViewById<RecyclerView>(R.id.rvAllCategories)
         val categories = localData.getCategories().toMutableList()
         val adapter = CategoryAdapter(categories) { selected ->

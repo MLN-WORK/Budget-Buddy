@@ -139,6 +139,7 @@ object AchievementUtils {
     fun showPopup(context: Context, achievement: Achievement) {
         val dialogView =
             LayoutInflater.from(context).inflate(R.layout.dialog_achievement_popup, null)
+        RuntimePaletteApplier.applyIfCustom(dialogView)
 
         val icon = dialogView.findViewById<ImageView>(R.id.popupIcon)
         val title = dialogView.findViewById<TextView>(R.id.popupTitle)

@@ -27,6 +27,9 @@
             android:name=".ProfileActivity"
             android:exported="false" />
         <activity
+            android:name=".ThemeColorsActivity"
+            android:exported="false" />
+        <activity
             android:name=".WelcomeActivity"
             android:exported="true">
             <intent-filter>

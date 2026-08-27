@@ -25,6 +25,7 @@ class IconAdapter(private val icons:List<String>, private val onItemClick:(Strin
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): IconViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.icon_item, parent,
             false)
+        RuntimePaletteApplier.applyIfCustom(view)
         return IconViewHolder(view)
     }
 

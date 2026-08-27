@@ -16,13 +16,30 @@
     </style>
     <style name="Theme.BudgetBuddy" parent="Base.Theme.BudgetBuddy" />
 
-    <style name="ThemeOverlay.BudgetBuddy.MaterialYou" parent="ThemeOverlay.Material3.DynamicColors.DayNight">
+    <style name="ThemeOverlay.BudgetBuddy.MaterialMappings" parent="">
         <item name="budgetBackgroundColor">?attr/colorSurface</item>
         <item name="budgetSurfaceColor">?attr/colorSurfaceContainer</item>
         <item name="budgetPrimaryColor">?attr/colorPrimary</item>
         <item name="budgetTextColor">?attr/colorOnSurface</item>
         <item name="budgetOnPrimaryColor">?attr/colorOnPrimary</item>
         <item name="budgetInputColor">?attr/colorSurfaceContainerHighest</item>
+    </style>
+
+    <style name="ThemeOverlay.BudgetBuddy.Amoled" parent="">
+        <item name="colorPrimary">@color/amoled_accent</item>
+        <item name="colorOnPrimary">@color/amoled_black</item>
+        <item name="android:windowBackground">@color/amoled_black</item>
+        <item name="android:navigationBarColor">@color/amoled_black</item>
+        <item name="android:colorAccent">@color/amoled_accent</item>
+        <item name="android:editTextColor">@color/amoled_text</item>
+        <item name="android:textColorHint">@color/grey</item>
+        <item name="android:textColor">@color/amoled_text</item>
+        <item name="budgetBackgroundColor">@color/amoled_black</item>
+        <item name="budgetSurfaceColor">@color/amoled_surface</item>
+        <item name="budgetPrimaryColor">@color/amoled_accent</item>
+        <item name="budgetTextColor">@color/amoled_text</item>
+        <item name="budgetOnPrimaryColor">@color/amoled_black</item>
+        <item name="budgetInputColor">@color/amoled_input</item>
     </style>
 
     <style name="SlideActivityAnimation" parent="@android:style/Animation.Activity">
@@ -61,5 +78,68 @@
         <item name="android:background">@android:color/transparent</item>
         <item name="android:textColor">?attr/budgetTextColor</item>
         <item name="android:popupBackground">?attr/budgetInputColor</item>
+    </style>
+
+    <style name="ThemeChoiceRadio" parent="Widget.MaterialComponents.CompoundButton.RadioButton">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">52dp</item>
+        <item name="android:buttonTint">?attr/budgetPrimaryColor</item>
+        <item name="android:fontFamily">@font/outfit_bold</item>
+        <item name="android:textColor">?attr/budgetTextColor</item>
+        <item name="android:textSize">17sp</item>
+    </style>
+
+    <style name="ColorPickerHeading">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:fontFamily">@font/outfit_bold</item>
+        <item name="android:textColor">?attr/budgetTextColor</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="ColorSwatchRow">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">6dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="ColorSwatch">
+        <item name="android:layout_width">30dp</item>
+        <item name="android:layout_height">30dp</item>
+    </style>
+
+    <style name="ColorHexLabel">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">10dp</item>
+        <item name="android:fontFamily">@font/roboto_bold</item>
+        <item name="android:textColor">?attr/budgetTextColor</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+
+    <style name="GaugePreviewBase">
+        <item name="android:layout_width">52dp</item>
+        <item name="android:layout_height">14dp</item>
+        <item name="android:layout_marginEnd">4dp</item>
+    </style>
+    <style name="GaugePreviewGood" parent="GaugePreviewBase">
+        <item name="android:background">@color/gauge_good</item>
+    </style>
+    <style name="GaugePreviewOkay" parent="GaugePreviewBase">
+        <item name="android:background">@color/gauge_okay</item>
+    </style>
+    <style name="GaugePreviewBad" parent="GaugePreviewBase">
+        <item name="android:background">@color/gauge_bad</item>
+    </style>
+    <style name="GaugePreviewAccessibleGood" parent="GaugePreviewBase">
+        <item name="android:background">@color/gauge_accessible_good</item>
+    </style>
+    <style name="GaugePreviewAccessibleOkay" parent="GaugePreviewBase">
+        <item name="android:background">@color/gauge_accessible_okay</item>
+    </style>
+    <style name="GaugePreviewAccessibleBad" parent="GaugePreviewBase">
+        <item name="android:background">@color/gauge_accessible_bad</item>
     </style>
 </resources>

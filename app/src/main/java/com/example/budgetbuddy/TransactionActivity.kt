@@ -146,6 +146,7 @@ class TransactionActivity : BaseActivity() {
 
             private fun bind(position: Int, convertView: View?, parent: ViewGroup): View {
                 val view = convertView ?: layoutInflater.inflate(R.layout.spinner_item_category, parent, false)
+                RuntimePaletteApplier.applyIfCustom(view)
                 val item = getItem(position) ?: return view
                 view.findViewById<TextView>(R.id.text).text = item.name
                 val iconView = view.findViewById<android.widget.ImageView>(R.id.imgIcon)

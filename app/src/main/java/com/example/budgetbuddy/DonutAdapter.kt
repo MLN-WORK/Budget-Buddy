@@ -21,6 +21,7 @@ class DonutAdapter(private val donutList: List<Donut>, private val currencySymbo
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DonutViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.donut_charts_layout, parent, false)
+        RuntimePaletteApplier.applyIfCustom(view)
         return DonutViewHolder(view)
     }
 

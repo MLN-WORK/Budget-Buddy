@@ -10,6 +10,7 @@ object ToastUtil {
     fun showCustomToast(activity: Activity, message: String) {
         val inflater = LayoutInflater.from(activity)
         val layout = inflater.inflate(R.layout.custom_toast, activity.findViewById(android.R.id.content), false)
+        RuntimePaletteApplier.applyIfCustom(layout)
 
         val text: TextView = layout.findViewById(R.id.tvToast)
         text.text = message
@@ -20,4 +21,3 @@ object ToastUtil {
         toast.show()
     }
 }
-

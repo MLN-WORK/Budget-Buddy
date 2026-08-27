@@ -137,36 +137,32 @@
                 android:textColor="?attr/budgetTextColor"
                 android:textColorHint="?attr/budgetTextColor" />
 
-            <CheckBox
-                android:id="@+id/cbDarkTheme"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnThemesColors"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="60dp"
                 android:layout_marginTop="22dp"
-                android:buttonTint="?attr/budgetPrimaryColor"
+                android:backgroundTint="?attr/budgetSurfaceColor"
                 android:fontFamily="@font/outfit_bold"
-                android:minHeight="48dp"
-                android:text="@string/dark_theme"
+                android:gravity="center_vertical|start"
+                android:paddingHorizontal="18dp"
+                android:text="@string/themes_and_colors"
                 android:textColor="?attr/budgetTextColor"
-                android:textSize="17sp" />
-
-            <CheckBox
-                android:id="@+id/cbMaterialYou"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:buttonTint="?attr/budgetPrimaryColor"
-                android:fontFamily="@font/outfit_bold"
-                android:minHeight="48dp"
-                android:text="@string/material_you_theme"
-                android:textColor="?attr/budgetTextColor"
-                android:textSize="17sp" />
+                android:textSize="17sp"
+                app:cornerRadius="12dp"
+                app:icon="@drawable/ic_forward_arrow"
+                app:iconGravity="textEnd"
+                app:iconTint="?attr/budgetTextColor"
+                app:strokeColor="?attr/budgetTextColor"
+                app:strokeWidth="2dp" />
 
             <TextView
+                android:id="@+id/tvThemeSummary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
+                android:layout_marginTop="6dp"
                 android:fontFamily="@font/outfit"
-                android:text="@string/material_you_description"
+                android:text="@string/current_theme_preview"
                 android:textColor="@color/grey"
                 android:textSize="14sp" />
 
