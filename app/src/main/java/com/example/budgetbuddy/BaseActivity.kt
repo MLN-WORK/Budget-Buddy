@@ -1,49 +1,37 @@
 package com.example.budgetbuddy
 
-import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.view.ContextThemeWrapper
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import com.google.android.material.color.DynamicColors
 
 abstract class BaseActivity : AppCompatActivity() {
-    override fun attachBaseContext(newBase: Context) {
-        val themedContext = when (LocalDataStore(newBase).appThemeMode) {
-            AppThemeMode.MATERIAL_YOU -> ContextThemeWrapper(
-                DynamicColors.wrapContextIfAvailable(newBase),
-                R.style.ThemeOverlay_BudgetBuddy_MaterialMappings
-            )
-            AppThemeMode.AMOLED -> ContextThemeWrapper(
-                newBase,
-                R.style.ThemeOverlay_BudgetBuddy_Amoled
-            )
-            else -> newBase
-        }
-        super.attachBaseContext(themedContext)
-    }
-
     override fun setContentView(layoutResID: Int) {
         super.setContentView(layoutResID)
-        applyCustomPaletteIfNeeded()
+        applyRuntimeAppearanceIfNeeded()
     }
 
     override fun setContentView(view: View?) {
         super.setContentView(view)
-        applyCustomPaletteIfNeeded()
+        applyRuntimeAppearanceIfNeeded()
     }
 
     override fun setContentView(view: View?, params: ViewGroup.LayoutParams?) {
         super.setContentView(view, params)
-        applyCustomPaletteIfNeeded()
+        applyRuntimeAppearanceIfNeeded()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        if (LocalDataStore(this).appThemeMode == AppThemeMode.AMOLED) {
+            setTheme(R.style.Theme_BudgetBuddy_Amoled)
+        }
         super.onCreate(savedInstanceState)
+        enforceAmoledWindowIfNeeded()
         enterImmersiveMode()
     }
 
@@ -71,5 +59,21 @@ abstract class BaseActivity : AppCompatActivity() {
                 accent = localData.customAccentColor
             )
         )
+    }
+
+    private fun applyRuntimeAppearanceIfNeeded(root: View = findViewById(android.R.id.content)) {
+        when (LocalDataStore(this).appThemeMode) {
+            AppThemeMode.CUSTOM -> applyCustomPaletteIfNeeded(root)
+            AppThemeMode.AMOLED -> root.setBackgroundColor(Color.BLACK)
+            else -> Unit
+        }
+    }
+
+    private fun enforceAmoledWindowIfNeeded() {
+        if (LocalDataStore(this).appThemeMode != AppThemeMode.AMOLED) return
+        window.setBackgroundDrawable(ColorDrawable(Color.BLACK))
+        window.statusBarColor = Color.BLACK
+        window.navigationBarColor = Color.BLACK
+        window.decorView.setBackgroundColor(Color.BLACK)
     }
 }

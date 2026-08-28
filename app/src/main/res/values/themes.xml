@@ -16,20 +16,19 @@
     </style>
     <style name="Theme.BudgetBuddy" parent="Base.Theme.BudgetBuddy" />
 
-    <style name="ThemeOverlay.BudgetBuddy.MaterialMappings" parent="">
-        <item name="budgetBackgroundColor">?attr/colorSurface</item>
-        <item name="budgetSurfaceColor">?attr/colorSurfaceContainer</item>
-        <item name="budgetPrimaryColor">?attr/colorPrimary</item>
-        <item name="budgetTextColor">?attr/colorOnSurface</item>
-        <item name="budgetOnPrimaryColor">?attr/colorOnPrimary</item>
-        <item name="budgetInputColor">?attr/colorSurfaceContainerHighest</item>
-    </style>
-
-    <style name="ThemeOverlay.BudgetBuddy.Amoled" parent="">
+    <style name="Theme.BudgetBuddy.Amoled" parent="Theme.BudgetBuddy">
         <item name="colorPrimary">@color/amoled_accent</item>
         <item name="colorOnPrimary">@color/amoled_black</item>
+        <item name="colorSurface">@color/amoled_black</item>
+        <item name="colorSurfaceContainer">@color/amoled_surface</item>
+        <item name="colorSurfaceContainerHighest">@color/amoled_input</item>
+        <item name="colorOnSurface">@color/amoled_text</item>
         <item name="android:windowBackground">@color/amoled_black</item>
+        <item name="android:colorBackground">@color/amoled_black</item>
         <item name="android:navigationBarColor">@color/amoled_black</item>
+        <item name="android:statusBarColor">@color/amoled_black</item>
+        <item name="android:windowLightNavigationBar">false</item>
+        <item name="android:windowLightStatusBar">false</item>
         <item name="android:colorAccent">@color/amoled_accent</item>
         <item name="android:editTextColor">@color/amoled_text</item>
         <item name="android:textColorHint">@color/grey</item>
@@ -40,6 +39,15 @@
         <item name="budgetTextColor">@color/amoled_text</item>
         <item name="budgetOnPrimaryColor">@color/amoled_black</item>
         <item name="budgetInputColor">@color/amoled_input</item>
+    </style>
+
+    <style name="ThemeOverlay.BudgetBuddy.MaterialMappings" parent="">
+        <item name="budgetBackgroundColor">?attr/colorSurface</item>
+        <item name="budgetSurfaceColor">?attr/colorSurfaceContainer</item>
+        <item name="budgetPrimaryColor">?attr/colorPrimary</item>
+        <item name="budgetTextColor">?attr/colorOnSurface</item>
+        <item name="budgetOnPrimaryColor">?attr/colorOnPrimary</item>
+        <item name="budgetInputColor">?attr/colorSurfaceContainerHighest</item>
     </style>
 
     <style name="SlideActivityAnimation" parent="@android:style/Animation.Activity">
