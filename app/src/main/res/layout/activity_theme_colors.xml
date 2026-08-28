@@ -160,7 +160,7 @@
                         tools:text="#46B793" />
                 </LinearLayout>
 
-                <com.example.budgetbuddy.ColorPickerView
+                <com.budgetbuddy.ColorPickerView
                     android:id="@+id/pickerAccent"
                     android:layout_width="match_parent"
                     android:layout_height="190dp"
@@ -194,7 +194,7 @@
                         tools:text="#FCF5E8" />
                 </LinearLayout>
 
-                <com.example.budgetbuddy.ColorPickerView
+                <com.budgetbuddy.ColorPickerView
                     android:id="@+id/pickerMain"
                     android:layout_width="match_parent"
                     android:layout_height="190dp"
@@ -316,7 +316,7 @@
                         tools:text="#2E7D32" />
                 </LinearLayout>
 
-                <com.example.budgetbuddy.ColorPickerView
+                <com.budgetbuddy.ColorPickerView
                     android:id="@+id/pickerGaugeGood"
                     android:layout_width="match_parent"
                     android:layout_height="190dp"
@@ -338,7 +338,7 @@
                         tools:text="#F9A825" />
                 </LinearLayout>
 
-                <com.example.budgetbuddy.ColorPickerView
+                <com.budgetbuddy.ColorPickerView
                     android:id="@+id/pickerGaugeOkay"
                     android:layout_width="match_parent"
                     android:layout_height="190dp"
@@ -360,7 +360,7 @@
                         tools:text="#C62828" />
                 </LinearLayout>
 
-                <com.example.budgetbuddy.ColorPickerView
+                <com.budgetbuddy.ColorPickerView
                     android:id="@+id/pickerGaugeBad"
                     android:layout_width="match_parent"
                     android:layout_height="190dp"

@@ -102,7 +102,7 @@ app/src/test/                           Host-side finance and streak tests
 app/src/androidTest/                    Offline onboarding UI tests
 ```
 
-The launcher entry point is `com.example.budgetbuddy.WelcomeActivity`. It redirects configured users directly to the Home screen, so onboarding runs only once.
+The launcher entry point is `com.budgetbuddy.WelcomeActivity`. It redirects configured users directly to the Home screen, so onboarding runs only once.
 
 ### Build and test
 

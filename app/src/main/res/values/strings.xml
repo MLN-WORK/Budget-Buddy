@@ -164,7 +164,7 @@
     <string name="select_optional_income_category">Income category (optional)</string>
     <string name="total_allocated">R%1$.2f</string>
     <string name="save_budget">Save budget</string>
-    <string name="invalid_budget_values">Add at least one category and enter valid amounts</string>
+    <string name="invalid_budget_values">Enter a valid monthly maximum above zero</string>
     <string name="invalid_budget_range">Enter a maximum above zero and valid category amounts</string>
     <string name="budget_save_failed">The budget could not be saved. Please check the amounts and try again.</string>
     <string name="select_repeat">Select repeat</string>
@@ -214,6 +214,8 @@
     <string name="analytics_no_budget_mood">Set a monthly budget to see how Budster feels</string>
     <string name="you_only_wanna_spend">Your category budgets use %.0f%% of your monthly maximum</string>
     <string name="category_budget_percentage">Your category budgets use %1$d%% of your monthly maximum</string>
+    <string name="preserve_transaction_drafts">Keep unfinished transactions</string>
+    <string name="preserve_transaction_drafts_description">Restore an unfinished transaction after visiting other pages. Off by default; creating a category always keeps the current form.</string>
     <string name="looks_like_you_have_t_spent_any_money_yet">Looks like you have\'t spent any money yet</string>
 
 </resources>
