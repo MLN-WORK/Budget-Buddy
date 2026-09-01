@@ -42,15 +42,6 @@ android:orientation="vertical">
                 android:fontFamily="@font/roboto_regular"
                 android:textColor="?attr/budgetTextColor"
                 android:layout_marginStart="10dp"/>
-            <TextView
-                android:id="@+id/tvRecordOcrBadge"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:text="@string/ocr_filter"
-                android:textColor="?attr/budgetPrimaryColor"
-                android:textSize="11sp"
-                android:visibility="gone" />
         </LinearLayout>
         <TextView
             android:id="@+id/tvRecordAmount"

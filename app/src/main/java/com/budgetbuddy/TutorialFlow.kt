@@ -70,7 +70,6 @@ object TutorialFlow {
         }
         activity.startActivity(Intent(activity, destination).apply {
             if (step > 0) putExtra(EXTRA_STEP, step)
-            if (step == 4) putExtra(AddImageActivity.EXTRA_OCR_MODE, true)
         })
         activity.finish()
         activity.overridePendingTransition(0, 0)
@@ -201,7 +200,7 @@ object TutorialFlow {
                     listOf(
                         activity.getString(R.string.income) to "+ ${data.currencySymbol}1,200.00",
                         activity.getString(R.string.tutorial_demo_groceries) to "− ${data.currencySymbol}180.00",
-                        activity.getString(R.string.ocr_filter) to "− ${data.currencySymbol}120.00"
+                        activity.getString(R.string.tutorial_demo_food) to "− ${data.currencySymbol}120.00"
                     )
                 )
             }
@@ -224,13 +223,9 @@ object TutorialFlow {
                 activity.findViewById<android.widget.EditText>(R.id.etDescription)?.setText(activity.getString(R.string.tutorial_demo_groceries))
                 activity.findViewById<View>(R.id.btnSave)?.apply { isEnabled = false; alpha = 0.55f }
             }
-            4 -> {
-                activity.findViewById<View>(R.id.ocrResultCard)?.visibility = View.VISIBLE
-                activity.findViewById<TextView>(R.id.tvOcrStatus)?.setText(R.string.receipt_ocr_ready)
-                activity.findViewById<TextView>(R.id.tvOcrSummary)?.apply {
-                    text = activity.getString(R.string.tutorial_demo_ocr_summary, data.currencySymbol)
-                    visibility = View.VISIBLE
-                }
+            4 -> activity.findViewById<View>(R.id.btnSaveImg)?.apply {
+                isEnabled = false
+                alpha = 0.55f
             }
             5 -> {
                 installStateSelector(activity, R.id.scrollableContent) { state -> applyAnalyticsState(activity, state) }
@@ -242,7 +237,7 @@ object TutorialFlow {
                     activity.getString(R.string.income) to "+ ${data.currencySymbol}500.00",
                     activity.getString(R.string.tutorial_demo_groceries) to "− ${data.currencySymbol}85.00",
                     activity.getString(R.string.tutorial_demo_rent) to "− ${data.currencySymbol}300.00",
-                    activity.getString(R.string.ocr_filter) to "− ${data.currencySymbol}42.80"
+                    activity.getString(R.string.tutorial_demo_food) to "− ${data.currencySymbol}42.80"
                 )
             )
         }
@@ -426,7 +421,7 @@ object TutorialFlow {
             1 -> R.string.tutorial_home_title
             2 -> R.string.tutorial_monthly_budget_title
             3 -> R.string.tutorial_transaction_title
-            4 -> R.string.tutorial_ocr_title
+            4 -> R.string.tutorial_receipt_title
             5 -> R.string.tutorial_analytics_title
             else -> R.string.tutorial_records_title
         }
@@ -434,7 +429,7 @@ object TutorialFlow {
             1 -> R.string.tutorial_home_coach
             2 -> R.string.tutorial_budget_coach
             3 -> R.string.tutorial_transaction_coach
-            4 -> R.string.tutorial_ocr_coach
+            4 -> R.string.tutorial_receipt_coach
             5 -> R.string.tutorial_analytics_coach
             else -> R.string.tutorial_records_coach
         }

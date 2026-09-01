@@ -39,12 +39,11 @@ class TransactionDetailActivity : BaseActivity() {
             R.string.detail_description_value,
             transaction.note ?: getString(R.string.no_description)
         )
-        binding.tvDetailDate.text = getString(R.string.ocr_date_value, transaction.date)
+        binding.tvDetailDate.text = getString(R.string.detail_date_value, transaction.date)
         binding.tvDetailCategory.text = getString(
             R.string.detail_category_value,
             localData.categoryDisplayName(transaction.categoryId)
         )
-        binding.tvDetailOcr.visibility = if (transaction.isOcr) View.VISIBLE else View.GONE
         binding.tvDetailLimit.visibility = if (transaction.addsToSpendingLimit) View.VISIBLE else View.GONE
         val icon = localData.categoryIcon(transaction.categoryId)
         CategoryIconCatalog.bind(binding.imgDetailCategory, icon)

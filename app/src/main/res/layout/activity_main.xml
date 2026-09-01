@@ -27,18 +27,6 @@
             android:layout_gravity="center" />
 
         <ImageButton
-            android:id="@+id/btnQuickOcr"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_gravity="start|center_vertical"
-            android:layout_marginStart="8dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/quick_scan_receipt"
-            android:padding="11dp"
-            android:src="@drawable/ic_camera"
-            app:tint="?attr/budgetOnPrimaryColor" />
-
-        <ImageButton
             android:id="@+id/btnSettings"
             android:layout_width="48dp"
             android:layout_height="48dp"

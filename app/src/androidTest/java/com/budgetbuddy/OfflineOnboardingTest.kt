@@ -333,16 +333,6 @@ class OfflineOnboardingTest {
     }
 
     @Test
-    fun ocrReviewConfirmationIsOptIn() {
-        val localData = LocalDataStore(context)
-        assertFalse(localData.reviewOcrBeforeApplying)
-
-        localData.setReviewOcrBeforeApplying(true)
-
-        assertTrue(localData.reviewOcrBeforeApplying)
-    }
-
-    @Test
     fun incomeAffectsCashFlowButDoesNotExpandSpendingLimit() {
         val localData = LocalDataStore(context)
         val month = SimpleDateFormat("MMMM yyyy", Locale.getDefault()).format(java.util.Date())
@@ -377,75 +367,6 @@ class OfflineOnboardingTest {
 
         assertEquals(500.0, localData.getIncomeAddedToSpendingLimit(month), 0.001)
         assertEquals(555.0, localData.getEffectiveSpendingLimit(month), 0.001)
-    }
-
-    @Test
-    fun ocrTagPersistsIndependentlyFromChosenCategory() {
-        val localData = LocalDataStore(context)
-        localData.saveTransaction(
-            Transaction(
-                transactionId = "ocr-grocery",
-                categoryId = "Groceries",
-                amount = 42.0,
-                date = "2026-08-28",
-                isOcr = true
-            )
-        )
-
-        val stored = requireNotNull(localData.getTransaction("ocr-grocery"))
-        assertEquals("Groceries", stored.categoryId)
-        assertTrue(stored.isOcr)
-    }
-
-    @Test
-    fun renamedOcrCategoryKeepsStableIdentityAndExistingRecords() {
-        val localData = LocalDataStore(context)
-        assertTrue(localData.setOcrCategoryName("Scanned receipts"))
-        localData.saveTransaction(
-            Transaction(
-                transactionId = "stable-ocr",
-                categoryId = LocalDataStore.OCR_CATEGORY,
-                amount = 18.0,
-                date = "2026-08-28",
-                isOcr = true
-            )
-        )
-        assertTrue(localData.setOcrCategoryName("Receipt imports"))
-
-        assertEquals(LocalDataStore.OCR_CATEGORY, localData.getTransaction("stable-ocr")?.categoryId)
-        assertEquals("Receipt imports", localData.categoryDisplayName(LocalDataStore.OCR_CATEGORY))
-        assertEquals("ic_eye", localData.categoryIcon(LocalDataStore.OCR_CATEGORY))
-    }
-
-    @Test
-    fun changingOcrNameFromSettingsReturnsHomeWithoutLosingTheRecord() {
-        val localData = LocalDataStore(context)
-        localData.saveProfile("Local User", "\$", "Budster")
-        localData.saveTransaction(
-            Transaction(
-                transactionId = "settings-rename-ocr",
-                categoryId = LocalDataStore.OCR_CATEGORY,
-                amount = 18.0,
-                date = "2026-08-28",
-                isOcr = true
-            )
-        )
-
-        ActivityScenario.launch<ProfileActivity>(
-            Intent(context, ProfileActivity::class.java)
-                .putExtra(ProfileActivity.EXTRA_SETTINGS_MODE, true)
-        ).use {
-            onView(withId(R.id.edtOcrCategoryName))
-                .perform(replaceText("My receipt scans"), closeSoftKeyboard())
-            onView(withId(R.id.btnSaveProfile)).perform(click())
-            onView(withId(R.id.tvHeader)).check(matches(withText(R.string.home)))
-        }
-
-        assertEquals(
-            LocalDataStore.OCR_CATEGORY,
-            localData.getTransaction("settings-rename-ocr")?.categoryId
-        )
-        assertEquals("My receipt scans", localData.categoryDisplayName(LocalDataStore.OCR_CATEGORY))
     }
 
     @Test

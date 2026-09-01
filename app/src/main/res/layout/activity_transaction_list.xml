@@ -167,14 +167,6 @@
                         android:textColor="?attr/budgetTextColor"
                         app:buttonTint="?attr/budgetPrimaryColor"/>
 
-                    <RadioButton
-                        android:id="@+id/rbOcr"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingStart="8dp"
-                        android:text="@string/ocr_filter"
-                        android:textColor="?attr/budgetTextColor"
-                        app:buttonTint="?attr/budgetPrimaryColor" />
                 </RadioGroup>
 
             </FrameLayout>

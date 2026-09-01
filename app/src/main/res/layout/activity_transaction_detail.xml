@@ -57,11 +57,6 @@
             <TextView android:id="@+id/tvDetailDate" style="@style/TransactionDetailValue" />
             <TextView android:id="@+id/tvDetailCategory" style="@style/TransactionDetailValue" />
             <TextView
-                android:id="@+id/tvDetailOcr"
-                style="@style/TransactionDetailBadge"
-                android:text="@string/ocr_scanned_record"
-                android:visibility="gone" />
-            <TextView
                 android:id="@+id/tvDetailLimit"
                 style="@style/TransactionDetailBadge"
                 android:text="@string/income_included_in_limit"

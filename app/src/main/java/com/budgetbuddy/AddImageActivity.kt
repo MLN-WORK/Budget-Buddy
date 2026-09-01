@@ -14,33 +14,24 @@ import androidx.core.content.FileProvider
 import com.bumptech.glide.Glide
 import com.budgetbuddy.databinding.ActivityAddImageBinding
 import java.io.File
-import java.text.SimpleDateFormat
-import java.util.Locale
 import java.util.concurrent.Executors
 
 /*
  * Start of class
  * Name of class and related classes (parent/child classes): AddImageActivity
- * Parent class: BaseActivity; child classes: none; related classes: ReceiptStorage, TransactionActivity, and ReceiptOcrScanner when available.
+ * Parent class: BaseActivity; child classes: none; related classes: ReceiptStorage, ReceiptFileCopier, and TransactionActivity.
  * What the class does: Captures or imports an app-owned receipt image for a transaction.
  * What's important to other classes, if applicable: It must preserve BaseActivity appearance behavior and use LocalDataStore as the offline source of truth.
  * Code with comments begins below.
  */
 class AddImageActivity : BaseActivity() {
     private lateinit var binding: ActivityAddImageBinding
-    private lateinit var ocrScanner: ReceiptOcrScanner
     private val imageWorker = Executors.newSingleThreadExecutor()
     private var selectedImage: File? = null
     private var pendingCameraImage: File? = null
     private var processingCameraImage: File? = null
     private var importInProgress = false
     private var resultDelivered = false
-    private var ocrResult: ReceiptOcrResult? = null
-    private var ocrCategory: String? = null
-    private var ocrIsIncome = false
-    private var ocrScanId = 0
-    private var ocrMode = false
-    private var autoCameraLaunched = false
 
     private val takePicture = registerForActivityResult(ActivityResultContracts.TakePicture()) { captured ->
         val image = pendingCameraImage
@@ -65,11 +56,6 @@ class AddImageActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityAddImageBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        ocrScanner = ReceiptOcrScanner(applicationContext)
-        ocrMode = intent.getBooleanExtra(EXTRA_OCR_MODE, false)
-        autoCameraLaunched = savedInstanceState?.getBoolean(STATE_AUTO_CAMERA_LAUNCHED, false) ?: false
-        binding.tvPgBanner.setText(if (ocrMode) R.string.scan_receipt else R.string.add_image)
-        binding.btnSaveImg.setText(if (ocrMode) R.string.use_scanned_receipt else R.string.attach_receipt)
 
         selectedImage = savedInstanceState?.getString(STATE_SELECTED_IMAGE)
             ?.let(::File)
@@ -78,33 +64,24 @@ class AddImageActivity : BaseActivity() {
         setLoading(false)
         selectedImage?.let {
             showPreview(it)
-            if (ocrMode) scanReceipt(it) else updateSaveButton()
+            updateSaveButton()
         }
 
         binding.btnOpenGallery.setOnClickListener {
             pickImage.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         }
-        binding.btnTakePhoto.setOnClickListener {
-            startCameraWithPermission()
-        }
+        binding.btnTakePhoto.setOnClickListener { startCameraWithPermission() }
         binding.btnSaveImg.setOnClickListener { deliverSelection() }
         binding.ivBackBtn.setOnClickListener { finish() }
-        if (ocrMode && intent.getBooleanExtra(EXTRA_AUTO_CAMERA, false) && !autoCameraLaunched) {
-            autoCameraLaunched = true
-            binding.root.post(::startCameraWithPermission)
-        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString(STATE_SELECTED_IMAGE, selectedImage?.absolutePath)
         outState.putString(STATE_PENDING_CAMERA_IMAGE, pendingCameraImage?.absolutePath)
-        outState.putBoolean(STATE_AUTO_CAMERA_LAUNCHED, autoCameraLaunched)
     }
 
     override fun onDestroy() {
-        ocrScanId++
-        if (::ocrScanner.isInitialized) ocrScanner.close()
         imageWorker.shutdownNow()
         if (isFinishing && !resultDelivered) {
             ReceiptStorage.deleteIfOwned(this, selectedImage?.absolutePath)
@@ -146,8 +123,7 @@ class AddImageActivity : BaseActivity() {
                     return@runOnUiThread
                 }
                 setLoading(false)
-                imported
-                    .onSuccess(::replaceSelection)
+                imported.onSuccess(::replaceSelection)
                     .onFailure { toast(getString(R.string.image_load_failed)) }
             }
         }
@@ -158,18 +134,17 @@ class AddImageActivity : BaseActivity() {
         processingCameraImage = image
         setLoading(true)
         imageWorker.execute {
-            val normalized = runCatching {
+            val normalised = runCatching {
                 ReceiptStorage.finalizeCameraCapture(applicationContext, image)
             }
             runOnUiThread {
                 processingCameraImage = null
                 if (isDestroyed || isFinishing) {
-                    normalized.getOrNull()?.let { ReceiptStorage.deleteIfOwned(this, it.absolutePath) }
+                    normalised.getOrNull()?.let { ReceiptStorage.deleteIfOwned(this, it.absolutePath) }
                     return@runOnUiThread
                 }
                 setLoading(false)
-                normalized
-                    .onSuccess(::replaceSelection)
+                normalised.onSuccess(::replaceSelection)
                     .onFailure { toast(getString(R.string.camera_capture_failed)) }
             }
         }
@@ -181,10 +156,7 @@ class AddImageActivity : BaseActivity() {
             ?.let { ReceiptStorage.deleteIfOwned(this, it.absolutePath) }
         selectedImage = image
         showPreview(image)
-        if (ocrMode) scanReceipt(image) else {
-            binding.ocrResultCard.visibility = View.GONE
-            updateSaveButton()
-        }
+        updateSaveButton()
     }
 
     private fun showPreview(image: File) {
@@ -198,46 +170,6 @@ class AddImageActivity : BaseActivity() {
         }.onFailure { toast(getString(R.string.image_load_failed)) }
     }
 
-    private fun scanReceipt(image: File) {
-        val scanId = ++ocrScanId
-        ocrResult = null
-        binding.ocrResultCard.visibility = View.VISIBLE
-        binding.tvOcrStatus.setText(R.string.receipt_ocr_scanning)
-        binding.tvOcrSummary.visibility = View.GONE
-        setLoading(true)
-        ocrScanner.scan(
-            image,
-            onSuccess = { result ->
-                runOnUiThread {
-                    if (scanId != ocrScanId || isFinishing || isDestroyed) return@runOnUiThread
-                    ocrResult = result
-                    val localData = LocalDataStore(this)
-                    ocrCategory = ReceiptCategoryClassifier.suggest(
-                        result.rawText,
-                        result.merchant,
-                        localData.getCategories(),
-                        localData.ocrDefaultCategory
-                    )
-                    ocrIsIncome = ReceiptCategoryClassifier.isLikelyIncome(result.rawText)
-                    setLoading(false)
-                    showOcrResult(result)
-                    deliverSelection()
-                }
-            },
-            onFailure = {
-                runOnUiThread {
-                    if (scanId != ocrScanId || isFinishing || isDestroyed) return@runOnUiThread
-                    ocrResult = null
-                    ocrCategory = LocalDataStore(this).ocrDefaultCategory
-                    ocrIsIncome = false
-                    setLoading(false)
-                    binding.tvOcrStatus.setText(R.string.receipt_ocr_no_details)
-                    binding.tvOcrSummary.visibility = View.GONE
-                }
-            }
-        )
-    }
-
     private fun deliverSelection() {
         if (resultDelivered || importInProgress) return
         val image = selectedImage?.takeIf { ReceiptStorage.isUsableOwnedReceipt(this, it) }
@@ -246,40 +178,8 @@ class AddImageActivity : BaseActivity() {
             return
         }
         resultDelivered = true
-        setResult(Activity.RESULT_OK, Intent().apply {
-            putExtra(EXTRA_IMAGE_PATH, image.absolutePath)
-            putExtra(EXTRA_OCR_MODE, ocrMode)
-            ocrResult?.merchant?.let { putExtra(EXTRA_OCR_MERCHANT, it) }
-            if (ocrMode) putExtra(EXTRA_OCR_DATE, ocrResult?.date ?: today())
-            ocrResult?.total?.let { putExtra(EXTRA_OCR_TOTAL, it) }
-            ocrResult?.items?.takeIf { it.isNotEmpty() }?.let {
-                putStringArrayListExtra(EXTRA_OCR_ITEMS, ArrayList(it))
-            }
-            ocrCategory?.let { putExtra(EXTRA_OCR_CATEGORY, it) }
-            putExtra(EXTRA_OCR_IS_INCOME, ocrIsIncome)
-        })
+        setResult(Activity.RESULT_OK, Intent().putExtra(EXTRA_IMAGE_PATH, image.absolutePath))
         finish()
-    }
-
-    private fun showOcrResult(result: ReceiptOcrResult) {
-        if (!result.hasSuggestions) {
-            binding.tvOcrStatus.setText(R.string.receipt_ocr_no_details)
-            binding.tvOcrSummary.visibility = View.GONE
-            return
-        }
-        binding.tvOcrStatus.setText(R.string.receipt_ocr_ready)
-        val missing = getString(R.string.receipt_ocr_not_found)
-        val localData = LocalDataStore(this)
-        binding.tvOcrSummary.text = getString(
-            R.string.receipt_ocr_scan_summary,
-            getString(if (ocrIsIncome) R.string.income else R.string.expense),
-            result.merchant ?: missing,
-            result.date ?: today(),
-            result.total?.let { getString(R.string.money_amount, localData.currencySymbol, it) } ?: missing,
-            ocrCategory?.let(localData::categoryDisplayName) ?: missing,
-            result.items.takeIf { it.isNotEmpty() }?.joinToString(", ") ?: missing
-        )
-        binding.tvOcrSummary.visibility = View.VISIBLE
     }
 
     private fun setLoading(loading: Boolean) {
@@ -298,22 +198,10 @@ class AddImageActivity : BaseActivity() {
 
     private fun toast(message: String) = ToastUtil.showCustomToast(this, message)
 
-    private fun today(): String =
-        SimpleDateFormat("yyyy-MM-dd", Locale.US).format(java.util.Date())
-
     companion object {
         const val EXTRA_IMAGE_PATH = "imagePath"
-        const val EXTRA_OCR_MERCHANT = "ocrMerchant"
-        const val EXTRA_OCR_DATE = "ocrDate"
-        const val EXTRA_OCR_TOTAL = "ocrTotal"
-        const val EXTRA_OCR_ITEMS = "ocrItems"
-        const val EXTRA_OCR_CATEGORY = "ocrCategory"
-        const val EXTRA_OCR_IS_INCOME = "ocrIsIncome"
-        const val EXTRA_OCR_MODE = "ocrMode"
-        const val EXTRA_AUTO_CAMERA = "autoCamera"
         private const val STATE_SELECTED_IMAGE = "selectedImage"
         private const val STATE_PENDING_CAMERA_IMAGE = "pendingCameraImage"
-        private const val STATE_AUTO_CAMERA_LAUNCHED = "autoCameraLaunched"
     }
 }
 // End of class: AddImageActivity

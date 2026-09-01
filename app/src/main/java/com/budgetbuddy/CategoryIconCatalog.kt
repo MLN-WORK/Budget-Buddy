@@ -41,7 +41,6 @@ object CategoryIconCatalog {
         "ic_cash_paper",
         "ic_money_bag",
         "ic_piggy",
-        "ic_eye",
         "ic_currency"
     )
 

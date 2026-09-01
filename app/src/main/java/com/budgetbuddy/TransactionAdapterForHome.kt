@@ -36,7 +36,6 @@ class TransactionAdapterForHome(
         val categoryText: TextView = itemView.findViewById(R.id.tvRecordCategory)
         val dateText: TextView = itemView.findViewById(R.id.tvRecordDate)
         val recordIcon: ImageView = itemView.findViewById(R.id.imgRecordIcon)
-        val ocrBadge: TextView = itemView.findViewById(R.id.tvRecordOcrBadge)
     }
     // End of class: TransactionViewHolder
 
@@ -55,7 +54,6 @@ class TransactionAdapterForHome(
             ?: context.getString(R.string.uncategorised)
         holder.dateText.text = transaction.date
         holder.itemView.setOnClickListener { onView(transaction) }
-        holder.ocrBadge.visibility = if (transaction.isOcr) View.VISIBLE else View.GONE
 
         val isExpense = !transaction.isIncome
 

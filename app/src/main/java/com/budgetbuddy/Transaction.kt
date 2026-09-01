@@ -18,8 +18,7 @@ data class Transaction(
     val photoUrl: String? = null,
     val isIncome: Boolean = false,
     val photoPath: String? = null,
-    val addsToSpendingLimit: Boolean = false,
-    val isOcr: Boolean = false
+    val addsToSpendingLimit: Boolean = false
 )
 // End of class: Transaction
 
@@ -38,7 +37,6 @@ data class TransactionDraft(
     val isIncome: Boolean = false,
     val categoryName: String? = null,
     val photoPath: String? = null,
-    val addsToSpendingLimit: Boolean = false,
-    val isOcr: Boolean = false
+    val addsToSpendingLimit: Boolean = false
 )
 // End of class: TransactionDraft

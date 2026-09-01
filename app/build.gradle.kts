@@ -8,11 +8,11 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.budgetbuddy"
+        applicationId = "com.budgetbuddy.manual"
         minSdk = 27
         targetSdk = 36
         versionCode = 18
-        versionName = "2.9.5-offline"
+        versionName = "2.9.5-manual"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -53,9 +53,6 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.glide.core)
     annotationProcessor(libs.glide.compiler)
-    // The recognition model ships in the APK so receipt OCR works without a download.
-    implementation(libs.mlkit.text.recognition)
-
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

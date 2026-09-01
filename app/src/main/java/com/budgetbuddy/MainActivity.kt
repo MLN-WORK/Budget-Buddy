@@ -1,7 +1,6 @@
 package com.budgetbuddy
 
 import android.Manifest
-import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
@@ -38,15 +37,6 @@ class MainActivity : BaseActivity() {
         if (!granted) ToastUtil.showCustomToast(this, getString(R.string.camera_permission_needed))
     }
 
-    private val quickOcrScanner = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode != Activity.RESULT_OK) return@registerForActivityResult
-        val data = result.data ?: return@registerForActivityResult
-        startActivity(Intent(this, TransactionActivity::class.java).apply {
-            putExtra(TransactionActivity.EXTRA_QUICK_OCR, true)
-            data.extras?.let(::putExtras)
-        })
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -57,12 +47,6 @@ class MainActivity : BaseActivity() {
         setupNavigation()
         binding.btnSettings.setOnClickListener {
             startActivity(Intent(this, ProfileActivity::class.java).putExtra(ProfileActivity.EXTRA_SETTINGS_MODE, true))
-        }
-        binding.btnQuickOcr.setOnClickListener {
-            quickOcrScanner.launch(Intent(this, AddImageActivity::class.java).apply {
-                putExtra(AddImageActivity.EXTRA_OCR_MODE, true)
-                putExtra(AddImageActivity.EXTRA_AUTO_CAMERA, true)
-            })
         }
         refreshDashboard()
         requestInitialPermissionsOnce()

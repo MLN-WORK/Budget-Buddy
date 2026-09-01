@@ -63,9 +63,7 @@ class AddCategoryActivity : BaseActivity() {
         }
 
         val localData = LocalDataStore(this)
-        val firstCustomCategory = localData.getCategories().none {
-            it.createdByUser && it.id != LocalDataStore.OCR_CATEGORY
-        }
+        val firstCustomCategory = localData.getCategories().none(Category::createdByUser)
         val newCategory = Category(categoryName, selectedIconId, createdByUser = true)
         if (!localData.addCategory(newCategory)) {
             Toast.makeText(this, "A category with that name already exists", Toast.LENGTH_SHORT).show()

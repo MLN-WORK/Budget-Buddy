@@ -8,16 +8,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import com.bumptech.glide.Glide
 import com.budgetbuddy.databinding.ActivityTransactionBinding
 import com.google.android.material.color.MaterialColors
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.io.File
 import java.text.SimpleDateFormat
-import java.time.LocalDate
 import java.util.Calendar
 import java.util.Locale
 import java.util.UUID
@@ -37,7 +34,6 @@ class TransactionActivity : BaseActivity() {
     private var selectedPhotoPath: String? = null
     private var draftPhotoPath: String? = null
     private var isIncome = false
-    private var isOcrTransaction = false
     private var editingTransaction: Transaction? = null
     private var preferredCategoryId: String? = null
     private var userCurrencySymbol = CurrencyCatalog.DEFAULT_SYMBOL
@@ -52,10 +48,6 @@ class TransactionActivity : BaseActivity() {
                 selectedPhotoPath = returned?.absolutePath
                 draftPhotoPath = returned?.absolutePath
                 showReceipt()
-                if (result.data?.getBooleanExtra(AddImageActivity.EXTRA_OCR_MODE, false) == true) {
-                    isOcrTransaction = true
-                    showReceiptSuggestions(result.data)
-                }
             } else {
                 toast(getString(R.string.image_load_failed))
             }
@@ -90,9 +82,6 @@ class TransactionActivity : BaseActivity() {
         binding.btnQuickAddCategory.setOnClickListener { launchCategoryCreator() }
         binding.btnSave.setOnClickListener { saveTransaction() }
         binding.btnAddImage.setOnClickListener { imagePicker.launch(Intent(this, AddImageActivity::class.java)) }
-        binding.btnScanReceipt.setOnClickListener {
-            imagePicker.launch(Intent(this, AddImageActivity::class.java).putExtra(AddImageActivity.EXTRA_OCR_MODE, true))
-        }
         binding.ivAttachedReceipt.setOnClickListener { imagePicker.launch(Intent(this, AddImageActivity::class.java)) }
 
         savedInstanceState?.let {
@@ -101,7 +90,6 @@ class TransactionActivity : BaseActivity() {
             selectedDate = it.getString(STATE_DATE, selectedDate)
             binding.tvDate.text = selectedDate
             isIncome = it.getBoolean(STATE_IS_INCOME, false)
-            isOcrTransaction = it.getBoolean(STATE_IS_OCR, false)
             binding.switchAddIncomeToLimit.isChecked = it.getBoolean(STATE_ADD_INCOME_TO_LIMIT, false)
             selectedPhotoPath = it.getString(STATE_PHOTO_PATH)
             draftPhotoPath = it.getString(STATE_DRAFT_PHOTO_PATH)
@@ -113,7 +101,6 @@ class TransactionActivity : BaseActivity() {
         if (savedInstanceState == null && editingTransaction == null && localData.preserveTransactionDrafts) {
             localData.getTransactionDraft()?.let(::restoreDraft)
         }
-        if (savedInstanceState == null) consumeQuickOcrIntent()
     }
 
     override fun onResume() {
@@ -127,7 +114,6 @@ class TransactionActivity : BaseActivity() {
         outState.putString(STATE_DESCRIPTION, binding.etDescription.text.toString())
         outState.putString(STATE_DATE, selectedDate)
         outState.putBoolean(STATE_IS_INCOME, isIncome)
-        outState.putBoolean(STATE_IS_OCR, isOcrTransaction)
         outState.putBoolean(STATE_ADD_INCOME_TO_LIMIT, binding.switchAddIncomeToLimit.isChecked)
         outState.putString(STATE_PHOTO_PATH, selectedPhotoPath)
         outState.putString(STATE_DRAFT_PHOTO_PATH, draftPhotoPath)
@@ -168,7 +154,6 @@ class TransactionActivity : BaseActivity() {
         selectedDate = transaction.date
         binding.tvDate.text = selectedDate
         selectedPhotoPath = transaction.photoPath
-        isOcrTransaction = transaction.isOcr
         binding.switchAddIncomeToLimit.isChecked = transaction.addsToSpendingLimit
         preferredCategoryId = transaction.categoryId
         if (transaction.isIncome) selectIncome() else selectExpense()
@@ -282,144 +267,6 @@ class TransactionActivity : BaseActivity() {
         }
     }
 
-    private fun showReceiptSuggestions(data: Intent?) {
-        val merchant = data?.getStringExtra(AddImageActivity.EXTRA_OCR_MERCHANT)
-        val items = data?.getStringArrayListExtra(AddImageActivity.EXTRA_OCR_ITEMS).orEmpty()
-        val date = data?.getStringExtra(AddImageActivity.EXTRA_OCR_DATE) ?: today()
-        val total = data?.takeIf { it.hasExtra(AddImageActivity.EXTRA_OCR_TOTAL) }
-            ?.getDoubleExtra(AddImageActivity.EXTRA_OCR_TOTAL, 0.0)
-            ?.takeIf { it.isFinite() && it > 0.0 }
-        val categoryId = data?.getStringExtra(AddImageActivity.EXTRA_OCR_CATEGORY) ?: localData.ocrDefaultCategory
-        val categoryName = localData.categoryDisplayName(categoryId)
-        val predictedIncome = data?.getBooleanExtra(AddImageActivity.EXTRA_OCR_IS_INCOME, false) == true
-        if (!localData.reviewOcrBeforeApplying) {
-            applyReceiptSuggestions(merchant, items, date, total, categoryId, predictedIncome)
-            return
-        }
-        val missing = getString(R.string.receipt_ocr_not_found)
-        val review = layoutInflater.inflate(R.layout.dialog_ocr_review, null)
-        review.findViewById<TextView>(R.id.tvOcrReviewTitle).setText(
-            if (predictedIncome) R.string.confirm_income else R.string.confirm_expense
-        )
-        review.findViewById<TextView>(R.id.tvOcrRecommendation).text = getString(
-            R.string.buddy_ocr_recommendation,
-            localData.buddyName
-        )
-        review.findViewById<TextView>(R.id.tvOcrMerchant).text = getString(R.string.ocr_merchant_value, merchant ?: missing)
-        review.findViewById<TextView>(R.id.tvOcrDate).text = getString(R.string.ocr_date_value, date)
-        review.findViewById<TextView>(R.id.tvOcrMonthWarning).apply {
-            val scannedMonth = date.take(7)
-            val currentMonth = today().take(7)
-            visibility = if (scannedMonth != currentMonth) View.VISIBLE else View.GONE
-            if (visibility == View.VISIBLE) {
-                text = getString(
-                    R.string.ocr_other_month_warning,
-                    date,
-                    SimpleDateFormat("MMMM yyyy", Locale.getDefault()).format(java.util.Date())
-                )
-            }
-        }
-        review.findViewById<TextView>(R.id.tvOcrTotal).text = getString(
-            R.string.ocr_total_value,
-            total?.let { getString(R.string.money_amount, userCurrencySymbol, it) } ?: missing
-        )
-        review.findViewById<TextView>(R.id.tvOcrCategory).text = getString(R.string.ocr_category_value, categoryName)
-        review.findViewById<TextView>(R.id.tvOcrItems).text = getString(
-            R.string.ocr_items_value,
-            items.takeIf { it.isNotEmpty() }?.joinToString(", ") ?: missing
-        )
-        bindOcrBuddy(review, date, categoryId, total ?: 0.0, predictedIncome)
-        MaterialAlertDialogBuilder(this)
-            .setView(review)
-            .setNegativeButton(R.string.keep_current_details, null)
-            .setPositiveButton(R.string.apply_details) { _, _ ->
-                applyReceiptSuggestions(merchant, items, date, total, categoryId, predictedIncome)
-            }
-            .show()
-    }
-
-    private fun applyReceiptSuggestions(
-        merchant: String?,
-        items: List<String>,
-        date: String,
-        total: Double?,
-        categoryId: String,
-        predictedIncome: Boolean
-    ) {
-        if (predictedIncome) selectIncome() else selectExpense()
-        total?.let { binding.etAmount.setText(getString(R.string.plain_decimal_amount, it)) }
-        date.takeIf { runCatching { LocalDate.parse(it) }.isSuccess }?.let {
-            selectedDate = it
-            binding.tvDate.text = it
-        }
-        if (binding.etDescription.text.isNullOrBlank()) {
-            val suggestedDescription = listOfNotNull(
-                merchant?.takeIf(String::isNotBlank),
-                items.takeIf { it.isNotEmpty() }?.joinToString(", ")
-            ).joinToString(" — ")
-            if (suggestedDescription.isNotBlank()) binding.etDescription.setText(suggestedDescription)
-        }
-        preferredCategoryId = categoryId
-        setupCategorySpinner()
-    }
-
-    private fun bindOcrBuddy(view: View, date: String?, categoryId: String, amount: Double, income: Boolean) {
-        val displayMonth = runCatching {
-            val parsed = requireNotNull(SimpleDateFormat(DATE_PATTERN, Locale.US).parse(date ?: today()))
-            SimpleDateFormat("MMMM yyyy", Locale.getDefault()).format(parsed)
-        }.getOrElse { SimpleDateFormat("MMMM yyyy", Locale.getDefault()).format(java.util.Date()) }
-        val budget = localData.getBudget(displayMonth)
-        val categoryBudget = budget?.categories?.get(categoryId)
-        val image = view.findViewById<ImageView>(R.id.imgOcrBuddy)
-        val status = view.findViewById<TextView>(R.id.tvOcrBudgetImpact)
-        if (income || amount <= 0.0) {
-            image.setImageResource(R.drawable.neutral_buddy_1)
-            status.setText(R.string.ocr_income_buddy_message)
-            return
-        }
-        val monthKey = runCatching {
-            SimpleDateFormat("yyyy-MM", Locale.US).format(
-                requireNotNull(SimpleDateFormat("MMMM yyyy", Locale.getDefault()).parse(displayMonth))
-            )
-        }.getOrDefault("")
-        val (spent, limit, categorySpecific) = if (categoryBudget != null && categoryBudget.allocation > 0.0) {
-            val categorySpent = localData.getTransactions()
-                .filter { !it.isIncome && it.categoryId == categoryId && it.date.startsWith(monthKey) }
-                .sumOf(Transaction::amount)
-            Triple(categorySpent + amount, categoryBudget.allocation, true)
-        } else {
-            Triple(localData.getMonthlyExpenseTotal(displayMonth) + amount, localData.getEffectiveSpendingLimit(displayMonth), false)
-        }
-        if (limit <= 0.0) {
-            image.setImageResource(R.drawable.happy_buddy)
-            status.setText(R.string.ocr_no_budget_message)
-            return
-        }
-        when (AnalyticsCalculator.buddyMood(spent, limit)) {
-            AnalyticsCalculator.BuddyMood.HAPPY -> image.setImageResource(R.drawable.neutral_buddy_1)
-            AnalyticsCalculator.BuddyMood.NEUTRAL -> image.setImageResource(R.drawable.happy_buddy)
-            AnalyticsCalculator.BuddyMood.ANGRY -> image.setImageResource(R.drawable.angry_buddy)
-        }
-        status.text = getString(
-            if (categorySpecific) R.string.ocr_category_budget_impact else R.string.ocr_month_budget_impact,
-            AnalyticsCalculator.spentPercentage(spent, limit)
-        )
-    }
-
-    private fun consumeQuickOcrIntent() {
-        if (!intent.getBooleanExtra(EXTRA_QUICK_OCR, false)) return
-        val file = intent.getStringExtra(AddImageActivity.EXTRA_IMAGE_PATH)
-            ?.let(::File)
-            ?.takeIf { ReceiptStorage.isUsableOwnedReceipt(this, it) }
-            ?: return
-        selectedPhotoPath = file.absolutePath
-        draftPhotoPath = file.absolutePath
-        isOcrTransaction = true
-        showReceipt()
-        binding.root.post { showReceiptSuggestions(intent) }
-        intent.removeExtra(EXTRA_QUICK_OCR)
-    }
-
     private fun launchCategoryCreator() {
         val selected = (binding.spinnerCategory.selectedItem as? Category)
         if (selected != null && selected.id.isNotBlank()) {
@@ -436,7 +283,6 @@ class TransactionActivity : BaseActivity() {
         selectedPhotoPath = draft.photoPath
         draftPhotoPath = draft.photoPath
         preferredCategoryId = draft.categoryName
-        isOcrTransaction = draft.isOcr
         binding.switchAddIncomeToLimit.isChecked = draft.addsToSpendingLimit
         if (draft.isIncome) selectIncome() else selectExpense()
         setupCategorySpinner()
@@ -451,11 +297,9 @@ class TransactionActivity : BaseActivity() {
             description = binding.etDescription.text.toString(),
             date = selectedDate,
             isIncome = isIncome,
-            categoryName = category ?: preferredCategoryId.validCategory()
-                ?: localData.ocrDefaultCategory.takeIf { isOcrTransaction },
+            categoryName = category ?: preferredCategoryId.validCategory(),
             photoPath = selectedPhotoPath,
-            addsToSpendingLimit = isIncome && binding.switchAddIncomeToLimit.isChecked,
-            isOcr = isOcrTransaction
+            addsToSpendingLimit = isIncome && binding.switchAddIncomeToLimit.isChecked
         )
     }
 
@@ -466,7 +310,6 @@ class TransactionActivity : BaseActivity() {
             !photoPath.isNullOrBlank() ||
             isIncome ||
             addsToSpendingLimit ||
-            isOcr ||
             (date.isNotBlank() && date != today())
 
     private fun today(): String =
@@ -482,7 +325,7 @@ class TransactionActivity : BaseActivity() {
             binding.spinnerCategory.selectedItemPosition > 0 &&
                 it.name != getString(R.string.add_category_spinner)
         }
-        if (!isIncome && selected == null && !isOcrTransaction) {
+        if (!isIncome && selected == null) {
             toast(getString(R.string.please_select_category))
             return
         }
@@ -492,15 +335,14 @@ class TransactionActivity : BaseActivity() {
             userId = LocalDataStore.LOCAL_USER_ID,
             categoryId = requireNotNull(TransactionCategoryPolicy.persistedCategory(
                 isIncome,
-                selected?.id ?: localData.ocrDefaultCategory.takeIf { isOcrTransaction }
+                selected?.id
             )),
             amount = amount,
             date = selectedDate,
             note = binding.etDescription.text.toString().takeIf(String::isNotBlank),
             isIncome = isIncome,
             photoPath = selectedPhotoPath,
-            addsToSpendingLimit = isIncome && binding.switchAddIncomeToLimit.isChecked,
-            isOcr = isOcrTransaction
+            addsToSpendingLimit = isIncome && binding.switchAddIncomeToLimit.isChecked
         )
         runCatching { localData.saveTransaction(transaction) }
             .onSuccess {
@@ -521,7 +363,6 @@ class TransactionActivity : BaseActivity() {
         binding.spinnerCategory.setSelection(0)
         preferredCategoryId = null
         selectedPhotoPath = null
-        isOcrTransaction = false
         binding.switchAddIncomeToLimit.isChecked = false
         showReceipt()
         selectExpense()
@@ -532,7 +373,6 @@ class TransactionActivity : BaseActivity() {
 
     companion object {
         const val EXTRA_TRANSACTION_ID = "transactionId"
-        const val EXTRA_QUICK_OCR = "quickOcr"
         private const val DATE_PATTERN = "yyyy-MM-dd"
         private const val STATE_AMOUNT = "amount"
         private const val STATE_DESCRIPTION = "description"
@@ -542,7 +382,6 @@ class TransactionActivity : BaseActivity() {
         private const val STATE_DRAFT_PHOTO_PATH = "draftPhotoPath"
         private const val STATE_CATEGORY = "category"
         private const val STATE_ADD_INCOME_TO_LIMIT = "addIncomeToLimit"
-        private const val STATE_IS_OCR = "isOcr"
     }
 }
 // End of class: TransactionActivity

@@ -43,7 +43,6 @@ class TransactionHistoryActivity : BaseActivity() {
     private lateinit var rbAll: RadioButton
     private lateinit var rbExpenses: RadioButton
     private lateinit var rbIncomes: RadioButton
-    private lateinit var rbOcr: RadioButton
     private var startDate: String = ""
     private var endDate: String = ""
 
@@ -131,7 +130,6 @@ class TransactionHistoryActivity : BaseActivity() {
         rbAll = findViewById(R.id.rbAll)
         rbExpenses = findViewById(R.id.rbExpenses)
         rbIncomes = findViewById(R.id.rbIncomes)
-        rbOcr = findViewById(R.id.rbOcr)
         btnCategoryTog = findViewById(R.id.btnCategoryTog)
         btnBackTHA = findViewById(R.id.btnBackTHA)
     }
@@ -173,7 +171,6 @@ class TransactionHistoryActivity : BaseActivity() {
                 R.id.rbAll -> loadAllTransactions()
                 R.id.rbExpenses -> loadAllExpenses()
                 R.id.rbIncomes -> loadAllIncomes()
-                R.id.rbOcr -> loadAllOcr()
             }
         } else {
             // Filter by date and type
@@ -182,7 +179,6 @@ class TransactionHistoryActivity : BaseActivity() {
                     R.id.rbAll -> txns.filterALl()
                     R.id.rbExpenses -> txns.filterExpensesOnly()
                     R.id.rbIncomes -> txns.filterIncomesOnly()
-                    R.id.rbOcr -> txns.filterOcrOnly()
                     else -> txns.filterALl()
                 }
                 adapter.updateData(filtered)
@@ -269,13 +265,6 @@ class TransactionHistoryActivity : BaseActivity() {
         )
     }
 
-    private fun loadAllOcr() {
-        repo.fetchAll(
-            onComplete = { txns -> adapter.updateData(txns.filterOcrOnly()) },
-            onError = { e -> toast("Load error: ${e.message}") }
-        )
-    }
-
     private fun toast(msg: String) {
         ToastUtil.showCustomToast(this, msg)
     }
@@ -308,8 +297,6 @@ class TransactionHistoryActivity : BaseActivity() {
     fun List<Transaction>.filterIncomesOnly(): List<Transaction> {
         return filter(Transaction::isIncome)
     }
-
-    fun List<Transaction>.filterOcrOnly(): List<Transaction> = filter(Transaction::isOcr)
 
 // ----------------------------------------------------------------
 // RecyclerView Adapter for ease of access
@@ -346,7 +333,6 @@ class TransactionHistoryActivity : BaseActivity() {
             val tvCategory: TextView = view.findViewById(R.id.tvCategory)
             val imgCatIcon: ImageView = view.findViewById(R.id.imgCatIcon)
             val ivPhoto: ImageView = view.findViewById(R.id.ivPhoto)
-            val tvOcrBadge: TextView = view.findViewById(R.id.tvOcrBadge)
         }
         // End of class: TransactionVH
 
@@ -373,7 +359,6 @@ class TransactionHistoryActivity : BaseActivity() {
             holder.tvCategory.text = category?.name
                 ?: txn.categoryId.takeIf(String::isNotBlank)
                 ?: context.getString(R.string.uncategorised)
-            holder.tvOcrBadge.visibility = if (txn.isOcr) View.VISIBLE else View.GONE
 
             val isExpense = !txn.isIncome
 

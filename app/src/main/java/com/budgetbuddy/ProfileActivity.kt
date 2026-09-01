@@ -56,17 +56,9 @@ class ProfileActivity : BaseActivity() {
             if (settingsMode) android.view.View.VISIBLE else android.view.View.GONE
         binding.switchStatusMoneyColors.visibility = if (settingsMode) View.VISIBLE else View.GONE
         binding.tvStatusMoneyColorsDescription.visibility = if (settingsMode) View.VISIBLE else View.GONE
-        binding.switchReviewOcrBeforeApplying.visibility = if (settingsMode) View.VISIBLE else View.GONE
-        binding.tvReviewOcrBeforeApplyingDescription.visibility = if (settingsMode) View.VISIBLE else View.GONE
-        binding.tvOcrCategoryNameLabel.visibility = if (settingsMode) View.VISIBLE else View.GONE
-        binding.edtOcrCategoryName.visibility = if (settingsMode) View.VISIBLE else View.GONE
-        binding.tvOcrCategoryNameDescription.visibility = if (settingsMode) View.VISIBLE else View.GONE
         binding.btnReplayTutorial.visibility = if (settingsMode) View.VISIBLE else View.GONE
-        binding.tvOcrPrivacyDisclaimer.visibility = if (settingsMode) View.VISIBLE else View.GONE
         binding.switchPreserveTransactionDrafts.isChecked = localData.preserveTransactionDrafts
         binding.switchStatusMoneyColors.isChecked = localData.useStatusMoneyColors
-        binding.switchReviewOcrBeforeApplying.isChecked = localData.reviewOcrBeforeApplying
-        binding.edtOcrCategoryName.setText(localData.ocrCategoryName)
         binding.btnThemesColors.setOnClickListener {
             startActivity(Intent(this, ThemeColorsActivity::class.java))
         }
@@ -120,14 +112,9 @@ class ProfileActivity : BaseActivity() {
             currencyName = currency.name
         )
         if (settingsMode) {
-            if (!localData.setOcrCategoryName(binding.edtOcrCategoryName.text.toString())) {
-                binding.edtOcrCategoryName.error = getString(R.string.ocr_category_name_invalid)
-                return
-            }
             val settingsSaved = runCatching {
                 localData.setPreserveTransactionDrafts(binding.switchPreserveTransactionDrafts.isChecked)
                 localData.setUseStatusMoneyColors(binding.switchStatusMoneyColors.isChecked)
-                localData.setReviewOcrBeforeApplying(binding.switchReviewOcrBeforeApplying.isChecked)
                 true
             }.getOrDefault(false)
             if (!settingsSaved) {

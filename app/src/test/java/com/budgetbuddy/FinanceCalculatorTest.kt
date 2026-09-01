@@ -53,7 +53,7 @@ class FinanceCalculatorTest {
             Transaction("groceries", categoryId = "Groceries", amount = 204.0, date = "2026-08-29"),
             Transaction("salary", categoryId = "Salary", amount = 348.0, date = "2026-08-29", isIncome = true),
             Transaction("bonus", categoryId = "Salary", amount = 200.0, date = "2026-08-29", isIncome = true, addsToSpendingLimit = true),
-            Transaction("ocr", categoryId = "OCR", amount = 2.0, date = "2026-08-29", isOcr = true)
+            Transaction("small-expense", categoryId = "Other", amount = 2.0, date = "2026-08-29")
         )
 
         val balance = FinanceCalculator.balanceForMonth(phoneTransactions, "2026-08")

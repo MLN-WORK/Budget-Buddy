@@ -86,25 +86,6 @@ class LocalDataStore(context: Context) {
     val useStatusMoneyColors: Boolean
         get() = preferences.getBoolean(KEY_USE_STATUS_MONEY_COLORS, true)
 
-    val reviewOcrBeforeApplying: Boolean
-        get() = preferences.getBoolean(KEY_REVIEW_OCR_BEFORE_APPLYING, false)
-
-    val ocrCategoryName: String
-        get() = runCatching { preferences.getString(KEY_OCR_CATEGORY_NAME, OCR_CATEGORY) }
-            .getOrNull()
-            ?.trim()
-            ?.takeIf(String::isNotBlank)
-            ?: OCR_CATEGORY
-
-    /** Stable category id used when OCR cannot make a more specific suggestion. */
-    val ocrDefaultCategory: String
-        get() {
-            val stored = runCatching {
-                preferences.getString(KEY_OCR_DEFAULT_CATEGORY, OCR_CATEGORY)
-            }.getOrNull() ?: OCR_CATEGORY
-            return getCategories().firstOrNull { it.id == stored || it.name == stored }?.id ?: OCR_CATEGORY
-        }
-
     val isTutorialComplete: Boolean
         get() = preferences.getBoolean(KEY_TUTORIAL_COMPLETE, false)
 
@@ -113,32 +94,6 @@ class LocalDataStore(context: Context) {
 
     fun setUseStatusMoneyColors(enabled: Boolean) {
         preferences.edit().putBoolean(KEY_USE_STATUS_MONEY_COLORS, enabled).apply()
-    }
-
-    fun setReviewOcrBeforeApplying(enabled: Boolean) {
-        preferences.edit().putBoolean(KEY_REVIEW_OCR_BEFORE_APPLYING, enabled).apply()
-    }
-
-    fun setOcrDefaultCategory(categoryId: String) {
-        val safe = getCategories().firstOrNull { it.id == categoryId || it.name == categoryId }?.id ?: OCR_CATEGORY
-        preferences.edit().putString(KEY_OCR_DEFAULT_CATEGORY, safe).apply()
-    }
-
-    fun setOcrCategoryName(value: String): Boolean {
-        val name = cleanSingleLine(value, MAX_CATEGORY_NAME_LENGTH)
-        if (name.isBlank()) return false
-        return runCatching {
-            // Do not build the live category list through ocrCategoryName while that same
-            // preference is being replaced. OCR keeps the stable id "OCR" forever; only
-            // its user-facing label changes, so existing records and budgets remain linked.
-            val duplicate = (PRESET_CATEGORIES.filterNot { it.id == OCR_CATEGORY } + getCustomCategories())
-                .any { it.name.equals(name, ignoreCase = true) }
-            if (duplicate) return@runCatching false
-            preferences.edit()
-                .remove(KEY_OCR_CATEGORY_NAME)
-                .putString(KEY_OCR_CATEGORY_NAME, name)
-                .commit()
-        }.getOrDefault(false)
     }
 
     fun requireTutorial() {
@@ -174,7 +129,6 @@ class LocalDataStore(context: Context) {
                 .put("categoryName", draft.categoryName)
                 .put("photoPath", draft.photoPath)
                 .put("addsToSpendingLimit", draft.addsToSpendingLimit)
-                .put("isOcr", draft.isOcr)
                 .toString()
         ).apply()
     }
@@ -189,8 +143,7 @@ class LocalDataStore(context: Context) {
             isIncome = value.optBoolean("isIncome"),
             categoryName = value.optNullableString("categoryName"),
             photoPath = value.optNullableString("photoPath"),
-            addsToSpendingLimit = value.optBoolean("addsToSpendingLimit"),
-            isOcr = value.optBoolean("isOcr")
+            addsToSpendingLimit = value.optBoolean("addsToSpendingLimit")
         )
     }.getOrNull()
 
@@ -273,13 +226,7 @@ class LocalDataStore(context: Context) {
         preferences.edit().putBoolean(KEY_INITIAL_PERMISSION_REQUESTED, true).apply()
     }
 
-    fun getCategories(): List<Category> = PRESET_CATEGORIES.map { category ->
-        if (category.id == OCR_CATEGORY) {
-            category.copy(name = ocrCategoryName, createdByUser = true)
-        } else {
-            category
-        }
-    } + getCustomCategories()
+    fun getCategories(): List<Category> = PRESET_CATEGORIES + getCustomCategories()
 
     fun categoryDisplayName(categoryId: String?): String = when {
         categoryId.isNullOrBlank() -> "Uncategorised"
@@ -455,22 +402,19 @@ class LocalDataStore(context: Context) {
         .put("photoPath", photoPath)
         .put("isIncome", isIncome)
         .put("addsToSpendingLimit", addsToSpendingLimit)
-        .put("isOcr", isOcr)
 
     private fun JSONObject.toTransaction(): Transaction {
-        val isOcr = optBoolean("isOcr")
         val storedCategory = optString("categoryId").takeIf(String::isNotBlank)
         return Transaction(
             transactionId = optString("transactionId"),
             userId = LOCAL_USER_ID,
-            categoryId = storedCategory ?: OCR_CATEGORY.takeIf { isOcr }.orEmpty(),
+            categoryId = storedCategory.orEmpty(),
             amount = optDouble("amount"),
             date = optString("date"),
             note = optNullableString("note"),
             isIncome = optBoolean("isIncome"),
             photoPath = optNullableString("photoPath"),
-            addsToSpendingLimit = optBoolean("addsToSpendingLimit"),
-            isOcr = isOcr
+            addsToSpendingLimit = optBoolean("addsToSpendingLimit")
         )
     }
 
@@ -578,9 +522,6 @@ class LocalDataStore(context: Context) {
         private const val KEY_PRESERVE_TRANSACTION_DRAFTS = "preserve_transaction_drafts"
         private const val KEY_TRANSACTION_DRAFT = "transaction_draft"
         private const val KEY_USE_STATUS_MONEY_COLORS = "use_status_money_colors"
-        private const val KEY_REVIEW_OCR_BEFORE_APPLYING = "review_ocr_before_applying"
-        private const val KEY_OCR_DEFAULT_CATEGORY = "ocr_default_category"
-        private const val KEY_OCR_CATEGORY_NAME = "ocr_category_name"
         private const val KEY_TUTORIAL_COMPLETE = "tutorial_complete"
         private const val KEY_TUTORIAL_INITIALIZED = "tutorial_initialized"
         private const val DEFAULT_CURRENCY = CurrencyCatalog.DEFAULT_SYMBOL
@@ -596,7 +537,6 @@ class LocalDataStore(context: Context) {
         private const val MAX_TRANSACTION_ID_LENGTH = 80
         private const val MAX_CATEGORY_ID_LENGTH = 80
         private const val MAX_TRANSACTION_AMOUNT = 1.0E15
-        const val OCR_CATEGORY = "OCR"
         const val CUSTOM_CURRENCY_CODE = "CUSTOM"
 
         val PRESET_CATEGORIES = listOf(
@@ -607,7 +547,6 @@ class LocalDataStore(context: Context) {
             Category("Dining", "ic_forkin_knife"),
             Category("Entertainment", "ic_play_button"),
             Category("Salary", "ic_cash_paper"),
-            Category(OCR_CATEGORY, "ic_eye", createdByUser = true, id = OCR_CATEGORY),
             Category("Other", "ic_currency")
         )
     }
