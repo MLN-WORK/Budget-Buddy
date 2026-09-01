@@ -4,6 +4,14 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
 
+/*
+ * Start of class
+ * Name of class and related classes (parent/child classes): TransactionCategoryPolicyTest
+ * Parent class: Any; child classes: none; related classes: TransactionCategoryPolicy, JUnit, and the application code under test.
+ * What the class does: Verifies the TransactionCategoryPolicy behavior and its regression cases.
+ * What's important to other classes, if applicable: Its assertions document the behavior production classes must preserve.
+ * Code with comments begins below.
+ */
 class TransactionCategoryPolicyTest {
     @Test
     fun `income without a category uses a stable default`() {
@@ -32,3 +40,4 @@ class TransactionCategoryPolicyTest {
         )
     }
 }
+// End of class: TransactionCategoryPolicyTest

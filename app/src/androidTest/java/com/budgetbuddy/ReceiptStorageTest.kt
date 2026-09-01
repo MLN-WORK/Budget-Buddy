@@ -13,6 +13,14 @@ import org.junit.runner.RunWith
 import java.io.File
 
 @RunWith(AndroidJUnit4::class)
+/*
+ * Start of class
+ * Name of class and related classes (parent/child classes): ReceiptStorageTest
+ * Parent class: Any; child classes: none; related classes: ReceiptStorage, JUnit, and the application code under test.
+ * What the class does: Verifies the ReceiptStorage behavior and its regression cases.
+ * What's important to other classes, if applicable: Its assertions document the behavior production classes must preserve.
+ * Code with comments begins below.
+ */
 class ReceiptStorageTest {
     private val context: Context
         get() = InstrumentationRegistry.getInstrumentation().targetContext
@@ -94,3 +102,4 @@ class ReceiptStorageTest {
         }
     }
 }
+// End of class: ReceiptStorageTest

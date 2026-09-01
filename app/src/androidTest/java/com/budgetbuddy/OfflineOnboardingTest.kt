@@ -1,6 +1,10 @@
 package com.budgetbuddy
 
+import android.Manifest
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
@@ -8,6 +12,7 @@ import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
 import androidx.test.espresso.action.ViewActions.replaceText
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.isChecked
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -15,6 +20,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -24,6 +30,14 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 @RunWith(AndroidJUnit4::class)
+/*
+ * Start of class
+ * Name of class and related classes (parent/child classes): OfflineOnboardingTest
+ * Parent class: Any; child classes: none; related classes: ActivityScenario, LocalDataStore, and the app activities under test.
+ * What the class does: Verifies offline onboarding, persistence, navigation, themes, permissions, and finance flows on Android.
+ * What's important to other classes, if applicable: These device tests protect the user-visible contracts shared by both application editions.
+ * Code with comments begins below.
+ */
 class OfflineOnboardingTest {
     private val context: Context
         get() = InstrumentationRegistry.getInstrumentation().targetContext
@@ -62,6 +76,22 @@ class OfflineOnboardingTest {
             assertEquals("€", localData.currencySymbol)
             assertEquals("EUR", localData.currencyCode)
         }
+    }
+
+    @Test
+    fun tutorialHomeDoesNotLaunchAPermissionRequestFromTheTemporaryActivity() {
+        val localData = LocalDataStore(context)
+        localData.saveProfile("Tutorial Tester", "R", "Budster")
+        localData.requireTutorial()
+
+        ActivityScenario.launch<MainActivity>(
+            Intent(context, MainActivity::class.java).putExtra(TutorialFlow.EXTRA_STEP, 1)
+        ).use {
+            InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+            onView(withId(R.id.btnSettings)).check(matches(isDisplayed()))
+        }
+
+        assertTrue(localData.shouldRequestInitialPermissions)
     }
 
     @Test
@@ -188,9 +218,315 @@ class OfflineOnboardingTest {
 
         ActivityScenario.launch(AnalyticsActivity::class.java).use {
             onView(withId(R.id.btnMinMaxHeader)).check(
-                matches(withText(context.getString(R.string.youSpent, 25f)))
+                matches(withText(context.getString(R.string.spending_limit_used_detail, 25.0, "R", 200.0)))
             )
         }
+    }
+
+    @Test
+    fun onboardingThemeSelectionDoesNotAdvanceUntilContinueIsPressed() {
+        LocalDataStore(context).apply {
+            saveProfile("Theme Tester", "R", "Budster")
+            requireTutorial()
+        }
+
+        ActivityScenario.launch<ThemeColorsActivity>(
+            Intent(context, ThemeColorsActivity::class.java)
+                .putExtra(ThemeColorsActivity.EXTRA_ONBOARDING, true)
+        ).use { scenario ->
+            var activityIdentity = 0
+            scenario.onActivity {
+                activityIdentity = System.identityHashCode(it)
+            }
+            onView(withId(R.id.rbThemeAmoled)).perform(click())
+            Thread.sleep(700)
+            InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+
+            onView(withText(R.string.themes_and_colors)).check(matches(isDisplayed()))
+            onView(withId(R.id.rbThemeAmoled)).check(matches(isChecked()))
+            onView(withId(R.id.btnSaveAppearance)).check(matches(withText(R.string.continue_to_tutorial)))
+            var amoledIdentity = 0
+            scenario.onActivity {
+                amoledIdentity = System.identityHashCode(it)
+                assertEquals(activityIdentity, amoledIdentity)
+                val page = it.findViewById<android.view.ViewGroup>(android.R.id.content).getChildAt(0)
+                assertEquals(
+                    android.graphics.Color.BLACK,
+                    (page.background as android.graphics.drawable.ColorDrawable).color
+                )
+            }
+
+            onView(withId(R.id.rbThemeLight)).perform(click())
+            Thread.sleep(700)
+            InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+            onView(withId(R.id.rbThemeLight)).check(matches(isChecked()))
+            onView(withId(R.id.btnSaveAppearance)).check(matches(isDisplayed()))
+            scenario.onActivity {
+                assertEquals(amoledIdentity, System.identityHashCode(it))
+                val page = it.findViewById<android.view.ViewGroup>(android.R.id.content).getChildAt(0)
+                assertEquals(
+                    AppearanceDefaults.LIGHT_APP.main,
+                    (page.background as android.graphics.drawable.ColorDrawable).color
+                )
+            }
+        }
+
+        assertFalse(LocalDataStore(context).isTutorialComplete)
+        assertEquals(AppThemeMode.LIGHT, LocalDataStore(context).appThemeMode)
+    }
+
+    @Test
+    fun unsavedThemePreviewDoesNotReplaceTheStoredTheme() {
+        val localData = LocalDataStore(context)
+        localData.saveProfile("Theme Tester", "R", "Budster")
+
+        ActivityScenario.launch(ThemeColorsActivity::class.java).use { scenario ->
+            scenario.onActivity { assertFalse(it.findViewById<android.view.View>(R.id.btnSaveAppearance).isEnabled) }
+            onView(withId(R.id.rbThemeAmoled)).perform(click())
+            scenario.onActivity { assertTrue(it.findViewById<android.view.View>(R.id.btnSaveAppearance).isEnabled) }
+        }
+
+        assertEquals(AppThemeMode.LIGHT, localData.appThemeMode)
+    }
+
+    @Test
+    fun savedThemeIsPersistedBeforeTheNewScreenStarts() {
+        val localData = LocalDataStore(context)
+        localData.saveProfile("Theme Tester", "R", "Budster")
+        localData.completeTutorial()
+
+        ActivityScenario.launch(ThemeColorsActivity::class.java).use {
+            onView(withId(R.id.rbThemeDark)).perform(click())
+            onView(withId(R.id.btnSaveAppearance)).perform(click())
+            InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+        }
+
+        assertEquals(AppThemeMode.DARK, localData.appThemeMode)
+    }
+
+    @Test
+    fun everySavedThemeCanLaunchTheHomeScreen() {
+        val localData = LocalDataStore(context)
+        localData.saveProfile("Theme Tester", "R", "Budster")
+        localData.completeTutorial()
+        localData.markInitialPermissionsRequested()
+
+        AppThemeMode.entries.forEach { mode ->
+            localData.saveAppearance(
+                themeMode = mode,
+                customAccent = AppearanceDefaults.CUSTOM_ACCENT,
+                customMain = AppearanceDefaults.CUSTOM_MAIN,
+                gaugeMode = GaugePaletteMode.DEFAULT,
+                customGauge = AppearanceDefaults.DEFAULT_GAUGE
+            )
+            ActivityScenario.launch(MainActivity::class.java).use { scenario ->
+                onView(withId(R.id.btnSettings)).check(matches(isDisplayed()))
+                scenario.onActivity {
+                    assertEquals(
+                        mode.name,
+                        BudgetBuddyApplication.nightModeFor(mode, AppearanceDefaults.CUSTOM_MAIN),
+                        it.delegate.localNightMode
+                    )
+                }
+            }
+        }
+    }
+
+    @Test
+    fun ocrReviewConfirmationIsOptIn() {
+        val localData = LocalDataStore(context)
+        assertFalse(localData.reviewOcrBeforeApplying)
+
+        localData.setReviewOcrBeforeApplying(true)
+
+        assertTrue(localData.reviewOcrBeforeApplying)
+    }
+
+    @Test
+    fun incomeAffectsCashFlowButDoesNotExpandSpendingLimit() {
+        val localData = LocalDataStore(context)
+        val month = SimpleDateFormat("MMMM yyyy", Locale.getDefault()).format(java.util.Date())
+        val date = SimpleDateFormat("yyyy-MM-dd", Locale.US).format(java.util.Date())
+        localData.saveBudget(month, Budget(0.0, 55.0, emptyMap()))
+        localData.saveTransaction(Transaction("income", categoryId = "Income", amount = 500.0, date = date, isIncome = true))
+        localData.saveTransaction(Transaction("expense", categoryId = "Other", amount = 55.0, date = date))
+
+        val monthKey = date.take(7)
+        val balance = localData.getBalance(monthKey)
+        assertEquals(500.0, balance.totalIncome, 0.001)
+        assertEquals(55.0, balance.totalExpenses, 0.001)
+        assertEquals(445.0, balance.closingBalance, 0.001)
+        assertEquals(55.0, localData.getBudget(month)?.maximumSpendingBudget ?: -1.0, 0.001)
+        assertEquals(100, AnalyticsCalculator.spentPercentage(balance.totalExpenses, 55.0))
+    }
+
+    @Test
+    fun optedInIncomeExpandsOnlyItsMonthlySpendingLimit() {
+        val localData = LocalDataStore(context)
+        val month = SimpleDateFormat("MMMM yyyy", Locale.getDefault()).format(java.util.Date())
+        val date = SimpleDateFormat("yyyy-MM-dd", Locale.US).format(java.util.Date())
+        localData.saveBudget(month, Budget(0.0, 55.0, emptyMap()))
+        localData.saveTransaction(Transaction(
+            "included-income",
+            categoryId = "Income",
+            amount = 500.0,
+            date = date,
+            isIncome = true,
+            addsToSpendingLimit = true
+        ))
+
+        assertEquals(500.0, localData.getIncomeAddedToSpendingLimit(month), 0.001)
+        assertEquals(555.0, localData.getEffectiveSpendingLimit(month), 0.001)
+    }
+
+    @Test
+    fun ocrTagPersistsIndependentlyFromChosenCategory() {
+        val localData = LocalDataStore(context)
+        localData.saveTransaction(
+            Transaction(
+                transactionId = "ocr-grocery",
+                categoryId = "Groceries",
+                amount = 42.0,
+                date = "2026-08-28",
+                isOcr = true
+            )
+        )
+
+        val stored = requireNotNull(localData.getTransaction("ocr-grocery"))
+        assertEquals("Groceries", stored.categoryId)
+        assertTrue(stored.isOcr)
+    }
+
+    @Test
+    fun renamedOcrCategoryKeepsStableIdentityAndExistingRecords() {
+        val localData = LocalDataStore(context)
+        assertTrue(localData.setOcrCategoryName("Scanned receipts"))
+        localData.saveTransaction(
+            Transaction(
+                transactionId = "stable-ocr",
+                categoryId = LocalDataStore.OCR_CATEGORY,
+                amount = 18.0,
+                date = "2026-08-28",
+                isOcr = true
+            )
+        )
+        assertTrue(localData.setOcrCategoryName("Receipt imports"))
+
+        assertEquals(LocalDataStore.OCR_CATEGORY, localData.getTransaction("stable-ocr")?.categoryId)
+        assertEquals("Receipt imports", localData.categoryDisplayName(LocalDataStore.OCR_CATEGORY))
+        assertEquals("ic_eye", localData.categoryIcon(LocalDataStore.OCR_CATEGORY))
+    }
+
+    @Test
+    fun changingOcrNameFromSettingsReturnsHomeWithoutLosingTheRecord() {
+        val localData = LocalDataStore(context)
+        localData.saveProfile("Local User", "\$", "Budster")
+        localData.saveTransaction(
+            Transaction(
+                transactionId = "settings-rename-ocr",
+                categoryId = LocalDataStore.OCR_CATEGORY,
+                amount = 18.0,
+                date = "2026-08-28",
+                isOcr = true
+            )
+        )
+
+        ActivityScenario.launch<ProfileActivity>(
+            Intent(context, ProfileActivity::class.java)
+                .putExtra(ProfileActivity.EXTRA_SETTINGS_MODE, true)
+        ).use {
+            onView(withId(R.id.edtOcrCategoryName))
+                .perform(replaceText("My receipt scans"), closeSoftKeyboard())
+            onView(withId(R.id.btnSaveProfile)).perform(click())
+            onView(withId(R.id.tvHeader)).check(matches(withText(R.string.home)))
+        }
+
+        assertEquals(
+            LocalDataStore.OCR_CATEGORY,
+            localData.getTransaction("settings-rename-ocr")?.categoryId
+        )
+        assertEquals("My receipt scans", localData.categoryDisplayName(LocalDataStore.OCR_CATEGORY))
+    }
+
+    @Test
+    fun tutorialRunsOnceUnlessExplicitlyRequestedAgain() {
+        val localData = LocalDataStore(context)
+        localData.requireTutorial()
+        assertFalse(localData.isTutorialComplete)
+        assertTrue(localData.hasTutorialState)
+
+        localData.completeTutorial()
+        assertTrue(localData.isTutorialComplete)
+    }
+
+    @Test
+    fun customCurrencyNameAndSymbolPersistTogether() {
+        val localData = LocalDataStore(context)
+        localData.saveProfile(
+            displayName = "Local Buddy",
+            currencySymbol = "¤¤",
+            currencyCode = LocalDataStore.CUSTOM_CURRENCY_CODE,
+            currencyName = "Buddy Credits"
+        )
+
+        assertEquals("Buddy Credits", localData.currencyName)
+        assertEquals("¤¤", localData.currencySymbol)
+        assertEquals(LocalDataStore.CUSTOM_CURRENCY_CODE, localData.currencyCode)
+    }
+
+    @Test
+    fun homeBudgetUsesTheExactOkayGaugeColourInLightMode() {
+        val localData = LocalDataStore(context)
+        localData.saveProfile("Gauge Tester", "€", "Budster")
+        localData.markInitialPermissionsRequested()
+        val month = SimpleDateFormat("MMMM yyyy", Locale.getDefault()).format(java.util.Date())
+        val date = SimpleDateFormat("yyyy-MM-dd", Locale.US).format(java.util.Date())
+        localData.saveBudget(month, Budget(maximumSpendingBudget = 100.0))
+        localData.saveTransaction(
+            Transaction("okay-band", categoryId = "Other", amount = 60.0, date = date)
+        )
+
+        ActivityScenario.launch(MainActivity::class.java).use { scenario ->
+            scenario.onActivity { activity ->
+                val expected = AppearanceDefaults.DEFAULT_GAUGE.okay
+                val bar = activity.findViewById<android.widget.ProgressBar>(R.id.pgBudgetBar)
+                val remaining = activity.findViewById<android.widget.TextView>(R.id.tvBudgetRemaining)
+                assertEquals(expected, bar.progressTintList?.defaultColor)
+                assertEquals(expected, remaining.currentTextColor)
+            }
+        }
+    }
+
+    @Test
+    fun packagedAppDoesNotRequestInternetPermission() {
+        val packageInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            context.packageManager.getPackageInfo(
+                context.packageName,
+                PackageManager.PackageInfoFlags.of(PackageManager.GET_PERMISSIONS.toLong())
+            )
+        } else {
+            @Suppress("DEPRECATION")
+            context.packageManager.getPackageInfo(context.packageName, PackageManager.GET_PERMISSIONS)
+        }
+        assertFalse(packageInfo.requestedPermissions.orEmpty().contains(Manifest.permission.INTERNET))
+    }
+
+    @Test
+    fun persistenceRejectsMalformedFinanceRecordsAndOversizedCategories() {
+        val localData = LocalDataStore(context)
+        val invalidSave = runCatching {
+            localData.saveTransaction(
+                Transaction("invalid", categoryId = "Other", amount = Double.POSITIVE_INFINITY, date = "bad-date")
+            )
+        }
+
+        assertTrue(invalidSave.isFailure)
+        assertNull(localData.getTransaction("invalid"))
+        assertFalse(
+            localData.addCategory(
+                Category("x".repeat(LocalDataStore.MAX_CATEGORY_NAME_LENGTH + 1), "ic_currency", true)
+            )
+        )
     }
 
     @Test
@@ -257,3 +593,4 @@ class OfflineOnboardingTest {
         }
     }
 }
+// End of class: OfflineOnboardingTest
