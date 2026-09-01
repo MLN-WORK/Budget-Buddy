@@ -9,10 +9,26 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.color.MaterialColors
 
+/*
+ * Start of class
+ * Name of class and related classes (parent/child classes): AchievementAdapter
+ * Parent class: RecyclerView.Adapter; child classes: AchievementViewHolder; related classes: Achievement and AchievementViewHolder.
+ * What the class does: Binds Achievement records to the achievements list.
+ * What's important to other classes, if applicable: Callers supply its model data and depend on stable row binding and click-callback behavior.
+ * Code with comments begins below.
+ */
 class AchievementAdapter(
     private val achievements: List<Achievement>
 ) : RecyclerView.Adapter<AchievementAdapter.AchievementViewHolder>() {
 
+    /*
+     * Start of class
+     * Name of class and related classes (parent/child classes): AchievementViewHolder
+     * Parent class: RecyclerView.ViewHolder; child classes: none; related classes: AchievementAdapter and Achievement.
+     * What the class does: Caches the views used for one achievement row.
+     * What's important to other classes, if applicable: Its enclosing adapter owns it; it must not retain activity state beyond the bound row.
+     * Code with comments begins below.
+     */
     class AchievementViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val achievementTitle: TextView = itemView.findViewById(R.id.tvAchievementTitle)
         val achievementDescription: TextView = itemView.findViewById(R.id.tvAchievementDescription)
@@ -23,6 +39,7 @@ class AchievementAdapter(
         val expandToggle: ImageView = itemView.findViewById(R.id.ivExpandToggle)
         val expandedLayout: View = itemView.findViewById(R.id.expandedLayout)
     }
+    // End of class: AchievementViewHolder
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AchievementViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -90,3 +107,4 @@ class AchievementAdapter(
 
     override fun getItemCount(): Int = achievements.size
 }
+// End of class: AchievementAdapter

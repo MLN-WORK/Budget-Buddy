@@ -9,6 +9,14 @@ import java.util.UUID
 import kotlin.math.max
 
 /** Decodes, rotates, scales, and rewrites receipts as dependable local JPEG files. */
+/*
+ * Start of class
+ * Name of class and related classes (parent/child classes): ReceiptImageNormalizer
+ * Parent class: Any; child classes: none; related classes: ReceiptStorage and ReceiptFileCopier.
+ * What the class does: Validates, rotates, scales, and rewrites receipt images as local JPEG files.
+ * What's important to other classes, if applicable: Other classes depend on its validation and ownership boundaries to keep financial and receipt data private and safe.
+ * Code with comments begins below.
+ */
 object ReceiptImageNormalizer {
     private const val MAX_DIMENSION = 2048
     private const val JPEG_QUALITY = 90
@@ -85,3 +93,4 @@ object ReceiptImageNormalizer {
         return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
     }
 }
+// End of class: ReceiptImageNormalizer

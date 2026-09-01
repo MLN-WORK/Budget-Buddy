@@ -5,6 +5,14 @@ import java.io.InputStream
 import java.util.UUID
 
 /** Pure file-copy core, kept Android-free so failure and cleanup behavior can be host-tested. */
+/*
+ * Start of class
+ * Name of class and related classes (parent/child classes): ReceiptFileCopier
+ * Parent class: Any; child classes: none; related classes: ReceiptStorage and ReceiptImageNormalizer.
+ * What the class does: Copies an untrusted image stream into bounded app-owned temporary storage.
+ * What's important to other classes, if applicable: Other classes depend on its validation and ownership boundaries to keep financial and receipt data private and safe.
+ * Code with comments begins below.
+ */
 object ReceiptFileCopier {
     const val DEFAULT_MAX_BYTES = 30L * 1024L * 1024L
 
@@ -47,3 +55,4 @@ object ReceiptFileCopier {
         }
     }
 }
+// End of class: ReceiptFileCopier

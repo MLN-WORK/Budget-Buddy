@@ -4,6 +4,14 @@ import android.app.Activity
 import android.content.Intent
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
+/*
+ * Start of class
+ * Name of class and related classes (parent/child classes): AppNavigation
+ * Parent class: Any; child classes: none; related classes: BaseActivity and the primary navigation activities.
+ * What the class does: Connects the shared bottom navigation to application screens.
+ * What's important to other classes, if applicable: Related classes depend on this class keeping its inputs validated and its output contract deterministic.
+ * Code with comments begins below.
+ */
 object AppNavigation {
     fun bind(
         activity: Activity,
@@ -36,3 +44,4 @@ object AppNavigation {
         }
     }
 }
+// End of class: AppNavigation

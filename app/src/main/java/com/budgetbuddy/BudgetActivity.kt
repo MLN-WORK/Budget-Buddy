@@ -14,6 +14,14 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import java.text.SimpleDateFormat
 import java.util.Locale
 
+/*
+ * Start of class
+ * Name of class and related classes (parent/child classes): BudgetActivity
+ * Parent class: BaseActivity; child classes: none; related classes: Budget, BudgetCategoryAdapter, BudgetLimitCalculator, and LocalDataStore.
+ * What the class does: Lets the user create and edit a monthly spending plan.
+ * What's important to other classes, if applicable: It must preserve BaseActivity appearance behavior and use LocalDataStore as the offline source of truth.
+ * Code with comments begins below.
+ */
 class BudgetActivity : BaseActivity() {
     private lateinit var binding: ActivityBudgetBinding
     private lateinit var localData: LocalDataStore
@@ -66,8 +74,8 @@ class BudgetActivity : BaseActivity() {
         val recyclerView = view.findViewById<RecyclerView>(R.id.rvAllCategories)
         val categories = localData.getCategories().toMutableList()
         val adapter = CategoryAdapter(categories) { selected ->
-            if (selectedBudgetCategories.none { it.name == selected.name }) {
-                selectedBudgetCategories += BudgetCategory(name = selected.name, icon = selected.icon)
+            if (selectedBudgetCategories.none { it.id == selected.id }) {
+                selectedBudgetCategories += BudgetCategory(name = selected.name, icon = selected.icon, id = selected.id)
                 budgetCategoryAdapter.notifyItemInserted(selectedBudgetCategories.lastIndex)
                 binding.fabSaveBudget.visibility = View.VISIBLE
                 updateBudgetAmount()
@@ -93,6 +101,14 @@ class BudgetActivity : BaseActivity() {
         val categoryTotal = selectedBudgetCategories.sumOf(BudgetCategory::allocation)
         binding.tvTotalBudgeted.text = getString(R.string.plain_decimal_amount, categoryTotal)
         val maximumBudget = binding.edtMaximumBudget.text.toString().toDoubleOrNull()
+        binding.tvUnallocatedPercentage.text = if (maximumBudget != null && maximumBudget > 0.0) {
+            getString(
+                R.string.budget_unallocated_percentage,
+                BudgetLimitCalculator.unallocatedPercentage(categoryTotal, maximumBudget)
+            )
+        } else {
+            getString(R.string.budget_unallocated_not_available)
+        }
         val excess = maximumBudget?.let { BudgetLimitCalculator.excess(categoryTotal, it) } ?: 0.0
         binding.tvBudgetWarning.visibility = if (excess > 0.0) View.VISIBLE else View.GONE
         binding.tvBudgetWarning.text = getString(
@@ -145,9 +161,14 @@ class BudgetActivity : BaseActivity() {
             selectedBudgetCategories.clear()
             binding.edtMaximumBudget.text.clear()
             if (budget != null) {
-                val iconByName = localData.getCategories().associate { it.name to it.icon }
-                selectedBudgetCategories += budget.categories.map { (name, category) ->
-                    category.copy(name = name, icon = iconByName[name] ?: category.icon ?: "ic_currency")
+                val categoriesById = localData.getCategories().associateBy(Category::id)
+                selectedBudgetCategories += budget.categories.map { (id, category) ->
+                    val current = categoriesById[id]
+                    category.copy(
+                        name = current?.name ?: category.name,
+                        icon = current?.icon ?: category.icon ?: "ic_currency",
+                        id = id
+                    )
                 }
                 binding.edtMaximumBudget.setText(
                     getString(R.string.plain_decimal_amount, budget.maximumSpendingBudget)
@@ -162,3 +183,4 @@ class BudgetActivity : BaseActivity() {
         }
     }
 }
+// End of class: BudgetActivity

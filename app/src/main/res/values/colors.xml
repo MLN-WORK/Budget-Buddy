@@ -12,8 +12,14 @@
     <color name="amoled_input">#FF151515</color>
     <color name="amoled_text">#FFFFFFFF</color>
     <color name="amoled_accent">#FF52D6AD</color>
+    <color name="dark_background">#FF030A17</color>
+    <color name="dark_surface">#FF152034</color>
+    <color name="dark_input">#FF000000</color>
+    <color name="dark_text">#FFFFFFFF</color>
+    <color name="dark_accent">#FFB9486C</color>
+    <color name="dark_hint">#FF7F7F7F</color>
     <color name="gauge_good">#FF2E7D32</color>
-    <color name="gauge_okay">#FFF9A825</color>
+    <color name="gauge_okay">#FFFFD600</color>
     <color name="gauge_bad">#FFC62828</color>
     <color name="gauge_accessible_good">#FF0072B2</color>
     <color name="gauge_accessible_okay">#FFE69F00</color>

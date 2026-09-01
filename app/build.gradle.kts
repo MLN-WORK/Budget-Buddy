@@ -11,15 +11,18 @@ android {
         applicationId = "com.budgetbuddy"
         minSdk = 27
         targetSdk = 36
-        versionCode = 10
-        versionName = "2.7.0-offline"
+        versionCode = 18
+        versionName = "2.9.5-offline"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            // Obfuscate and trim production builds so implementation details and unused
+            // transitive code are not shipped unnecessarily.
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -50,6 +53,8 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.glide.core)
     annotationProcessor(libs.glide.compiler)
+    // The recognition model ships in the APK so receipt OCR works without a download.
+    implementation(libs.mlkit.text.recognition)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -23,12 +23,7 @@
         <item name="colorSurfaceContainer">@color/amoled_surface</item>
         <item name="colorSurfaceContainerHighest">@color/amoled_input</item>
         <item name="colorOnSurface">@color/amoled_text</item>
-        <item name="android:windowBackground">@color/amoled_black</item>
         <item name="android:colorBackground">@color/amoled_black</item>
-        <item name="android:navigationBarColor">@color/amoled_black</item>
-        <item name="android:statusBarColor">@color/amoled_black</item>
-        <item name="android:windowLightNavigationBar">false</item>
-        <item name="android:windowLightStatusBar">false</item>
         <item name="android:colorAccent">@color/amoled_accent</item>
         <item name="android:editTextColor">@color/amoled_text</item>
         <item name="android:textColorHint">@color/grey</item>

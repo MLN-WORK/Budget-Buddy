@@ -1,20 +1,27 @@
 <resources>
     <style name="Base.Theme.BudgetBuddy" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/teal</item>
-        <item name="colorOnPrimary">@color/white</item>
-        <item name="android:windowBackground">@color/cream</item>
+        <item name="colorPrimary">@color/dark_accent</item>
+        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorSurface">@color/dark_background</item>
+        <item name="colorSurfaceContainer">@color/dark_surface</item>
+        <item name="colorSurfaceContainerHighest">@color/dark_input</item>
+        <item name="colorOnSurface">@color/dark_text</item>
+        <item name="android:windowBackground">@color/dark_background</item>
         <item name="android:windowAnimationStyle">@null</item>
-        <item name="android:navigationBarColor">@color/cream</item>
-        <item name="android:colorAccent">@color/teal</item>
-        <item name="android:editTextColor">@color/black</item>
-        <item name="android:textColorHint">@color/grey</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="android:navigationBarColor">@color/dark_background</item>
+        <item name="android:statusBarColor">@color/dark_background</item>
+        <item name="android:windowLightNavigationBar">false</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:colorAccent">@color/dark_accent</item>
+        <item name="android:editTextColor">@color/dark_text</item>
+        <item name="android:textColorHint">@color/dark_hint</item>
+        <item name="android:textColor">@color/dark_text</item>
         <item name="materialButtonStyle">@style/CustomDefaultButton</item>
-        <item name="budgetBackgroundColor">@color/cream</item>
-        <item name="budgetSurfaceColor">@color/beige</item>
-        <item name="budgetPrimaryColor">@color/teal</item>
-        <item name="budgetTextColor">@color/black</item>
-        <item name="budgetOnPrimaryColor">@color/white</item>
-        <item name="budgetInputColor">@color/white</item>
+        <item name="budgetBackgroundColor">@color/dark_background</item>
+        <item name="budgetSurfaceColor">@color/dark_surface</item>
+        <item name="budgetPrimaryColor">@color/dark_accent</item>
+        <item name="budgetTextColor">@color/dark_text</item>
+        <item name="budgetOnPrimaryColor">@color/black</item>
+        <item name="budgetInputColor">@color/dark_input</item>
     </style>
 </resources>

@@ -45,6 +45,7 @@
     </LinearLayout>
 
     <ScrollView
+        android:id="@+id/themeScrollView"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:fillViewport="true"
@@ -75,7 +76,7 @@
                 android:layout_marginTop="4dp"
                 android:fontFamily="@font/outfit"
                 android:text="@string/app_theme_description"
-                android:textColor="@color/grey"
+                android:textColor="?attr/budgetTextColor"
                 android:textSize="15sp" />
 
             <RadioGroup
@@ -118,7 +119,7 @@
                 android:layout_marginStart="12dp"
                 android:layout_marginTop="4dp"
                 android:fontFamily="@font/outfit"
-                android:textColor="@color/grey"
+                android:textColor="?attr/budgetTextColor"
                 android:textSize="14sp"
                 tools:text="Material You is available on this device." />
 
@@ -223,7 +224,7 @@
                 android:layout_marginTop="4dp"
                 android:fontFamily="@font/outfit"
                 android:text="@string/gauge_colors_description"
-                android:textColor="@color/grey"
+                android:textColor="?attr/budgetTextColor"
                 android:textSize="15sp" />
 
             <RadioGroup
@@ -335,7 +336,7 @@
                     <TextView
                         android:id="@+id/tvGaugeOkayHex"
                         style="@style/ColorHexLabel"
-                        tools:text="#F9A825" />
+                        tools:text="#FFD600" />
                 </LinearLayout>
 
                 <com.budgetbuddy.ColorPickerView
@@ -364,6 +365,43 @@
                     android:id="@+id/pickerGaugeBad"
                     android:layout_width="match_parent"
                     android:layout_height="190dp"
+                    android:contentDescription="@string/gauge_bad_color" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:fontFamily="@font/outfit_bold"
+                android:text="@string/selected_gauge_preview"
+                android:textColor="?attr/budgetTextColor"
+                android:textSize="16sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal">
+
+                <View
+                    android:id="@+id/previewGaugeGood"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:contentDescription="@string/gauge_good_color" />
+
+                <View
+                    android:id="@+id/previewGaugeOkay"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:contentDescription="@string/gauge_okay_color" />
+
+                <View
+                    android:id="@+id/previewGaugeBad"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
                     android:contentDescription="@string/gauge_bad_color" />
             </LinearLayout>
 

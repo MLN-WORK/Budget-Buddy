@@ -22,6 +22,14 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
+/*
+ * Start of class
+ * Name of class and related classes (parent/child classes): TransactionHistoryActivity
+ * Parent class: BaseActivity; child classes: TransactionAdapter and TransactionVH; related classes: TransactionRepo, TransactionAdapter, TransactionVH, and AppNavigation.
+ * What the class does: Displays, filters, and searches the complete transaction history.
+ * What's important to other classes, if applicable: It must preserve BaseActivity appearance behavior and use LocalDataStore as the offline source of truth.
+ * Code with comments begins below.
+ */
 class TransactionHistoryActivity : BaseActivity() {
 
     private lateinit var tvStartDate: TextView
@@ -35,6 +43,7 @@ class TransactionHistoryActivity : BaseActivity() {
     private lateinit var rbAll: RadioButton
     private lateinit var rbExpenses: RadioButton
     private lateinit var rbIncomes: RadioButton
+    private lateinit var rbOcr: RadioButton
     private var startDate: String = ""
     private var endDate: String = ""
 
@@ -122,6 +131,7 @@ class TransactionHistoryActivity : BaseActivity() {
         rbAll = findViewById(R.id.rbAll)
         rbExpenses = findViewById(R.id.rbExpenses)
         rbIncomes = findViewById(R.id.rbIncomes)
+        rbOcr = findViewById(R.id.rbOcr)
         btnCategoryTog = findViewById(R.id.btnCategoryTog)
         btnBackTHA = findViewById(R.id.btnBackTHA)
     }
@@ -163,6 +173,7 @@ class TransactionHistoryActivity : BaseActivity() {
                 R.id.rbAll -> loadAllTransactions()
                 R.id.rbExpenses -> loadAllExpenses()
                 R.id.rbIncomes -> loadAllIncomes()
+                R.id.rbOcr -> loadAllOcr()
             }
         } else {
             // Filter by date and type
@@ -171,6 +182,7 @@ class TransactionHistoryActivity : BaseActivity() {
                     R.id.rbAll -> txns.filterALl()
                     R.id.rbExpenses -> txns.filterExpensesOnly()
                     R.id.rbIncomes -> txns.filterIncomesOnly()
+                    R.id.rbOcr -> txns.filterOcrOnly()
                     else -> txns.filterALl()
                 }
                 adapter.updateData(filtered)
@@ -257,6 +269,13 @@ class TransactionHistoryActivity : BaseActivity() {
         )
     }
 
+    private fun loadAllOcr() {
+        repo.fetchAll(
+            onComplete = { txns -> adapter.updateData(txns.filterOcrOnly()) },
+            onError = { e -> toast("Load error: ${e.message}") }
+        )
+    }
+
     private fun toast(msg: String) {
         ToastUtil.showCustomToast(this, msg)
     }
@@ -270,6 +289,7 @@ class TransactionHistoryActivity : BaseActivity() {
         )
     }
 }
+// End of class: TransactionHistoryActivity
 // ----------------------------------------------------------------
 // Extension Functions
 // ----------------------------------------------------------------
@@ -289,10 +309,20 @@ class TransactionHistoryActivity : BaseActivity() {
         return filter(Transaction::isIncome)
     }
 
+    fun List<Transaction>.filterOcrOnly(): List<Transaction> = filter(Transaction::isOcr)
+
 // ----------------------------------------------------------------
 // RecyclerView Adapter for ease of access
 // ----------------------------------------------------------------
 
+    /*
+     * Start of class
+     * Name of class and related classes (parent/child classes): TransactionAdapter
+     * Parent class: RecyclerView.Adapter; child classes: TransactionVH; related classes: TransactionHistoryActivity, Transaction, and TransactionVH.
+     * What the class does: Binds transaction-history records and selection behavior to the list.
+     * What's important to other classes, if applicable: Callers supply its model data and depend on stable row binding and click-callback behavior.
+     * Code with comments begins below.
+     */
     class TransactionAdapter(
         private var items: MutableList<Transaction>,
         private val categories: List<Category>,
@@ -301,6 +331,14 @@ class TransactionHistoryActivity : BaseActivity() {
         private val onDelete: (Transaction) -> Unit
     ) : RecyclerView.Adapter<TransactionAdapter.TransactionVH>() {
 
+        /*
+         * Start of class
+         * Name of class and related classes (parent/child classes): TransactionVH
+         * Parent class: RecyclerView.ViewHolder; child classes: none; related classes: TransactionAdapter and Transaction.
+         * What the class does: Caches and binds the views for one transaction-history row.
+         * What's important to other classes, if applicable: Its enclosing adapter owns it; it must not retain activity state beyond the bound row.
+         * Code with comments begins below.
+         */
         inner class TransactionVH(view: View) : RecyclerView.ViewHolder(view) {
             val tvDesc: TextView = view.findViewById(R.id.tvDescription)
             val tvAmount: TextView = view.findViewById(R.id.tvAmount)
@@ -308,7 +346,9 @@ class TransactionHistoryActivity : BaseActivity() {
             val tvCategory: TextView = view.findViewById(R.id.tvCategory)
             val imgCatIcon: ImageView = view.findViewById(R.id.imgCatIcon)
             val ivPhoto: ImageView = view.findViewById(R.id.ivPhoto)
+            val tvOcrBadge: TextView = view.findViewById(R.id.tvOcrBadge)
         }
+        // End of class: TransactionVH
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TransactionVH {
             val view = LayoutInflater.from(parent.context)
@@ -329,7 +369,11 @@ class TransactionHistoryActivity : BaseActivity() {
             val context = holder.itemView.context
             holder.tvDesc.text = txn.note ?: context.getString(R.string.no_description)
             holder.tvDate.text = txn.date
-            holder.tvCategory.text = txn.categoryId
+            val category = categories.find { it.id == txn.categoryId || it.name == txn.categoryId }
+            holder.tvCategory.text = category?.name
+                ?: txn.categoryId.takeIf(String::isNotBlank)
+                ?: context.getString(R.string.uncategorised)
+            holder.tvOcrBadge.visibility = if (txn.isOcr) View.VISIBLE else View.GONE
 
             val isExpense = !txn.isIncome
 
@@ -363,7 +407,6 @@ class TransactionHistoryActivity : BaseActivity() {
                 holder.ivPhoto.visibility = View.GONE
             }
 
-            val category = categories.find { it.name == txn.categoryId }
             val iconName = category?.icon ?: "ic_currency"
             CategoryIconCatalog.bind(holder.imgCatIcon, iconName)
 
@@ -393,3 +436,4 @@ class TransactionHistoryActivity : BaseActivity() {
             notifyDataSetChanged()
         }
     }
+    // End of class: TransactionAdapter

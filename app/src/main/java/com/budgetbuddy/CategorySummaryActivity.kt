@@ -14,6 +14,14 @@ import com.google.android.material.button.MaterialButton
 import java.text.SimpleDateFormat
 import java.util.*
 
+/*
+ * Start of class
+ * Name of class and related classes (parent/child classes): CategorySummaryActivity
+ * Parent class: BaseActivity; child classes: none; related classes: TransactionRepo, CategorySummaryAdapter, and LocalDataStore.
+ * What the class does: Shows the transactions and total for one selected category.
+ * What's important to other classes, if applicable: It must preserve BaseActivity appearance behavior and use LocalDataStore as the offline source of truth.
+ * Code with comments begins below.
+ */
 class CategorySummaryActivity : BaseActivity() {
 
     private lateinit var rvSummary: RecyclerView
@@ -102,11 +110,15 @@ class CategorySummaryActivity : BaseActivity() {
 
             // Fetch categories to get icon names
             fetchAllCategories { categories ->
-                val categoryIconMap = categories.associateBy({ it.name }, { it.icon })
+                val categoriesById = categories.associateBy(Category::id)
 
-                val summaryData = categoryTotals.map { (categoryName, total) ->
-                    val icon = categoryIconMap[categoryName] ?: "ic_default"
-                    Triple(categoryName, total, icon)
+                val summaryData = categoryTotals.map { (categoryId, total) ->
+                    val category = categoriesById[categoryId]
+                    Triple(
+                        category?.name ?: localData.categoryDisplayName(categoryId),
+                        total,
+                        category?.icon ?: "ic_currency"
+                    )
                 }
 
                 summaryAdapter.updateData(summaryData)
@@ -129,3 +141,4 @@ class CategorySummaryActivity : BaseActivity() {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
     }
 }
+// End of class: CategorySummaryActivity

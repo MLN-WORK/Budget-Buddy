@@ -7,6 +7,14 @@ import androidx.core.widget.ImageViewCompat
 import com.google.android.material.color.MaterialColors
 
 /** A curated set keeps UI-only assets and broken placeholders out of category selection. */
+/*
+ * Start of class
+ * Name of class and related classes (parent/child classes): CategoryIconCatalog
+ * Parent class: Any; child classes: none; related classes: Category, IconAdapter, and category adapters.
+ * What the class does: Maps safe category icon names to packaged drawable resources.
+ * What's important to other classes, if applicable: Related classes depend on this class keeping its inputs validated and its output contract deterministic.
+ * Code with comments begins below.
+ */
 object CategoryIconCatalog {
     val selectableIcons = listOf(
         "ic_shopping_basket",
@@ -33,6 +41,7 @@ object CategoryIconCatalog {
         "ic_cash_paper",
         "ic_money_bag",
         "ic_piggy",
+        "ic_eye",
         "ic_currency"
     )
 
@@ -53,3 +62,4 @@ object CategoryIconCatalog {
         )
     }
 }
+// End of class: CategoryIconCatalog

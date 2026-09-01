@@ -18,7 +18,7 @@ You do not need Android Studio, programming tools, an online account, or a techn
 4. Open the downloaded file and tap **Install**.
 5. Open **Budget Buddy**, tap **Continue offline**, add your name, choose a currency, and keep the default buddy name **Budster the Budgeter** or replace it with your own.
 
-If an older Budget Buddy APK is already installed, install the new APK over it without uninstalling first. Your existing on-device budgets and transactions will remain available.
+The current `com.budgetbuddy` package installs independently from older `com.example.budgetbuddy` builds. Android does not automatically copy local data between those two app identities.
 
 Android may warn that the app came from outside the Play Store. This is expected for a directly downloaded APK. Only install the APK from this repository's official release page.
 
@@ -28,16 +28,20 @@ Android may warn that the app came from outside the Play Store. This is expected
 - Shows setup only on the first launch; later launches open the Home screen directly.
 - Uses an immersive full-screen interface so Android system bars do not cover the app controls; swipe from an edge to reveal them temporarily.
 - Introduces the companion as **Budster the Budgeter** and lets the user choose a custom buddy name of up to 32 characters, including numbers and special characters.
-- Saves the user name, buddy name, currency, and theme locally; all can be changed from the settings button on the Home screen. New profiles default to Euro, and the offline currency list can be searched by name, ISO code, or symbol.
+- Saves the user name, buddy name, currency, and theme locally; all can be changed from the settings button on the Home screen. New profiles default to Euro. The A-Z currency picker can be filtered by name, ISO code, or symbol and supports a custom currency name and symbol.
 - Provides an optional inverted dark theme from the settings screen.
 - Keeps the same bottom navigation size, position, icons, and instant page transition across every primary screen, including Home.
 - Records income and expenses with a date, category, amount, and optional note.
 - Creates custom spending categories alongside the built-in categories.
-- Builds monthly category budgets and shows spending, remaining funds, income, expenses, and balance.
+- Keeps the monthly spending limit separate from income by default. Each income record can explicitly add its amount to that month's spending limit, and the dashboard shows the resulting limit, included income, remaining allowance, expenses, and net cash flow.
 - Recalculates budget totals whenever a transaction is added, edited, or deleted.
 - Requests the camera permission once on the first Home-screen visit, captures receipts through Android’s standard camera flow, and uses Android’s privacy-friendly photo picker for gallery images.
 - Decodes and normalizes both camera and gallery receipts into rotated, size-bounded local JPEG files on a background worker, then validates each image before it can be attached. Failed, abandoned, replaced, and partial drafts are cleaned up.
-- Filters transaction history by type and date and summarizes spending by category.
+- Uses a bundled ML Kit model to read Latin-script receipts on-device, suggests the merchant, date, and total, and requires the user to review the suggestions before applying them to a transaction.
+- Opens the camera directly from the Home receipt shortcut, provides a separate receipt scan action below image attachment, and gives every scanned record an OCR tag independent of its category.
+- Gives OCR records a stable built-in category identity with a renameable label, so renaming it never disconnects existing transactions, budgets, icons, or filters. Missing receipt dates default to the scan date, and prominent top-of-receipt text is prioritized for merchant suggestions.
+- Shows all saved records on Home, filters transaction history by type, OCR source, and date, opens one record when tapped, and summarizes spending by category.
+- Guides fresh installs from local profile creation through appearance customization and a six-part Buddy tutorial, including a dedicated offline OCR lesson. The tutorial can be skipped on its first page and replayed from Settings.
 - Shows local charts and a spending gauge. Budster is happy while at least 50% of the monthly budget remains, neutral from 15% through 49%, and angry below 15% or when over budget.
 - Shows a dedicated badge for every achievement, with a lock overlay until it is earned, and includes a streak that requires budgets in three distinct consecutive months.
 
@@ -45,7 +49,9 @@ In transaction history, tap a transaction to edit it. Press and hold a transacti
 
 ## Privacy
 
-Budget Buddy has no internet permission and contains no Firebase, advertising, analytics service, remote database, or cloud synchronization code. The local profile, transactions, receipt copies, budgets, categories, settings, and achievements remain in the app's private storage on the device. Android cloud backup is disabled.
+Budget Buddy has no internet permission and contains no Firebase, advertising, remote database, or cloud synchronization code. The local profile, transactions, receipt copies, recognized receipt text, budgets, categories, settings, and achievements remain in the app's private storage on the device. Android cloud backup is disabled.
+
+Receipt recognition uses Google's bundled ML Kit Text Recognition SDK. Google states that receipt inputs and recognition outputs are processed on-device and are not sent to its servers. Its terms also state that ML Kit may collect technical performance and API-usage metrics; Settings discloses this to users. Use of ML Kit remains subject to the ML Kit and Google APIs terms.
 
 Uninstalling the app or clearing its app data permanently removes its records. There is currently no export, backup, import, or multi-device recovery feature. The local store is protected by Android's app sandbox but is not separately encrypted, so the app should not be treated as a vault on a rooted or compromised device.
 
@@ -53,12 +59,13 @@ Uninstalling the app or clearing its app data permanently removes its records. T
 
 - Android 8.1 or newer
 - Camera permission prompt on the first Home-screen visit; denying it does not block budgeting or gallery selection
-- No internet connection, account, API, database, dataset, or external service
+- No internet connection, account, database, dataset, model download, or runtime external service
 
 ## Current limitations
 
 - Budget Buddy is intentionally a single-device, local-profile app.
 - Receipt images stay in app-owned storage and cannot currently be exported through the interface.
+- Receipt OCR suggestions can be wrong on blurry, angled, handwritten, unusually formatted, or non-Latin-script receipts and must be reviewed before saving.
 - There is no automatic backup or restore after uninstalling or replacing the device.
 - Currency formatting uses the chosen symbol; it does not apply country-specific decimal or grouping rules.
 - The APK is distributed directly through repository releases rather than an app store.
@@ -74,12 +81,13 @@ Budget Buddy is a single-module native Android application written in Kotlin wit
 - Gradle 8.14.5, Android Gradle Plugin 8.13.2, and Kotlin DSL
 - MPAndroidChart and SpeedView for offline visualizations
 - Glide for local receipt images
+- Bundled Google ML Kit Text Recognition for offline receipt OCR
 - JUnit 4 and AndroidX Espresso tests
 
 ### Important structure
 
 ```text
-app/src/main/java/com/example/budgetbuddy/
+app/src/main/java/com/budgetbuddy/
   WelcomeActivity.kt                   Offline welcome screen
   ProfileActivity.kt                   Local profile and searchable currency settings
   CurrencyCatalog.kt                   Offline currency names, ISO codes, and symbols
@@ -93,6 +101,8 @@ app/src/main/java/com/example/budgetbuddy/
   ReceiptStorage.kt                    App-owned receipt validation and cleanup
   ReceiptFileCopier.kt                 Atomic, size-limited gallery copying
   ReceiptImageNormalizer.kt            Safe JPEG decoding, orientation, and scaling
+  ReceiptOcrScanner.kt                 Bundled on-device text recognition
+  ReceiptParser.kt                     Merchant, date, and total suggestions
   TransactionHistoryActivity.kt        Filter, edit, and delete history
   BudgetActivity.kt                    Monthly category budgets
   AnalyticsActivity.kt                 Charts and spending gauge

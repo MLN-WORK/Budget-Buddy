@@ -1,6 +1,5 @@
 package com.budgetbuddy
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +9,14 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import java.util.Locale
 
+/*
+ * Start of class
+ * Name of class and related classes (parent/child classes): CategorySummaryAdapter
+ * Parent class: RecyclerView.Adapter; child classes: CategorySummaryViewHolder; related classes: Transaction, CategorySummaryActivity, and CategorySummaryViewHolder.
+ * What the class does: Binds category summary transactions to their list rows.
+ * What's important to other classes, if applicable: Callers supply its model data and depend on stable row binding and click-callback behavior.
+ * Code with comments begins below.
+ */
 class CategorySummaryAdapter(private val currencySymbol: String) :
     RecyclerView.Adapter<CategorySummaryAdapter.CategorySummaryViewHolder>() {
 
@@ -53,13 +60,23 @@ class CategorySummaryAdapter(private val currencySymbol: String) :
         notifyDataSetChanged()
     }
 
+    /*
+     * Start of class
+     * Name of class and related classes (parent/child classes): CategorySummaryViewHolder
+     * Parent class: RecyclerView.ViewHolder; child classes: none; related classes: CategorySummaryAdapter and Transaction.
+     * What the class does: Caches the views used by one category summary row.
+     * What's important to other classes, if applicable: Its enclosing adapter owns it; it must not retain activity state beyond the bound row.
+     * Code with comments begins below.
+     */
     class CategorySummaryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvCategory: TextView = itemView.findViewById(R.id.tvCategoryName)
         val tvTotal: TextView = itemView.findViewById(R.id.tvCategoryTotal)
         val imgCatIcon: ImageView = itemView.findViewById(R.id.imgCatIcon)
     }
+    // End of class: CategorySummaryViewHolder
 
     private fun getIconResourceId(iconName: String, view: View): Int {
         return view.context.resources.getIdentifier(iconName, "drawable", view.context.packageName)
     }
 }
+// End of class: CategorySummaryAdapter

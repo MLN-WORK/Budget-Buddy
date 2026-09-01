@@ -43,7 +43,7 @@
                 android:layout_height="120dp"
                 android:layout_gravity="center_horizontal"
                 android:contentDescription="@string/buddy"
-                android:src="@drawable/happy_buddy" />
+                android:src="@drawable/neutral_buddy_1" />
 
             <TextView
                 android:id="@+id/tvProfileTitle"
@@ -68,6 +68,7 @@
 
             <EditText
                 android:id="@+id/edtDisplayName"
+                android:maxLength="80"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_marginTop="30dp"
@@ -123,13 +124,15 @@
                 android:layout_height="60dp"
                 android:layout_marginTop="8dp"
                 android:background="@drawable/bg_input"
-                android:completionThreshold="0"
+                android:clickable="true"
+                android:cursorVisible="false"
                 android:drawableEnd="@drawable/ic_downward_arrow"
                 android:dropDownHeight="wrap_content"
                 android:dropDownVerticalOffset="4dp"
                 android:fontFamily="@font/outfit"
                 android:hint="@string/search_currency_hint"
-                android:inputType="text"
+                android:focusable="false"
+                android:inputType="none"
                 android:maxLines="1"
                 android:paddingHorizontal="18dp"
                 android:popupBackground="?attr/budgetInputColor"
@@ -163,7 +166,7 @@
                 android:layout_marginTop="6dp"
                 android:fontFamily="@font/outfit"
                 android:text="@string/current_theme_preview"
-                android:textColor="@color/grey"
+                android:textColor="?attr/budgetTextColor"
                 android:textSize="14sp" />
 
             <com.google.android.material.materialswitch.MaterialSwitch
@@ -184,8 +187,119 @@
                 android:layout_marginTop="4dp"
                 android:fontFamily="@font/outfit"
                 android:text="@string/preserve_transaction_drafts_description"
-                android:textColor="@color/grey"
+                android:textColor="?attr/budgetTextColor"
                 android:textSize="14sp"
+                android:visibility="gone" />
+
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/switchStatusMoneyColors"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="22dp"
+                android:fontFamily="@font/outfit_bold"
+                android:text="@string/use_status_money_colors"
+                android:textColor="?attr/budgetTextColor"
+                android:textSize="17sp"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tvStatusMoneyColorsDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/outfit"
+                android:text="@string/use_status_money_colors_description"
+                android:textColor="?attr/budgetTextColor"
+                android:textSize="14sp"
+                android:visibility="gone" />
+
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/switchReviewOcrBeforeApplying"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="22dp"
+                android:fontFamily="@font/outfit_bold"
+                android:text="@string/review_ocr_before_applying"
+                android:textColor="?attr/budgetTextColor"
+                android:textSize="17sp"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tvReviewOcrBeforeApplyingDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/outfit"
+                android:text="@string/review_ocr_before_applying_description"
+                android:textColor="?attr/budgetTextColor"
+                android:textSize="14sp"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tvOcrCategoryNameLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="22dp"
+                android:fontFamily="@font/outfit_bold"
+                android:labelFor="@id/edtOcrCategoryName"
+                android:text="@string/ocr_category_name"
+                android:textColor="?attr/budgetTextColor"
+                android:textSize="17sp"
+                android:visibility="gone" />
+
+            <EditText
+                android:id="@+id/edtOcrCategoryName"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_input"
+                android:fontFamily="@font/outfit"
+                android:importantForAutofill="no"
+                android:inputType="textCapWords"
+                android:maxLength="40"
+                android:maxLines="1"
+                android:paddingHorizontal="14dp"
+                android:textColor="?attr/budgetTextColor"
+                android:textColorHint="?attr/budgetTextColor"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tvOcrCategoryNameDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/outfit"
+                android:text="@string/ocr_category_name_description"
+                android:textColor="?attr/budgetTextColor"
+                android:textSize="14sp"
+                android:visibility="gone" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnReplayTutorial"
+                android:layout_width="match_parent"
+                android:layout_height="58dp"
+                android:layout_marginTop="22dp"
+                android:backgroundTint="?attr/budgetSurfaceColor"
+                android:fontFamily="@font/outfit_bold"
+                android:text="@string/replay_tutorial"
+                android:textColor="?attr/budgetTextColor"
+                android:textSize="17sp"
+                android:visibility="gone"
+                app:cornerRadius="12dp"
+                app:strokeColor="?attr/budgetTextColor"
+                app:strokeWidth="2dp" />
+
+            <TextView
+                android:id="@+id/tvOcrPrivacyDisclaimer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:background="@drawable/bg_input"
+                android:fontFamily="@font/outfit"
+                android:padding="14dp"
+                android:text="@string/receipt_ocr_privacy"
+                android:textColor="?attr/budgetTextColor"
+                android:textSize="13sp"
                 android:visibility="gone" />
 
             <com.google.android.material.button.MaterialButton

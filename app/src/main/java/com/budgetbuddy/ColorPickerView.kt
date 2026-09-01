@@ -15,6 +15,14 @@ import android.view.View
 import androidx.core.os.BundleCompat
 import kotlin.math.max
 
+/*
+ * Start of class
+ * Name of class and related classes (parent/child classes): ColorPickerView
+ * Parent class: View; child classes: none; related classes: ThemeColorsActivity and AppearanceSelection.
+ * What the class does: Draws an HSV colour picker and reports the selected opaque colour.
+ * What's important to other classes, if applicable: Related classes depend on this class keeping its inputs validated and its output contract deterministic.
+ * Code with comments begins below.
+ */
 class ColorPickerView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
@@ -189,3 +197,4 @@ class ColorPickerView @JvmOverloads constructor(
         private const val STATE_COLOR = "color"
     }
 }
+// End of class: ColorPickerView

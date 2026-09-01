@@ -6,6 +6,14 @@ import android.webkit.MimeTypeMap
 import java.io.File
 
 /** Owns every receipt file so camera and gallery providers never become long-term dependencies. */
+/*
+ * Start of class
+ * Name of class and related classes (parent/child classes): ReceiptStorage
+ * Parent class: Any; child classes: none; related classes: ReceiptFileCopier, ReceiptImageNormalizer, AddImageActivity, and LocalDataStore.
+ * What the class does: Owns receipt destinations, imports, normalization, ownership checks, and safe deletion.
+ * What's important to other classes, if applicable: Other classes depend on its validation and ownership boundaries to keep financial and receipt data private and safe.
+ * Code with comments begins below.
+ */
 object ReceiptStorage {
     fun createCameraDestination(context: Context): File =
         File.createTempFile("camera-", ".jpg", writableDirectory(context))
@@ -62,3 +70,4 @@ object ReceiptStorage {
         }
     }
 }
+// End of class: ReceiptStorage

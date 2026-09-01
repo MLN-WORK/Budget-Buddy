@@ -79,6 +79,48 @@
                     android:visibility="gone" />
             </FrameLayout>
 
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/ocrResultCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:visibility="gone"
+                app:cardBackgroundColor="?attr/budgetSurfaceColor"
+                app:cardCornerRadius="16dp"
+                app:strokeColor="?attr/budgetTextColor"
+                app:strokeWidth="1dp"
+                tools:visibility="visible">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="14dp">
+
+                    <TextView
+                        android:id="@+id/tvOcrStatus"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/outfit_bold"
+                        android:text="@string/receipt_ocr_scanning"
+                        android:textColor="?attr/budgetTextColor"
+                        android:textSize="17sp" />
+
+                    <TextView
+                        android:id="@+id/tvOcrSummary"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:fontFamily="@font/roboto_regular"
+                        android:textColor="?attr/budgetTextColor"
+                        android:textSize="15sp"
+                        android:visibility="gone"
+                        tools:text="Merchant: Corner Coffee\nDate: 2026-08-28\nTotal: $5.18"
+                        tools:visibility="visible" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
             <LinearLayout
                 android:id="@+id/ll_buttons"
                 android:layout_width="match_parent"
@@ -172,7 +214,7 @@
                 android:background="@drawable/bg_button_teal"
                 android:fontFamily="@font/outfit_bold"
                 android:gravity="center"
-                android:text="@string/save"
+                android:text="@string/attach_receipt"
                 android:textColor="?attr/budgetOnPrimaryColor"
                 android:textSize="22sp" />
         </LinearLayout>

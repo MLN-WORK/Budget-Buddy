@@ -10,14 +10,31 @@ import android.content.Context
 import androidx.core.content.ContextCompat
 import com.budgetbuddy.R
 
+/*
+ * Start of class
+ * Name of class and related classes (parent/child classes): DonutAdapter
+ * Parent class: RecyclerView.Adapter; child classes: DonutViewHolder; related classes: Donut, MainActivity, and DonutViewHolder.
+ * What the class does: Binds home spending-summary slices to their list rows.
+ * What's important to other classes, if applicable: Callers supply its model data and depend on stable row binding and click-callback behavior.
+ * Code with comments begins below.
+ */
 class DonutAdapter(private val donutList: List<Donut>, private val currencySymbol: String) :
     RecyclerView.Adapter<DonutAdapter.DonutViewHolder>() {
 
+    /*
+     * Start of class
+     * Name of class and related classes (parent/child classes): DonutViewHolder
+     * Parent class: RecyclerView.ViewHolder; child classes: none; related classes: DonutAdapter and Donut.
+     * What the class does: Caches the views used by one spending-summary row.
+     * What's important to other classes, if applicable: Its enclosing adapter owns it; it must not retain activity state beyond the bound row.
+     * Code with comments begins below.
+     */
     class DonutViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val categoryName: TextView = itemView.findViewById(R.id.tvDonutCategory)
         val progressBar: CircularProgressIndicator = itemView.findViewById(R.id.pbDonut)
         val amountRemaining: TextView = itemView.findViewById(R.id.tvDonutAmountLeft)
     }
+    // End of class: DonutViewHolder
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DonutViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.donut_charts_layout, parent, false)
@@ -57,3 +74,4 @@ class DonutAdapter(private val donutList: List<Donut>, private val currencySymbo
 
     override fun getItemCount(): Int = donutList.size
 }
+// End of class: DonutAdapter

@@ -5,6 +5,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.budgetbuddy.AchievementManager.achievements
 import com.budgetbuddy.databinding.ActivityAchievementBinding
 
+/*
+ * Start of class
+ * Name of class and related classes (parent/child classes): AchievementActivity
+ * Parent class: BaseActivity; child classes: none; related classes: AchievementManager and AchievementAdapter.
+ * What the class does: Displays the user's achievements and their progress.
+ * What's important to other classes, if applicable: It must preserve BaseActivity appearance behavior and use LocalDataStore as the offline source of truth.
+ * Code with comments begins below.
+ */
 class AchievementActivity : BaseActivity() {
     private lateinit var binding: ActivityAchievementBinding
 
@@ -40,3 +48,4 @@ class AchievementActivity : BaseActivity() {
         AppNavigation.bind(this, binding.bottomNavView, R.id.nav_achievement)
     }
 }
+// End of class: AchievementActivity

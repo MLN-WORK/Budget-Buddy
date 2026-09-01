@@ -6,6 +6,14 @@ import android.view.LayoutInflater
 import android.widget.ImageView
 import android.widget.TextView
 
+/*
+ * Start of class
+ * Name of class and related classes (parent/child classes): AchievementManager
+ * Parent class: Any; child classes: none; related classes: LocalDataStore, Achievement, and AchievementProgressCalculator.
+ * What the class does: Defines achievements and coordinates their persisted state.
+ * What's important to other classes, if applicable: Related classes depend on this class keeping its inputs validated and its output contract deterministic.
+ * Code with comments begins below.
+ */
 object AchievementManager {
 
     val achievements = mutableListOf(
@@ -118,11 +126,12 @@ object AchievementManager {
             val output = java.text.SimpleDateFormat("MMMM yyyy", java.util.Locale.getDefault())
             output.format(requireNotNull(input.parse(monthKey)))
         }.getOrNull() ?: return
-        val budget = localData.getBudget(month) ?: return
+        val effectiveLimit = localData.getEffectiveSpendingLimit(month)
+        if (effectiveLimit <= 0.0) return
         val spent = localData.getTransactions("$monthKey-01", "$monthKey-31")
             .filterNot(Transaction::isIncome)
             .sumOf(Transaction::amount)
-        if (spent <= budget.maximumSpendingBudget) unlockOrProgress("stay_within_budget", context)
+        if (spent <= effectiveLimit) unlockOrProgress("stay_within_budget", context)
     }
 
     fun restore(context: Context) {
@@ -133,8 +142,17 @@ object AchievementManager {
         }
     }
 }
+// End of class: AchievementManager
 
 // Move this OUTSIDE of AchievementManager
+/*
+ * Start of class
+ * Name of class and related classes (parent/child classes): AchievementUtils
+ * Parent class: Any; child classes: none; related classes: AchievementManager and AchievementAdapter.
+ * What the class does: Provides reusable achievement display and lookup helpers.
+ * What's important to other classes, if applicable: Related classes depend on this class keeping its inputs validated and its output contract deterministic.
+ * Code with comments begins below.
+ */
 object AchievementUtils {
     fun showPopup(context: Context, achievement: Achievement) {
         val dialogView =
@@ -165,3 +183,4 @@ object AchievementUtils {
         dialog.show()
     }
 }
+// End of class: AchievementUtils

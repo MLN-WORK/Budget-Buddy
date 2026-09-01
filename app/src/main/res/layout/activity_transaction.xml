@@ -73,6 +73,18 @@
                     android:textColor="?attr/budgetTextColor"/>
             </LinearLayout>
 
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/switchAddIncomeToLimit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15dp"
+                android:fontFamily="@font/outfit_bold"
+                android:text="@string/add_income_to_spending_limit"
+                android:textColor="?attr/budgetTextColor"
+                android:textSize="16sp"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
             <!-- ENTER AMOUNT -->
             <LinearLayout
                 android:layout_width="match_parent"
@@ -169,6 +181,7 @@
             <!--DESCRIPTION-->
             <EditText
                 android:id="@+id/etDescription"
+                android:maxLength="500"
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
                 android:layout_marginTop="15dp"
@@ -186,15 +199,34 @@
             <Button
                 android:id="@+id/btnAddImage"
                 style="@style/CustomDefaultButton"
-                android:layout_width="190dp"
+                android:layout_width="230dp"
                 android:layout_height="50dp"
                 android:layout_marginTop="15dp"
                 android:background="@drawable/bg_button_teal"
                 android:drawableStart="@drawable/ic_camera"
+                android:drawablePadding="10dp"
                 android:drawableTint="?attr/budgetOnPrimaryColor"
+                android:gravity="center"
                 android:text="@string/add_image"
                 android:textColor="?attr/budgetOnPrimaryColor"
+                android:textAlignment="center"
                 android:layout_gravity="center"/>
+
+            <Button
+                android:id="@+id/btnScanReceipt"
+                style="@style/CustomDefaultButton"
+                android:layout_width="230dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/bg_button_teal"
+                android:drawableStart="@drawable/ic_eye"
+                android:drawablePadding="10dp"
+                android:drawableTint="?attr/budgetOnPrimaryColor"
+                android:gravity="center"
+                android:text="@string/scan_receipt_with_ocr"
+                android:textAlignment="center"
+                android:textColor="?attr/budgetOnPrimaryColor" />
 
             <ImageView
                 android:id="@+id/ivAttachedReceipt"

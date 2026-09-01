@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="18dp">
+
+    <EditText
+        android:id="@+id/edtCurrencyFilter"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:background="@drawable/bg_input"
+        android:hint="@string/filter_currencies"
+        android:inputType="text"
+        android:maxLines="1"
+        android:paddingHorizontal="14dp"
+        android:textColor="?attr/budgetTextColor"
+        android:textColorHint="?attr/budgetTextColor" />
+
+    <ListView
+        android:id="@+id/listCurrencies"
+        android:layout_width="match_parent"
+        android:layout_height="260dp"
+        android:layout_marginTop="10dp"
+        android:divider="?attr/budgetTextColor"
+        android:dividerHeight="1dp" />
+
+    <Button
+        android:id="@+id/btnCustomCurrency"
+        style="@style/CustomDefaultButton"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/bg_button_teal"
+        android:text="@string/create_custom_currency"
+        android:textColor="?attr/budgetOnPrimaryColor" />
+
+    <LinearLayout
+        android:id="@+id/customCurrencyFields"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <EditText
+            android:id="@+id/edtCustomCurrencyName"
+            android:maxLength="80"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:background="@drawable/bg_input"
+            android:hint="@string/custom_currency_name"
+            android:inputType="textCapWords"
+            android:maxLines="1"
+            android:paddingHorizontal="14dp"
+            android:textColor="?attr/budgetTextColor"
+            android:textColorHint="?attr/budgetTextColor" />
+
+        <EditText
+            android:id="@+id/edtCustomCurrencySymbol"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_input"
+            android:hint="@string/custom_currency_symbol"
+            android:inputType="text"
+            android:maxLength="8"
+            android:maxLines="1"
+            android:paddingHorizontal="14dp"
+            android:textColor="?attr/budgetTextColor"
+            android:textColorHint="?attr/budgetTextColor" />
+
+        <Button
+            android:id="@+id/btnUseCustomCurrency"
+            style="@style/CustomDefaultButton"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_button_teal"
+            android:text="@string/use_custom_currency"
+            android:textColor="?attr/budgetOnPrimaryColor" />
+    </LinearLayout>
+</LinearLayout>

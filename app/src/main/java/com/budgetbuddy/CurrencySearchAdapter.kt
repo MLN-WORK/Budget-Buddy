@@ -6,6 +6,14 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Filter
 
+/*
+ * Start of class
+ * Name of class and related classes (parent/child classes): CurrencySearchAdapter
+ * Parent class: ArrayAdapter<CurrencyOption>; child classes: none; related classes: CurrencyCatalog, CurrencyOption, and ProfileActivity.
+ * What the class does: Filters and displays currency choices in the profile picker.
+ * What's important to other classes, if applicable: Related classes depend on this class keeping its inputs validated and its output contract deterministic.
+ * Code with comments begins below.
+ */
 class CurrencySearchAdapter(context: Context) :
     ArrayAdapter<CurrencyOption>(context, R.layout.spinner_item, CurrencyCatalog.options.toMutableList()) {
 
@@ -35,3 +43,4 @@ class CurrencySearchAdapter(context: Context) :
     override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View =
         super.getDropDownView(position, convertView, parent).also(RuntimePaletteApplier::applyIfCustom)
 }
+// End of class: CurrencySearchAdapter

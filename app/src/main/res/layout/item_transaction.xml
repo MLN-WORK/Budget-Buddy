@@ -64,6 +64,19 @@ android:orientation="vertical">
                 android:textColor="?attr/budgetTextColor"
                 android:layout_marginTop="4dp"/>
 
+            <TextView
+                android:id="@+id/tvOcrBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/bg_input"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="3dp"
+                android:text="@string/ocr_filter"
+                android:textColor="?attr/budgetPrimaryColor"
+                android:textSize="12sp"
+                android:visibility="gone" />
+
             <!-- Optional Photo -->
             <ImageView
                 android:id="@+id/ivPhoto"

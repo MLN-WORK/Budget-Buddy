@@ -2,16 +2,16 @@ package com.budgetbuddy
 
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
+import android.graphics.Color
 import android.icu.util.Calendar
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.ColorUtils
 import com.budgetbuddy.databinding.ActivityAnalyticsBinding
 import com.google.android.material.color.MaterialColors
 import com.github.anastr.speedviewlib.components.Section
-import com.github.anastr.speedviewlib.components.indicators.NeedleIndicator
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
@@ -21,6 +21,14 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 
+/*
+ * Start of class
+ * Name of class and related classes (parent/child classes): AnalyticsActivity
+ * Parent class: BaseActivity; child classes: none; related classes: AnalyticsCalculator, LocalDataStore, GaugePalette, and TransactionRepo.
+ * What the class does: Renders monthly analytics, budget gauge, summaries, and category charts.
+ * What's important to other classes, if applicable: It must preserve BaseActivity appearance behavior and use LocalDataStore as the offline source of truth.
+ * Code with comments begins below.
+ */
 class AnalyticsActivity : BaseActivity() {
     private lateinit var binding: ActivityAnalyticsBinding
     private var startDate = ""
@@ -195,10 +203,11 @@ class AnalyticsActivity : BaseActivity() {
                 val allocation = budgetCategories[category]?.first ?: 0f
                 floatArrayOf(spent, maxOf(0f, allocation - spent))
             }
+            val categoryLabels = allCategories.map(localData::categoryDisplayName)
             if (showMaxInfo) {
-                setupStackedBarGraph(allCategories, stackedValues)
+                setupStackedBarGraph(categoryLabels, stackedValues)
             } else {
-                setupBarGraph(totals.keys.toList(), totals.values.map(Double::toFloat))
+                setupBarGraph(totals.keys.map(localData::categoryDisplayName), totals.values.map(Double::toFloat))
             }
         }
         val onError: (Exception) -> Unit = { Log.e("BarGraph", "Error loading local transactions", it) }
@@ -221,7 +230,9 @@ class AnalyticsActivity : BaseActivity() {
             entries.add(BarEntry(i.toFloat(), amounts[i]))
         }
         val dataSet = BarDataSet(entries, "Amount Spent")
+        val chartTextColor = MaterialColors.getColor(binding.root, R.attr.budgetTextColor)
 
+        // Analytics bars intentionally reuse the currently selected gauge palette.
         val colours = getBarColours()
         val barColours = ArrayList<Int>()
         for(i in entries.indices){
@@ -229,6 +240,8 @@ class AnalyticsActivity : BaseActivity() {
         }
         dataSet.colors = barColours
         dataSet.setDrawValues(true)
+        dataSet.valueTextColor = chartTextColor
+        dataSet.valueTextSize = 12f
 
         val barData = BarData(dataSet)
         barData.barWidth = 0.5f
@@ -287,11 +300,15 @@ class AnalyticsActivity : BaseActivity() {
         }
 
         val dataSet = BarDataSet(entries, "[Spending & Budget Usage]")
+        val chartTextColor = MaterialColors.getColor(binding.root, R.attr.budgetTextColor)
+        val gaugePalette = localData.gaugePalette
         dataSet.setColors(
-            MaterialColors.getColor(binding.root, R.attr.budgetPrimaryColor),
-            ContextCompat.getColor(this, R.color.lightPink)
+            gaugePalette.bad,
+            gaugePalette.good
         ) // spent, remaining
         dataSet.setDrawValues(true)
+        dataSet.valueTextColor = chartTextColor
+        dataSet.valueTextSize = 12f
         dataSet.stackLabels = arrayOf("Spent", "Remaining to Max")
 
         val barData = BarData(dataSet)
@@ -308,10 +325,12 @@ class AnalyticsActivity : BaseActivity() {
         xAxis.granularity = 1f
         xAxis.labelRotationAngle = -30f
         xAxis.textSize = 12f
+        xAxis.textColor = chartTextColor
 
         val yAxis = barGraph.axisLeft
         yAxis.setDrawGridLines(false)
         yAxis.axisMinimum = 0f
+        yAxis.textColor = chartTextColor
 
         barGraph.axisRight.isEnabled = false
         barGraph.legend.isEnabled = true
@@ -321,19 +340,8 @@ class AnalyticsActivity : BaseActivity() {
     }
 
     private fun getBarColours(): List<Int>{
-        //set up colours
-        val typedArray = resources.obtainTypedArray(R.array.bar_colours)
-        val colourList = mutableListOf<Int>()
-        for(i in 0 until typedArray.length()){
-            colourList.add(
-                typedArray.getColor(
-                    i,
-                    MaterialColors.getColor(binding.root, R.attr.budgetTextColor)
-                )
-            )
-        }
-        typedArray.recycle()
-        return colourList
+        val palette = localData.gaugePalette
+        return listOf(palette.good, palette.okay, palette.bad)
     }
 
     //helper function to check if date range was selected
@@ -348,19 +356,44 @@ class AnalyticsActivity : BaseActivity() {
     * © 2017 Anas Altair – Licensed under Apache 2.0*/
     private fun setupGaugeChart(month:String){
         val gauge = binding.minMaxGauge
-        val indicatorColor = MaterialColors.getColor(binding.root, R.attr.budgetTextColor)
-        gauge.indicator = NeedleIndicator(this).apply {
-            color = indicatorColor
-            width = 14f * resources.displayMetrics.density
-        }
+        val gaugeBackground = MaterialColors.getColor(binding.root, R.attr.budgetSurfaceColor)
+        val indicatorColor = if (
+            ColorUtils.calculateContrast(Color.WHITE, gaugeBackground) >=
+            ColorUtils.calculateContrast(Color.BLACK, gaugeBackground)
+        ) Color.WHITE else Color.BLACK
+        // Keep the indicator created and sized by the XML. Replacing it at runtime can
+        // create a zero-length needle on some devices/themes, which made AMOLED look empty.
+        gauge.indicator.color = indicatorColor
         gauge.centerCircleColor = indicatorColor
         gauge.clearSections()
         /*percentage spent = amount spent / max Goal * 100
         minGoal = min goal from budget
         max goal = amount spent from budget */
         val budget = localData.getBudget(month)
+        val monthKey = runCatching {
+            val display = SimpleDateFormat("MMMM yyyy", Locale.getDefault())
+            val storage = SimpleDateFormat("yyyy-MM", Locale.US)
+            storage.format(requireNotNull(display.parse(month)))
+        }.getOrDefault("")
+        val balance = localData.getBalance(monthKey)
+        val maximumGoal = localData.getEffectiveSpendingLimit(month)
+        val symbol = localData.currencySymbol
+        val gaugePalette = localData.gaugePalette
+        val analyticsSurface = MaterialColors.getColor(binding.root, R.attr.budgetSurfaceColor)
+        val goodText = readableAnalyticsColor(gaugePalette.good, analyticsSurface)
+        val badText = readableAnalyticsColor(gaugePalette.bad, analyticsSurface)
+        binding.tvAnalyticsIncome.text = getString(R.string.analytics_income_amount, symbol, balance.totalIncome)
+        binding.tvAnalyticsIncome.setTextColor(goodText)
+        binding.tvAnalyticsExpenses.text = getString(R.string.analytics_expenses_amount, symbol, balance.totalExpenses)
+        binding.tvAnalyticsExpenses.setTextColor(badText)
+        binding.tvAnalyticsCashFlow.text = getString(
+            if (balance.closingBalance >= 0.0) R.string.analytics_positive_cash_flow else R.string.analytics_negative_cash_flow,
+            symbol,
+            kotlin.math.abs(balance.closingBalance)
+        )
+        binding.tvAnalyticsCashFlow.setTextColor(if (balance.closingBalance >= 0.0) goodText else badText)
         @SuppressLint("SetTextI18n")
-        if (budget == null) {
+        if (maximumGoal <= 0.0) {
                     gauge.clearSections()
                     gauge.addSections(
                         Section(
@@ -371,24 +404,23 @@ class AnalyticsActivity : BaseActivity() {
                         )
                     )
                     gauge.speedTo(0f, 1000)
-                    binding.btnMinMaxHeader.setText(getString(R.string.youSpent, 0.0))
+                    binding.btnMinMaxHeader.setText(R.string.spending_limit_not_set_header)
                     binding.tvMinGoal.setText(R.string.no_money)
                     binding.tvMaxGoal.setText(R.string.no_money)
-                    binding.imgBeetleJuice.setImageResource(R.drawable.neutral_buddy_1)
+                    binding.imgBeetleJuice.setImageResource(R.drawable.happy_buddy)
                     binding.tvFeedBack.setText(R.string.analytics_no_budget_mood)
+                    binding.tvAnalyticsBudgetRemaining.setText(R.string.analytics_remaining_not_available)
+                    binding.tvAnalyticsBudgetRemaining.setTextColor(
+                        MaterialColors.getColor(binding.root, R.attr.budgetTextColor)
+                    )
         } else {
-                    val maximumGoal = budget.maximumSpendingBudget
-                    Log.d("GetMaxGoal", "Max goal is $maximumGoal")
-
-                    val categoryTotal = budget.budgetAmount
+                    val categoryTotal = budget?.budgetAmount ?: 0.0
                     // Always calculate from the transaction source of truth. Editing or replacing
                     // a budget must never erase the spending already recorded for that month.
                     val totalSpent = localData.getMonthlyExpenseTotal(month)
-                    val percentageSpent = AnalyticsCalculator.spentPercentage(totalSpent, maximumGoal)
+                    val percentageSpent = AnalyticsCalculator.spentPercentageExact(totalSpent, maximumGoal)
 
-                    val allocationPercentage = BudgetLimitCalculator.allocationPercentage(categoryTotal, maximumGoal)
-                    val gaugePalette = localData.gaugePalette
-
+                    val allocationPercentage = BudgetLimitCalculator.allocationPercentageExact(categoryTotal, maximumGoal)
                     // Spending 0–50% leaves at least half the budget, 50–85% leaves
                     // 15–49%, and anything beyond 85% leaves less than 15%.
                     gauge.addSections(
@@ -401,11 +433,11 @@ class AnalyticsActivity : BaseActivity() {
                     val buddyPic = binding.imgBeetleJuice
                     when (AnalyticsCalculator.buddyMood(totalSpent, maximumGoal)) {
                         AnalyticsCalculator.BuddyMood.HAPPY -> {
-                            buddyPic.setImageResource(R.drawable.happy_buddy)
+                            buddyPic.setImageResource(R.drawable.neutral_buddy_1)
                             binding.tvFeedBack.setText(R.string.budget_mood_happy)
                         }
                         AnalyticsCalculator.BuddyMood.NEUTRAL -> {
-                            buddyPic.setImageResource(R.drawable.neutral_buddy_1)
+                            buddyPic.setImageResource(R.drawable.happy_buddy)
                             binding.tvFeedBack.setText(R.string.budget_mood_neutral)
                         }
                         AnalyticsCalculator.BuddyMood.ANGRY -> {
@@ -416,10 +448,25 @@ class AnalyticsActivity : BaseActivity() {
                     //set gauge value
                     gauge.speedTo(AnalyticsCalculator.gaugeSpeed(percentageSpent), 1000)
                     //to display information to user in view
-                    binding.btnMinMaxHeader.setText(getString(R.string.youSpent, percentageSpent.toFloat()))
+                    binding.btnMinMaxHeader.text = getString(
+                        R.string.spending_limit_used_detail,
+                        percentageSpent,
+                        symbol,
+                        maximumGoal
+                    )
                     binding.tvMinGoal.text = getString(R.string.plain_decimal_amount, categoryTotal)
                     binding.tvMaxGoal.text = getString(R.string.plain_decimal_amount, maximumGoal)
                     binding.tvPercentage.text = getString(R.string.category_budget_percentage, allocationPercentage)
+                    val remaining = maximumGoal - totalSpent
+                    binding.tvAnalyticsBudgetRemaining.text = if (remaining >= 0.0) {
+                        getString(R.string.analytics_remaining_amount, symbol, remaining)
+                    } else {
+                        getString(R.string.analytics_over_limit_amount, symbol, -remaining)
+                    }
+                    val statusColor = AnalyticsCalculator.gaugeColor(percentageSpent, gaugePalette)
+                    binding.tvAnalyticsBudgetRemaining.setTextColor(
+                        readableAnalyticsColor(statusColor, analyticsSurface)
+                    )
         }
 
     }//end setupGaugeChart
@@ -430,6 +477,17 @@ class AnalyticsActivity : BaseActivity() {
         binding.tvCurrency2.text = localData.currencySymbol
     }
 
+    private fun readableAnalyticsColor(color: Int, surface: Int): Int {
+        if (ColorUtils.calculateContrast(color, surface) >= 4.5) return color
+        val target = if (ColorUtils.calculateLuminance(surface) < 0.45) Color.WHITE else Color.BLACK
+        for (step in 1..10) {
+            val candidate = ColorUtils.blendARGB(color, target, step / 10f)
+            if (ColorUtils.calculateContrast(candidate, surface) >= 4.5) return candidate
+        }
+        return target
+    }
+
 }
+// End of class: AnalyticsActivity
 
 /* Gauge sections mirror Budster's mood thresholds based on monthly budget remaining. */

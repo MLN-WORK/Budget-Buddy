@@ -21,7 +21,23 @@ import androidx.core.widget.TextViewCompat
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.color.MaterialColors
 
+/*
+ * Start of class
+ * Name of class and related classes (parent/child classes): RuntimePaletteApplier
+ * Parent class: Any; child classes: ResolvedPalette; related classes: AppPalette, ResolvedPalette, BaseActivity, and ThemeColorsActivity.
+ * What the class does: Maps inflated view colours to a custom application palette at runtime.
+ * What's important to other classes, if applicable: ThemeColorsActivity and BaseActivity depend on this contract so previews are immediate, reversible, and consistent.
+ * Code with comments begins below.
+ */
 object RuntimePaletteApplier {
+    /*
+     * Start of class
+     * Name of class and related classes (parent/child classes): ResolvedPalette
+     * Parent class: Any; child classes: none; related classes: RuntimePaletteApplier and AppPalette.
+     * What the class does: Stores the source theme colours used during runtime palette mapping.
+     * What's important to other classes, if applicable: Consumers rely on its property meanings remaining stable across persistence, calculation, and display code.
+     * Code with comments begins below.
+     */
     private data class ResolvedPalette(
         val background: Int,
         val surface: Int,
@@ -30,6 +46,7 @@ object RuntimePaletteApplier {
         val text: Int,
         val onPrimary: Int
     )
+    // End of class: ResolvedPalette
 
     fun apply(root: View, custom: AppPalette) {
         val resolved = ResolvedPalette(
@@ -41,6 +58,19 @@ object RuntimePaletteApplier {
             onPrimary = MaterialColors.getColor(root, R.attr.budgetOnPrimaryColor)
         )
         walk(root) { view -> recolorView(view, resolved, custom) }
+    }
+
+    /** Recolours an already-previewed custom hierarchy without reinflating the activity. */
+    fun transition(root: View, previous: AppPalette, next: AppPalette) {
+        val resolved = ResolvedPalette(
+            background = previous.main,
+            surface = previous.surface,
+            input = previous.input,
+            primary = previous.accent,
+            text = previous.onMain,
+            onPrimary = previous.onAccent
+        )
+        walk(root) { view -> recolorView(view, resolved, next) }
     }
 
     fun applyIfCustom(root: View) {
@@ -67,7 +97,10 @@ object RuntimePaletteApplier {
         view.backgroundTintList = view.backgroundTintList?.mapped { mapBackground(it, old, new) }
 
         if (view is TextView) {
-            view.setTextColor(mapForeground(view.currentTextColor, old, new))
+            // Preserve enabled, disabled, pressed, and checked colours. Collapsing a
+            // ColorStateList to its default colour made custom-theme radio buttons
+            // look unchecked even when they were selected.
+            view.setTextColor(view.textColors.mapped { mapForeground(it, old, new) })
             TextViewCompat.setCompoundDrawableTintList(
                 view,
                 TextViewCompat.getCompoundDrawableTintList(view)?.mapped {
@@ -93,28 +126,28 @@ object RuntimePaletteApplier {
     }
 
     private fun recolorDrawable(drawable: Drawable?, old: ResolvedPalette, new: AppPalette) {
-        when (drawable) {
-            null -> Unit
-            is ColorDrawable -> drawable.color = mapBackground(drawable.color, old, new)
-            is GradientDrawable -> drawable.color?.defaultColor?.let {
-                drawable.setColor(mapBackground(it, old, new))
+        val mutable = drawable?.mutate() ?: return
+        when (mutable) {
+            is ColorDrawable -> mutable.color = mapBackground(mutable.color, old, new)
+            is GradientDrawable -> mutable.color?.defaultColor?.let {
+                mutable.setColor(mapBackground(it, old, new))
             }
             is RippleDrawable -> {
-                for (index in 0 until drawable.numberOfLayers) {
-                    recolorDrawable(drawable.getDrawable(index), old, new)
+                for (index in 0 until mutable.numberOfLayers) {
+                    recolorDrawable(mutable.getDrawable(index), old, new)
                 }
             }
             is LayerDrawable -> {
-                for (index in 0 until drawable.numberOfLayers) {
-                    recolorDrawable(drawable.getDrawable(index), old, new)
+                for (index in 0 until mutable.numberOfLayers) {
+                    recolorDrawable(mutable.getDrawable(index), old, new)
                 }
             }
-            is InsetDrawable -> recolorDrawable(drawable.drawable, old, new)
-            is ScaleDrawable -> recolorDrawable(drawable.drawable, old, new)
-            is ClipDrawable -> recolorDrawable(drawable.drawable, old, new)
+            is InsetDrawable -> recolorDrawable(mutable.drawable, old, new)
+            is ScaleDrawable -> recolorDrawable(mutable.drawable, old, new)
+            is ClipDrawable -> recolorDrawable(mutable.drawable, old, new)
             is StateListDrawable -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                for (index in 0 until drawable.stateCount) {
-                    recolorDrawable(drawable.getStateDrawable(index), old, new)
+                for (index in 0 until mutable.stateCount) {
+                    recolorDrawable(mutable.getStateDrawable(index), old, new)
                 }
             }
         }
@@ -137,8 +170,21 @@ object RuntimePaletteApplier {
         else -> color
     }
 
-    private fun ColorStateList.mapped(map: (Int) -> Int): ColorStateList =
-        ColorStateList.valueOf(map(defaultColor))
+    private fun ColorStateList.mapped(map: (Int) -> Int): ColorStateList {
+        val states = arrayOf(
+            intArrayOf(-android.R.attr.state_enabled, android.R.attr.state_checked),
+            intArrayOf(-android.R.attr.state_enabled, -android.R.attr.state_checked),
+            intArrayOf(android.R.attr.state_enabled, android.R.attr.state_pressed),
+            intArrayOf(android.R.attr.state_enabled, android.R.attr.state_focused),
+            intArrayOf(android.R.attr.state_enabled, android.R.attr.state_checked),
+            intArrayOf(android.R.attr.state_enabled, -android.R.attr.state_checked),
+            intArrayOf()
+        )
+        val colours = IntArray(states.size) { index ->
+            map(getColorForState(states[index], defaultColor))
+        }
+        return ColorStateList(states, colours)
+    }
 
     private fun same(first: Int, second: Int): Boolean =
         (first and 0x00FFFFFF) == (second and 0x00FFFFFF)
@@ -146,3 +192,4 @@ object RuntimePaletteApplier {
     private fun withOriginalAlpha(original: Int, replacement: Int): Int =
         (original and 0xFF000000.toInt()) or (replacement and 0x00FFFFFF)
 }
+// End of class: RuntimePaletteApplier

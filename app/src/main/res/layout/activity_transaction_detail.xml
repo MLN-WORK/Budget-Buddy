@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/budgetBackgroundColor">
+
+    <FrameLayout
+        android:id="@+id/detailHeader"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:background="?attr/budgetPrimaryColor"
+        app:layout_constraintTop_toTopOf="parent">
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="start|center_vertical"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/back"
+            android:padding="12dp"
+            android:src="@drawable/ic_back_arrow"
+            app:tint="?attr/budgetOnPrimaryColor" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:fontFamily="@font/outfit_bold"
+            android:text="@string/transaction_details"
+            android:textColor="?attr/budgetOnPrimaryColor"
+            android:textSize="27sp" />
+    </FrameLayout>
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/detailHeader">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp">
+            <ImageView
+                android:id="@+id/imgDetailCategory"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:layout_gravity="center_horizontal"
+                android:contentDescription="@string/category_icon"
+                android:padding="12dp" />
+            <TextView android:id="@+id/tvDetailType" style="@style/TransactionDetailHeading" />
+            <TextView android:id="@+id/tvDetailAmount" style="@style/TransactionDetailAmount" />
+            <TextView android:id="@+id/tvDetailMerchant" style="@style/TransactionDetailValue" />
+            <TextView android:id="@+id/tvDetailDate" style="@style/TransactionDetailValue" />
+            <TextView android:id="@+id/tvDetailCategory" style="@style/TransactionDetailValue" />
+            <TextView
+                android:id="@+id/tvDetailOcr"
+                style="@style/TransactionDetailBadge"
+                android:text="@string/ocr_scanned_record"
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/tvDetailLimit"
+                style="@style/TransactionDetailBadge"
+                android:text="@string/income_included_in_limit"
+                android:visibility="gone" />
+            <ImageView
+                android:id="@+id/ivDetailReceipt"
+                android:layout_width="match_parent"
+                android:layout_height="320dp"
+                android:layout_marginTop="18dp"
+                android:contentDescription="@string/receipt_photo"
+                android:scaleType="fitCenter"
+                android:visibility="gone" />
+        </LinearLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

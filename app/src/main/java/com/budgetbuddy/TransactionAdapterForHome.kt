@@ -8,18 +8,37 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 
+/*
+ * Start of class
+ * Name of class and related classes (parent/child classes): TransactionAdapterForHome
+ * Parent class: RecyclerView.Adapter; child classes: TransactionViewHolder; related classes: Transaction, MainActivity, and TransactionViewHolder.
+ * What the class does: Binds recent transactions to the compact home list.
+ * What's important to other classes, if applicable: Callers supply its model data and depend on stable row binding and click-callback behavior.
+ * Code with comments begins below.
+ */
 class TransactionAdapterForHome(
     private val transactionList: List<Transaction>,
     private val currencySymbol: String,
-    private val categoryIconMap: Map<String, String>
+    private val categoriesById: Map<String, Category>,
+    private val onView: (Transaction) -> Unit
 ) : RecyclerView.Adapter<TransactionAdapterForHome.TransactionViewHolder>() {
 
+    /*
+     * Start of class
+     * Name of class and related classes (parent/child classes): TransactionViewHolder
+     * Parent class: RecyclerView.ViewHolder; child classes: none; related classes: TransactionAdapterForHome and Transaction.
+     * What the class does: Caches the views used for one compact transaction row.
+     * What's important to other classes, if applicable: Its enclosing adapter owns it; it must not retain activity state beyond the bound row.
+     * Code with comments begins below.
+     */
     class TransactionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val amountText: TextView = itemView.findViewById(R.id.tvRecordAmount)
         val categoryText: TextView = itemView.findViewById(R.id.tvRecordCategory)
         val dateText: TextView = itemView.findViewById(R.id.tvRecordDate)
         val recordIcon: ImageView = itemView.findViewById(R.id.imgRecordIcon)
+        val ocrBadge: TextView = itemView.findViewById(R.id.tvRecordOcrBadge)
     }
+    // End of class: TransactionViewHolder
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TransactionViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -31,8 +50,12 @@ class TransactionAdapterForHome(
     override fun onBindViewHolder(holder: TransactionViewHolder, position: Int) {
         val transaction = transactionList[position]
         val context = holder.itemView.context
-        holder.categoryText.text = transaction.categoryId
+        holder.categoryText.text = categoriesById[transaction.categoryId]?.name
+            ?: transaction.categoryId.takeIf(String::isNotBlank)
+            ?: context.getString(R.string.uncategorised)
         holder.dateText.text = transaction.date
+        holder.itemView.setOnClickListener { onView(transaction) }
+        holder.ocrBadge.visibility = if (transaction.isOcr) View.VISIBLE else View.GONE
 
         val isExpense = !transaction.isIncome
 
@@ -48,7 +71,7 @@ class TransactionAdapterForHome(
             )
         }
 
-        val iconName = categoryIconMap[transaction.categoryId] ?: "ic_currency"
+        val iconName = categoriesById[transaction.categoryId]?.icon ?: "ic_currency"
         CategoryIconCatalog.bind(holder.recordIcon, iconName)
 
         val bgColors = listOf(
@@ -70,3 +93,4 @@ class TransactionAdapterForHome(
 
     override fun getItemCount(): Int = transactionList.size
 }
+// End of class: TransactionAdapterForHome

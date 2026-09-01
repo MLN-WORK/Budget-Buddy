@@ -1,7 +1,5 @@
 package com.budgetbuddy
 
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +8,14 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 
+/*
+ * Start of class
+ * Name of class and related classes (parent/child classes): BaseActivity
+ * Parent class: AppCompatActivity; child classes: AchievementActivity, AddCategoryActivity, AddImageActivity, AnalyticsActivity, BudgetActivity, CategorySummaryActivity, MainActivity, ProfileActivity, ThemeColorsActivity, TransactionActivity, TransactionDetailActivity, TransactionHistoryActivity, TutorialActivity, and WelcomeActivity; related classes: BudgetBuddyApplication, RuntimePaletteApplier, TutorialFlow, and all screen activities.
+ * What the class does: Applies theme, custom palette, AMOLED, immersive, and tutorial behavior to every screen.
+ * What's important to other classes, if applicable: It must preserve BaseActivity appearance behavior and use LocalDataStore as the offline source of truth.
+ * Code with comments begins below.
+ */
 abstract class BaseActivity : AppCompatActivity() {
     override fun setContentView(layoutResID: Int) {
         super.setContentView(layoutResID)
@@ -27,11 +33,19 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        if (LocalDataStore(this).appThemeMode == AppThemeMode.AMOLED) {
+        val appearance = LocalDataStore(this)
+        val preview = appearancePreview()
+        delegate.localNightMode = BudgetBuddyApplication.nightModeFor(
+            preview?.themeMode ?: appearance.appThemeMode,
+            preview?.customMain ?: appearance.customMainColor
+        )
+        if ((preview?.themeMode ?: appearance.appThemeMode) == AppThemeMode.AMOLED) {
+            // Keep OLED's colour attributes available during view inflation. Its
+            // style intentionally has no window/system-bar overrides, so geometry
+            // follows the exact same lifecycle as Dark mode.
             setTheme(R.style.Theme_BudgetBuddy_Amoled)
         }
         super.onCreate(savedInstanceState)
-        enforceAmoledWindowIfNeeded()
         enterImmersiveMode()
     }
 
@@ -51,29 +65,29 @@ abstract class BaseActivity : AppCompatActivity() {
 
     fun applyCustomPaletteIfNeeded(root: View = findViewById(android.R.id.content)) {
         val localData = LocalDataStore(this)
-        if (localData.appThemeMode != AppThemeMode.CUSTOM) return
+        val preview = appearancePreview()
+        val mode = preview?.themeMode ?: localData.appThemeMode
+        if (mode != AppThemeMode.CUSTOM) return
         RuntimePaletteApplier.apply(
             root,
             AppearanceDefaults.customAppPalette(
-                main = localData.customMainColor,
-                accent = localData.customAccentColor
+                main = preview?.customMain ?: localData.customMainColor,
+                accent = preview?.customAccent ?: localData.customAccentColor
             )
         )
     }
 
     private fun applyRuntimeAppearanceIfNeeded(root: View = findViewById(android.R.id.content)) {
-        when (LocalDataStore(this).appThemeMode) {
+        val mode = appearancePreview()?.themeMode ?: LocalDataStore(this).appThemeMode
+        when (mode) {
             AppThemeMode.CUSTOM -> applyCustomPaletteIfNeeded(root)
-            AppThemeMode.AMOLED -> root.setBackgroundColor(Color.BLACK)
+            AppThemeMode.AMOLED -> Unit
             else -> Unit
         }
+        TutorialFlow.attachIfNeeded(this)
     }
 
-    private fun enforceAmoledWindowIfNeeded() {
-        if (LocalDataStore(this).appThemeMode != AppThemeMode.AMOLED) return
-        window.setBackgroundDrawable(ColorDrawable(Color.BLACK))
-        window.statusBarColor = Color.BLACK
-        window.navigationBarColor = Color.BLACK
-        window.decorView.setBackgroundColor(Color.BLACK)
-    }
+    private fun appearancePreview(): AppearanceSelection? =
+        AppearancePreviewStore.current.takeIf { this is ThemeColorsActivity }
 }
+// End of class: BaseActivity

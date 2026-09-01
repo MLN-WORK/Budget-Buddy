@@ -28,7 +28,7 @@
             android:layout_marginTop="22dp"
             android:contentDescription="@string/buddy"
             android:scaleType="fitCenter"
-            android:src="@drawable/happy_buddy" />
+            android:src="@drawable/neutral_buddy_1" />
 
         <TextView
             android:layout_width="match_parent"
