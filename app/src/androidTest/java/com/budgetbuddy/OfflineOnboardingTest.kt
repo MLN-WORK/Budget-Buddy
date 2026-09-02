@@ -419,6 +419,30 @@ class OfflineOnboardingTest {
     }
 
     @Test
+    fun tutorialAnalyticsNeutralUsesTheExactGaugeColourInLightMode() {
+        val localData = LocalDataStore(context)
+        localData.saveProfile("Tutorial Gauge Tester", "€", "Budster")
+        localData.markInitialPermissionsRequested()
+        localData.saveAppearance(
+            themeMode = AppThemeMode.LIGHT,
+            customAccent = AppearanceDefaults.CUSTOM_ACCENT,
+            customMain = AppearanceDefaults.CUSTOM_MAIN,
+            gaugeMode = GaugePaletteMode.DEFAULT,
+            customGauge = AppearanceDefaults.DEFAULT_GAUGE
+        )
+
+        val intent = Intent(context, AnalyticsActivity::class.java)
+            .putExtra(TutorialFlow.EXTRA_STEP, 5)
+        ActivityScenario.launch<AnalyticsActivity>(intent).use { scenario ->
+            onView(withText(R.string.tutorial_state_neutral)).perform(click())
+            scenario.onActivity { activity ->
+                val remaining = activity.findViewById<android.widget.TextView>(R.id.tvAnalyticsBudgetRemaining)
+                assertEquals(AppearanceDefaults.DEFAULT_GAUGE.okay, remaining.currentTextColor)
+            }
+        }
+    }
+
+    @Test
     fun packagedAppDoesNotRequestInternetPermission() {
         val packageInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             context.packageManager.getPackageInfo(

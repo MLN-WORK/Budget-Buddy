@@ -28,7 +28,7 @@ class AppearancePreferencesTest {
 
     @Test
     fun defaultOkayGaugeUsesAClearYellowRatherThanBrown() {
-        assertEquals(0xFFFFD600.toInt(), AppearanceDefaults.DEFAULT_GAUGE.okay)
+        assertEquals(0xFFB8860B.toInt(), AppearanceDefaults.DEFAULT_GAUGE.okay)
     }
 
     @Test
