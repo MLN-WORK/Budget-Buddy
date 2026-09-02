@@ -187,7 +187,8 @@ object AppearanceDefaults {
 
     val DEFAULT_GAUGE = GaugePalette(
         good = 0xFF2E7D32.toInt(),
-        okay = 0xFFFFD600.toInt(),
+        // DarkGoldenRod remains recognisably yellow while staying visible on light surfaces.
+        okay = 0xFFB8860B.toInt(),
         bad = 0xFFC62828.toInt()
     )
     val COLOR_BLIND_GAUGE = GaugePalette(

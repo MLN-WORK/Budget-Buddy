@@ -336,7 +336,7 @@
                     <TextView
                         android:id="@+id/tvGaugeOkayHex"
                         style="@style/ColorHexLabel"
-                        tools:text="#FFD600" />
+                        tools:text="#B8860B" />
                 </LinearLayout>
 
                 <com.budgetbuddy.ColorPickerView

@@ -14,7 +14,6 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.activity.addCallback
-import androidx.core.graphics.ColorUtils
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.github.anastr.speedviewlib.SpeedView
@@ -298,7 +297,6 @@ object TutorialFlow {
         val data = LocalDataStore(activity)
         val symbol = data.currencySymbol
         val palette = data.gaugePalette
-        val surface = MaterialColors.getColor(activity.window.decorView, R.attr.budgetSurfaceColor)
         val (spent, percentage, buddy) = when (state) {
             1 -> Triple(680.0, 68, R.drawable.happy_buddy)
             2 -> Triple(1080.0, 108, R.drawable.angry_buddy)
@@ -306,9 +304,9 @@ object TutorialFlow {
         }
         val income = 1200.0
         val remaining = 1000.0 - spent
-        val dynamic = readableColor(statusColor(palette, percentage), surface)
-        val good = readableColor(palette.good, surface)
-        val bad = readableColor(palette.bad, surface)
+        val dynamic = AnalyticsCalculator.gaugeColor(percentage.toDouble(), palette)
+        val good = palette.good
+        val bad = palette.bad
         activity.findViewById<TextView>(R.id.tvBalanceAmount)?.apply {
             text = activity.getString(R.string.money_amount, symbol, income - spent)
             setTextColor(if (income - spent >= 0) good else bad)
@@ -352,25 +350,15 @@ object TutorialFlow {
             data.currencySymbol
         )
         activity.findViewById<TextView>(R.id.tvPercentage)?.text = activity.getString(R.string.percentage_two_decimals, percentage.toDouble())
+        val remaining = 1000.0 - (percentage * 10.0)
+        activity.findViewById<TextView>(R.id.tvAnalyticsBudgetRemaining)?.apply {
+            text = activity.getString(R.string.analytics_remaining_amount, data.currencySymbol, remaining)
+            // Tutorial examples use the same exact source-of-truth colour as Analytics.
+            setTextColor(AnalyticsCalculator.gaugeColor(percentage.toDouble(), palette))
+        }
         activity.findViewById<ImageView>(R.id.imgBeetleJuice)?.setImageResource(
             when (state) { 1 -> R.drawable.happy_buddy; 2 -> R.drawable.angry_buddy; else -> R.drawable.neutral_buddy_1 }
         )
-    }
-
-    private fun statusColor(palette: GaugePalette, percentage: Int) = when {
-        percentage < 50 -> palette.good
-        percentage < 85 -> palette.okay
-        else -> palette.bad
-    }
-
-    private fun readableColor(color: Int, surface: Int): Int {
-        if (ColorUtils.calculateContrast(color, surface) >= 4.5) return color
-        val target = if (ColorUtils.calculateLuminance(surface) < 0.45) Color.WHITE else Color.BLACK
-        for (step in 1..10) {
-            val candidate = ColorUtils.blendARGB(color, target, step / 10f)
-            if (ColorUtils.calculateContrast(candidate, surface) >= 4.5) return candidate
-        }
-        return target
     }
 
     private fun buddyForStep(step: Int) = when (step) {

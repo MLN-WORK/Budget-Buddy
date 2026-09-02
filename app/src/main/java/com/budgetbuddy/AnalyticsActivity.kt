@@ -464,9 +464,8 @@ class AnalyticsActivity : BaseActivity() {
                         getString(R.string.analytics_over_limit_amount, symbol, -remaining)
                     }
                     val statusColor = AnalyticsCalculator.gaugeColor(percentageSpent, gaugePalette)
-                    binding.tvAnalyticsBudgetRemaining.setTextColor(
-                        readableAnalyticsColor(statusColor, analyticsSurface)
-                    )
+                    // The remaining amount must match the gauge band exactly in every theme.
+                    binding.tvAnalyticsBudgetRemaining.setTextColor(statusColor)
         }
 
     }//end setupGaugeChart

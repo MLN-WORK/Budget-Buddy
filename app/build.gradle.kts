@@ -11,8 +11,8 @@ android {
         applicationId = "com.budgetbuddy"
         minSdk = 27
         targetSdk = 36
-        versionCode = 18
-        versionName = "2.9.5-offline"
+        versionCode = 19
+        versionName = "3.0-stable"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
